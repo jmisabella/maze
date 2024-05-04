@@ -1,7 +1,5 @@
 package maze.classes
 
-import maze.classes.Direction._
-
 case class Coordinates(x: Int, y: Int)
 
 case class Neighbors(
@@ -28,4 +26,10 @@ case class Cell(
     case None => false
     case Some(c) => linked.contains(c)
   }
+
+  override def toString(): String = s"coords: [${coords.x}, ${coords.y}]"
+}
+
+object Cell {
+  def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(row, column))
 }
