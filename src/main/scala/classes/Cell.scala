@@ -1,6 +1,8 @@
 package maze.classes
 
-case class Coordinates(x: Int, y: Int)
+case class Coordinates(x: Int, y: Int) {
+  override def toString(): String = s"($x,$y)"
+}
 
 case class Neighbors(
   north: Option[Coordinates] = None,
@@ -8,7 +10,8 @@ case class Neighbors(
   south: Option[Coordinates] = None,
   west: Option[Coordinates] = None
 ) {
-  override def toString(): String = s"north [$north], east [$east], south [$south], west [$west]"
+  override def toString(): String = 
+    s"""north: ${north.getOrElse("NONE")}, east: ${east.getOrElse("NONE")}, south: ${south.getOrElse("NONE")}, west: ${west.getOrElse("NONE")}"""
 }
 
 case class Cell(
@@ -30,8 +33,8 @@ case class Cell(
   }
   
   override def toString(): String = 
-    s"""coords: [${coords.x}, ${coords.y}]
-neighbors: [${neighbors}]
+    s"""coords: $coords
+neighbors: ${neighbors}
 """
 }
 
