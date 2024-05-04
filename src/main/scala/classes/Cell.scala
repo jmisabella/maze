@@ -12,7 +12,7 @@ case class Neighbors(
 )
 
 case class Cell(
-  coordinates: Coordinates, 
+  coords: Coordinates, 
   neighbors: Neighbors = Neighbors(), 
   linked: Set[Coordinates] = Set() 
 ) {
