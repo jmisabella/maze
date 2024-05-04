@@ -2,13 +2,13 @@ package maze.behaviors
 
 import maze.classes.{ Cell, Coordinates, Neighbors, Grid }
 
-trait Linkage {
+trait GridPreparation {
 
   def initialize(rows: Int, columns: Int): Grid = prepareCells(prepareGrid(rows, columns))
 
   def prepareGrid(rows: Int, columns: Int): Grid = {
     val empty = Grid(rows, columns).copy(cells = Array.ofDim[Cell](rows, columns))
-    empty.copy(cells = //empty.cells)
+    empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {
           Cell(row, col)

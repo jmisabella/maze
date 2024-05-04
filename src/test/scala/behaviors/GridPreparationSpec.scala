@@ -1,18 +1,17 @@
 package maze.behaviors
 
-import maze.behaviors.Linkage
+import maze.behaviors.GridPreparation
 import maze.classes.{ Cell, Grid }
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
-class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
-  case object module extends Linkage
+class GridPreparationSpec extends AnyFlatSpec with GivenWhenThen {
+  case object module extends GridPreparation
 
-  "Linkage" should "prepare a 3x3 grid" in {
+  "GridPreparation" should "prepare a 3x3 grid" in {
     When("preparing a 3x3 grid") 
-    // val grid = module.initialize(3, 3)
     val grid = module.prepareGrid(3, 3)
     Then("grid should have 3 rows and 3 columns")
     grid.cells.length should be (3)   
@@ -26,7 +25,6 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
   it should "initialize a 3x3 grid" in {
     When("initializing a 3x3 grid") 
     val grid = module.initialize(3, 3)
-    // val grid = module.prepareGrid(3, 3)
     Then("grid should have 3 rows and 3 columns")
     grid.cells.length should be (3)   
     for (row <- grid.cells) {
