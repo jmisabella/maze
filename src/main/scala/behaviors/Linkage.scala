@@ -27,20 +27,19 @@ trait Linkage {
             case 0 => None
             case _ => Some((grid.cells(cell.coords.x - 1)(cell.coords.y)).coords)
           }
-          // val east = cell.coords.y match {
-          //   case y if (y >= grid.columns) => None
-          //   case _ => Some((grid.cells(cell.coords.x)(cell.coords.y + 1)).coords)
-          // }
-          // val south = cell.coords.x match {
-          //   case x if (x >= grid.rows) => None
-          //   case _ => Some((grid.cells(cell.coords.x + 1)(cell.coords.y)).coords)
-          // }
-          // val west = cell.coords.y match {
-          //   case 0 => None
-          //   case _ => Some((grid.cells(cell.coords.x)(cell.coords.y - 1)).coords)
-          // }
-          // cell.copy(neighbors = Neighbors(north, east, south, west))
-          cell
+          val east = cell.coords.y match {
+            case y if (y >= grid.columns - 1) => None
+            case _ => Some((grid.cells(cell.coords.x)(cell.coords.y + 1)).coords)
+          }
+          val south = cell.coords.x match {
+            case x if (x >= grid.rows - 1) => None
+            case _ => Some((grid.cells(cell.coords.x + 1)(cell.coords.y)).coords)
+          }
+          val west = cell.coords.y match {
+            case 0 => None
+            case _ => Some((grid.cells(cell.coords.x)(cell.coords.y - 1)).coords)
+          }
+          cell.copy(neighbors = Neighbors(north, east, south, west))
         }).toArray
       }).toArray
     )

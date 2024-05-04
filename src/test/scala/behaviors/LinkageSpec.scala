@@ -34,6 +34,7 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
         println(cell)
       }
     }
-
   }
+
+
 }

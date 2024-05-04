@@ -7,7 +7,9 @@ case class Neighbors(
   east: Option[Coordinates] = None,
   south: Option[Coordinates] = None,
   west: Option[Coordinates] = None
-)
+) {
+  override def toString(): String = s"north [$north], east [$east], south [$south], west [$west]"
+}
 
 case class Cell(
   coords: Coordinates, 
@@ -26,8 +28,11 @@ case class Cell(
     case None => false
     case Some(c) => linked.contains(c)
   }
-
-  override def toString(): String = s"coords: [${coords.x}, ${coords.y}]"
+  
+  override def toString(): String = 
+    s"""coords: [${coords.x}, ${coords.y}]
+neighbors: [${neighbors}]
+"""
 }
 
 object Cell {
