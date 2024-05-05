@@ -17,7 +17,8 @@ case class Neighbors(
 case class Cell(
   coords: Coordinates, 
   neighbors: Neighbors = Neighbors(), 
-  linked: Set[Coordinates] = Set() 
+  linked: Set[Coordinates] = Set(),
+  visited: Boolean = false
 ) {
   def link(coordinates: Option[Coordinates]): Cell = coordinates match {
     case None => this
@@ -34,7 +35,9 @@ case class Cell(
   
   override def toString(): String = 
     s"""coords: $coords
+visited: ${visited}
 neighbors: ${neighbors}
+linked: ${linked}
 """
 }
 

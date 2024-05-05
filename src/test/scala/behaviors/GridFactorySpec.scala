@@ -1,14 +1,15 @@
 package maze.behaviors
 
-import maze.behaviors.GridPreparation
+import maze.behaviors.GridFactory
 import maze.classes.{ Cell, Grid }
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
-class GridPreparationSpec extends AnyFlatSpec with GivenWhenThen {
-  case object module extends GridPreparation
+class GridFactorySpec extends AnyFlatSpec with GivenWhenThen {
+
+  case object module extends GridFactory
 
   "GridPreparation" should "prepare a 3x3 grid" in {
     When("preparing a 3x3 grid") 

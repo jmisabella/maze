@@ -2,7 +2,7 @@ package maze.behaviors
 
 import maze.classes.{ Cell, Coordinates, Neighbors, Grid }
 
-trait GridPreparation {
+trait GridFactory {
 
   def initialize(rows: Int, columns: Int): Grid = prepareCells(prepareGrid(rows, columns))
 
