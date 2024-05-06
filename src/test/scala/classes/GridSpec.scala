@@ -24,4 +24,30 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     updatedGrid.count(c => !c.visited) should be (8)
   }
 
+  it should "flatten and unflatten its grid to end up with original X by Y matrix" in {
+    Given("5x5 grid with all unvisited cells") 
+    val grid: Grid = module.initialize(5, 5)
+    When("flattening grid into a list")
+    val flattened = grid.flatten()
+    Then("flattened list's length should equal original grid's rows multiplied by columns")
+    flattened.length should equal (grid.rows * grid.columns)
+    When("unflattening back to a grid")
+    val unflattened: Grid = grid.unflatten(flattened)
+    Then("the unflattened grid should equal the original grid")
+    grid.rows should equal (unflattened.rows)
+    grid.columns should equal (unflattened.columns)
+    grid.cells should equal (unflattened.cells)
+    When("updating middle cell to be visited and flattening and re-unflattening cells")
+    val middle: Cell = unflattened.get(2)(2).visit()
+    middle.visited should be (true)
+    val grid2 = unflattened.set(middle)
+    grid2.get(2)(2).visited should be (true)
+    val unflattened2: Grid = grid2.unflatten(grid2.flatten())
+    Then("the unflattend grid should equal the original, such that only the middle cell has been visited")
+    grid2.rows should equal (unflattened2.rows)
+    grid2.columns should equal (unflattened2.columns)
+    grid2.cells should equal (unflattened2.cells)
+  }
+
+
 }

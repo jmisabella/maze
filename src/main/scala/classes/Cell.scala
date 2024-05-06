@@ -32,9 +32,11 @@ case class Cell(
     case None => false
     case Some(c) => linked.contains(c)
   }
-  
+  def visit(): Cell = copy(visited = true)
+  def unvisit(): Cell = copy(visited = false)
+
   override def toString(): String = 
-    s"""coords: $coords
+s"""coords: $coords
 visited: ${visited}
 neighbors: ${neighbors}
 linked: ${linked}
