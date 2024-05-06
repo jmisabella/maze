@@ -50,6 +50,9 @@ case class Grid(
   def foreach(block: Cell => Unit): Unit = cells.foreach(row => row.foreach(block))
   def count[A <: Cell](p: Cell => Boolean): Int = flatten().count(p)
   def map(f: Cell => Cell): Grid = unflatten(flatten().map(f))
+  
+  // TODO: I think we need to re-work filtering in order to preserve original grid size! 
+  // TODO: If cells are filtered out then grid should use null to represent missing cells.
   def withFilter(p: Cell => Boolean): Grid = unflatten(flatten().filter(p))
   def filter(p: Cell => Boolean): Grid = withFilter(p)
   def contains[A <: Cell](c: A): Boolean = flatten().contains(c.asInstanceOf[Cell])
