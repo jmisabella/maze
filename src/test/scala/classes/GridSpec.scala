@@ -10,10 +10,22 @@ import org.scalatest.GivenWhenThen
 class GridSpec extends AnyFlatSpec with GivenWhenThen {
   
   case object module extends GridFactory
+  
+  "Grid" should "initialize a 3x3 grid" in {
+    When("initializing a 3x3 grid") 
+    val grid = Grid(3, 3)
+    Then("grid should have 3 rows and 3 columns")
+    grid.cells.length should be (3)   
+    for (row <- grid.cells) {
+      for (cell <- row) {
+        println(cell)
+      }
+    }
+  }
 
-  "Grid" should "update cell to be visited" in {
+  it should "update cell to be visited" in {
     Given("3x3 grid with all unvisited cells") 
-    val grid = module.initialize(3, 3)
+    val grid = Grid(3, 3)
     grid.count(c => !c.visited) should be (9)
     When("updating first cell to be visited")
     val first: Cell = grid.get(0)(0).copy(visited = true)
@@ -26,7 +38,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "flatten and unflatten its grid to end up with original X by Y matrix" in {
     Given("5x5 grid with all unvisited cells") 
-    val grid: Grid = module.initialize(5, 5)
+    val grid: Grid = Grid(5, 5)
     When("flattening grid into a list")
     val flattened = grid.flatten()
     Then("flattened list's length should equal original grid's rows multiplied by columns")
@@ -49,5 +61,5 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     grid2.cells should equal (unflattened2.cells)
   }
 
-
+  
 }

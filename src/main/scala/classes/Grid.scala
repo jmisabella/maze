@@ -5,7 +5,7 @@ import maze.classes.Cell
 case class Grid(
   rows: Int, 
   columns: Int, 
-  cells: Array[Array[Cell]] = Array()) {
+  cells: Array[Array[Cell]] ) {
 
   // retrieve cell residing at provided row and column coordinates
   def get(x: Int)(y: Int): Cell = cells(x)(y)
@@ -59,3 +59,40 @@ case class Grid(
   def contains[A <: Cell](cs: Seq[A]): Boolean = flatten().foldLeft(false)((acc, c) => contains(c)) 
 }
 
+object Grid {
+  def apply(rows: Int, columns: Int): Grid = {
+    val empty: Grid = Grid(rows, columns, Array[Array[Cell]]()).copy(cells = Array.ofDim[Cell](rows, columns))
+    val grid: Grid = empty.copy(cells =
+      (for (row <- 0 until empty.rows) yield {
+        (for (col <- 0 until empty.columns) yield {
+          Cell(row, col)
+        }).toArray
+      }).toArray
+    )
+    grid.copy(
+      cells = (for (row <- 0 until grid.rows) yield {
+        // set cells' neighbors
+        (for (col <- 0 until grid.columns) yield {
+          val cell = grid.cells(row)(col)
+          val north = cell.coords.x match {
+            case 0 => None
+            case _ => Some((grid.cells(cell.coords.x - 1)(cell.coords.y)).coords)
+          }
+          val east = cell.coords.y match {
+            case y if (y >= grid.columns - 1) => None
+            case _ => Some((grid.cells(cell.coords.x)(cell.coords.y + 1)).coords)
+          }
+          val south = cell.coords.x match {
+            case x if (x >= grid.rows - 1) => None
+            case _ => Some((grid.cells(cell.coords.x + 1)(cell.coords.y)).coords)
+          }
+          val west = cell.coords.y match {
+            case 0 => None
+            case _ => Some((grid.cells(cell.coords.x)(cell.coords.y - 1)).coords)
+          }
+          cell.copy(neighbors = Neighbors(north, east, south, west))
+        }).toArray
+      }).toArray
+    )
+  }
+}
