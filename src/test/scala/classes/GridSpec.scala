@@ -1,6 +1,5 @@
 package maze.classes
 
-import maze.behaviors.GridFactory
 import maze.classes.{ Cell, Grid }
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -8,8 +7,6 @@ import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
 class GridSpec extends AnyFlatSpec with GivenWhenThen {
-  
-  case object module extends GridFactory
   
   "Grid" should "initialize a 3x3 grid" in {
     When("initializing a 3x3 grid") 
@@ -61,5 +58,45 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     grid2.cells should equal (unflattened2.cells)
   }
 
-  
+  it should "know which cells have been linked together" in {
+    Given("4x4 grid") 
+    val grid: Grid = Grid(4, 4)
+    When("linking all cells in bottom row together")
+    // TODO: move linking functionality into a Linkage behavior
+    val bottomRowWithDupes: List[Cell] = (for ((c1, c2) <- grid.row(3) zip grid.row(3).drop(1)) yield c1.link(c2)).flatten
+    val grouped = bottomRowWithDupes.groupBy(c => (c.coords, c.visited, c.neighbors))
+    // val merged = grouped.foldLeft(Map.empty[(Coordinates, Boolean, Neighbors), List[Cell]].withDefaultValue(Nil)) {
+    val merged = grouped.foldLeft(Nil: Seq[Option[Cell]]) {
+      case (acc, (k, v)) => {
+        val coords: Coordinates = k._1
+        val visited: Boolean = k._2
+        val neighbors: Neighbors = k._3
+        val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
+        // acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked)))
+        acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked)))
+      }
+    }
+    // println("##########################################")
+    // println(grouped.getClass)
+    // println(grouped.mkString("\n--------------------------\n"))
+    // println("##########################################")
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    println("~~~~~~~~~~~~~~~~~~~~~ UPDATED ~~~~~~~~~~~~~~~~~~~~~")
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    println(merged.mkString("\n"))
+    // var updated: Grid = grid
+    // for (cell <- bottomRow) {
+    //   updated = updated.set(cell)
+    // }
+    // println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    // println("~~~~~~~~~~~~~~~~~~~~~ UPDATED ~~~~~~~~~~~~~~~~~~~~~")
+    // println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    // for (row <- updated.cells) {
+    //   for (cell <- row) {
+    //     println(cell)
+    //   }
+    // }
+
+  }
+
 }

@@ -9,6 +9,10 @@ case class Grid(
 
   // retrieve cell residing at provided row and column coordinates
   def get(x: Int)(y: Int): Cell = cells(x)(y)
+  // retrieve row
+  def row(x: Int): List[Cell] = cells(x).toList
+  // retrieve column
+  def column(y: Int): List[Cell] = (for (i <- 0 until rows) yield cells(i)(y)).toList
 
   // given a cell (which tracks its own x,y coordinates) updates grid's cell at those coordinates
   def set(cell: Cell): Grid = {
@@ -25,7 +29,7 @@ case class Grid(
 
   def links(cell: Cell): Seq[Cell] = (for (c <- cell.linked) yield cells(c.x)(c.y)).toSeq
 
-  def linked(cell1: Cell, cell2: Cell): Boolean = cell1.isLinked(Some(cell2.coords))
+  def linked(cell1: Cell, cell2: Cell): Boolean = cell1.isLinked(cell2)
 
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
