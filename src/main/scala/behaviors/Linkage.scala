@@ -14,8 +14,10 @@ trait Linkage {
     case false => Seq(cell1.copy(linked = cell1.linked - cell2.coords))
     case true => Seq(cell1.copy(linked = cell1.linked - cell2.coords), cell2.copy(linked = cell2.linked - cell1.coords))
   }
-  def isLinked(cell1: Cell, cell2: Cell): Boolean = cell1.linked.contains(cell2.coords)
-
+  def linked(cell1: Cell, cell2: Cell, bidi: Boolean = true): Boolean = bidi match {
+    case false => cell1.linked.contains(cell2.coords)
+    case true => cell1.linked.contains(cell2.coords) && cell2.linked.contains(cell1.coords) 
+  } 
   def link(cells: Seq[Cell], bidi: Boolean = true): Seq[Cell] = {
     val bottomRowWithDupes: Seq[Cell] = (for ((c1, c2) <- cells zip cells.drop(1)) yield link(c1, c2, bidi)).flatten
     val grouped = bottomRowWithDupes.groupBy(c => (c.coords, c.visited, c.neighbors))

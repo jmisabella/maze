@@ -20,17 +20,10 @@ case class Cell(
   linked: Set[Coordinates] = Set(),
   visited: Boolean = false
 ) {
-  def visit(): Cell = copy(visited = true)
-  def unvisit(): Cell = copy(visited = false)
-  def link(cell: Cell, bidi: Boolean = true): Seq[Cell] = bidi match {
-    case false => Seq(this.copy(linked = this.linked + cell.coords))
-    case true => Seq(this.copy(linked = this.linked + cell.coords), cell.copy(linked = cell.linked + this.coords))
+  def isLinked(cell: Cell, bidi: Boolean = true): Boolean = bidi match {
+    case false => linked.contains(cell.coords)
+    case true => linked.contains(cell.coords) && cell.linked(this.coords)
   }
-  def unlink(cell: Cell, bidi: Boolean = true): Seq[Cell] = bidi match {
-    case false => Seq(this.copy(linked = this.linked - cell.coords))
-    case true => Seq(this.copy(linked = this.linked - cell.coords), cell.copy(linked = cell.linked - this.coords))
-  }
-  def isLinked(cell: Cell): Boolean = linked.contains(cell.coords)
 
   override def toString(): String = 
 s"""coords: $coords
