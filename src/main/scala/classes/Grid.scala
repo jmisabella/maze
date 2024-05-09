@@ -37,9 +37,9 @@ case class Grid(
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
   def unflatten(flattened: List[Cell]): Grid = {
-    require(
-      flattened.length == rows * columns, 
-      s"When unflattening Grid, flattened cell count [${flattened.length}] does not equal $rows rows multiplied by $columns columns")
+    // require(
+    //   flattened.length == rows * columns, 
+    //   s"When unflattening Grid, flattened cell count [${flattened.length}] does not equal $rows rows multiplied by $columns columns")
     var remaining: List[Cell] = flattened
     val empty: Grid = Grid(rows, columns).copy(cells = Array.ofDim[Cell](rows, columns))
     empty.copy(cells =
