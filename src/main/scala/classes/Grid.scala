@@ -1,14 +1,18 @@
 package maze.classes
 
 import maze.classes.Cell
+import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
+import scala.util.Random // used to randomly seed our custom RNG for non-testing
 
 case class Grid(
   rows: Int, 
   columns: Int, 
-  cells: Array[Array[Cell]] ) {
+  cells: Array[Array[Cell]],
+  seed: RNG) {
 
   // retrieve cell residing at provided row and column coordinates
   def get(x: Int)(y: Int): Cell = cells(x)(y)
+  def get(coords: Coordinates): Cell = cells(coords.x)(coords.y)
   // retrieve row
   def row(x: Int): List[Cell] = cells(x).toList
   // retrieve column
@@ -65,7 +69,8 @@ case class Grid(
 
 object Grid {
   def apply(rows: Int, columns: Int): Grid = {
-    val empty: Grid = Grid(rows, columns, Array[Array[Cell]]()).copy(cells = Array.ofDim[Cell](rows, columns))
+    val seed: RNG = RNG.RandomSeed(Random.nextInt(rows * columns + 1))
+    val empty: Grid = Grid(rows, columns, Array[Array[Cell]](), seed).copy(cells = Array.ofDim[Cell](rows, columns))
     val grid: Grid = empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {
