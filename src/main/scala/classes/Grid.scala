@@ -30,7 +30,6 @@ case class Grid(
     }).toArray)
   }
 
-
   def links(cell: Cell): Seq[Cell] = (for (c <- cell.linked) yield cells(c.x)(c.y)).toSeq
 
   def linked(cell1: Cell, cell2: Cell): Boolean = cell1.isLinked(cell2)
@@ -65,6 +64,31 @@ case class Grid(
   def filter(p: Cell => Boolean): Grid = withFilter(p)
   def contains[A <: Cell](c: A): Boolean = flatten().contains(c.asInstanceOf[Cell])
   def contains[A <: Cell](cs: Seq[A]): Boolean = flatten().foldLeft(false)((acc, c) => contains(c)) 
+
+  override def toString(): String = {
+    var output: String = "+" + "---+" * columns + "\n"
+    for (row <- cells) {
+      var top: String = "|"
+      var bottom: String = "+"
+      for (cell <- row) {
+        val body = "   "
+        val eastBoundary: String = cell.neighbors.east match {
+          case Some(east) if (cell.isLinked(east)) => " "
+          case _ => "|"
+        }
+        top += body + eastBoundary
+        val southBoundary: String = cell.neighbors.south match {
+          case Some(south) if (cell.isLinked(south)) => "   "
+          case _ => "---"
+        }
+        val corner: String= "+"
+        bottom += southBoundary + corner
+      }
+      output += top + "\n"
+      output += bottom + "\n"
+    }
+    output 
+  }
 }
 
 object Grid {

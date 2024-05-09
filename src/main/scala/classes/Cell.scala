@@ -24,6 +24,7 @@ case class Cell(
     case false => linked.contains(cell.coords)
     case true => linked.contains(cell.coords) && cell.linked(this.coords)
   }
+  def isLinked(coords: Coordinates): Boolean = linked.contains(coords)
 
   override def toString(): String = 
 s"""coords: $coords
