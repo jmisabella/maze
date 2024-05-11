@@ -9,7 +9,7 @@ trait BinaryTree {
   type LINKAGE <: Linkage
   val linker: LINKAGE
 
-  def build(grid: Grid): Grid = {
+  def generate(grid: Grid): Grid = {
     var nextGrid: Grid = grid // to keep track of next random seeds
     val unflattened: Seq[Seq[Cell]] = for (cell <- grid.flatten()) yield {
       val neighbors: Seq[Coordinates] = (cell.neighbors.north, cell.neighbors.east) match {
@@ -21,7 +21,7 @@ trait BinaryTree {
       neighbors match {
         case Nil => Seq(cell)
         case xs => {
-          val (index, nextSeed): (Int, RNG) = nextGrid.seed.boundedPositiveInt(neighbors.length)
+          val (index, nextSeed): (Int, RNG) = nextGrid.randomInt(neighbors.length)
           nextGrid = nextGrid.copy(seed = nextSeed) // we made a random move, update grid's seed to the next seed
           val neighbor: Coordinates = neighbors(index)
           linker.link(Seq(cell, nextGrid.get(neighbor)))
