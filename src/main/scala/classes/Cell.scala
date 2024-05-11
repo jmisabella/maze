@@ -3,7 +3,9 @@ package maze.classes
 case class Coordinates(x: Int, y: Int) {
   override def toString(): String = s"($x,$y)"
 }
-
+object Coordinates {
+  implicit def ordering [A <: Coordinates]: Ordering[A] = Ordering.by(c => s"${c.x}${c.y}")
+}
 case class Neighbors(
   north: Option[Coordinates] = None,
   east: Option[Coordinates] = None,
@@ -26,9 +28,14 @@ case class Cell(
   }
   def isLinked(coords: Coordinates): Boolean = linked.contains(coords)
 
+//   override def toString(): String = 
+// s"""coords: $coords
+// visited: ${visited}
+// neighbors: ${neighbors}
+// linked: ${linked}
+// """
   override def toString(): String = 
 s"""coords: $coords
-visited: ${visited}
 neighbors: ${neighbors}
 linked: ${linked}
 """
@@ -36,4 +43,5 @@ linked: ${linked}
 
 object Cell {
   def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(row, column))
+  implicit def ordering [A <: Cell]: Ordering[A] = Ordering.by(_.coords)
 }

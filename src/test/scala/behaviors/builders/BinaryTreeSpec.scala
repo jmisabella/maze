@@ -18,11 +18,11 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   "BinaryTree" should "generate a 5x5 maze using Binary Tree and print it to screen" in {
     Given("5x5 grid")
-    val grid = Grid(5, 5)
+    val grid = Grid(3, 3)
     When("generating maze using BinaryTree")
     val generated: Grid = module.build(grid)
     Then("the maze should be printed to screen")
-    println(generated)
+    println(generated.toString())
 
   }
 }

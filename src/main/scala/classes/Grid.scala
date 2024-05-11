@@ -36,13 +36,27 @@ case class Grid(
 
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
-  def unflatten(flattened: List[Cell]): Grid = {
+  // TODO: this method does not work correctly, seems to be losing the final row when using BinaryTree to construct the maze! 
+  // TODO: I believe we need to rework this method to group by coordinates in order to merge all linked coordinates together! 
+  def unflatten(flattened: Seq[Cell]): Grid = {
     // require(
     //   flattened.length == rows * columns, 
     //   s"When unflattening Grid, flattened cell count [${flattened.length}] does not equal $rows rows multiplied by $columns columns")
-    var remaining: List[Cell] = flattened
+    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors))
+    val merged: Seq[Option[Cell]] = grouped.foldLeft(Nil: Seq[Option[Cell]]) {
+      case (acc, (k, v)) => {
+        val coords: Coordinates = k._1
+        val visited: Boolean = k._2
+        val neighbors: Neighbors = k._3
+        val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
+        acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked)))
+      }
+    }
+    val mergedCells: Seq[Cell] = merged.filter(_.isDefined).map(_.get).filter(_.linked != Set())
+    // var remaining: List[Cell] = flattened
+    var remaining: List[Cell] = mergedCells.toList.sorted
     val empty: Grid = Grid(rows, columns).copy(cells = Array.ofDim[Cell](rows, columns))
-    empty.copy(cells =
+    val result: Grid = empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {
           val cell = remaining.head
@@ -51,6 +65,8 @@ case class Grid(
         }).toArray
       }).toArray
     )
+    // println("REMAINING: " + remaining)
+    result
   }
   // common monad and other useful functions
   def flatten(): List[Cell] = cells.flatten.toList
