@@ -36,7 +36,6 @@ case class Cell(
 // """
   override def toString(): String = 
 s"""coords: $coords
-neighbors: ${neighbors}
 linked: ${linked}
 """
 }

@@ -58,5 +58,4 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     grid2.cells should equal (unflattened2.cells)
   }
   
-
 }

@@ -53,10 +53,9 @@ case class Grid(
       }
     }
     val mergedCells: Seq[Cell] = merged.filter(_.isDefined).map(_.get).filter(_.linked != Set())
-    // var remaining: List[Cell] = flattened
     var remaining: List[Cell] = mergedCells.toList.sorted
     val empty: Grid = Grid(rows, columns).copy(cells = Array.ofDim[Cell](rows, columns))
-    val result: Grid = empty.copy(cells =
+    empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {
           val cell = remaining.head
@@ -65,8 +64,6 @@ case class Grid(
         }).toArray
       }).toArray
     )
-    // println("REMAINING: " + remaining)
-    result
   }
   // common monad and other useful functions
   def flatten(): List[Cell] = cells.flatten.toList
