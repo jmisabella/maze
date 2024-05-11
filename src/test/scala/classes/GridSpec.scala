@@ -37,7 +37,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     Given("5x5 grid with all unvisited cells") 
     val grid: Grid = Grid(5, 5)
     When("flattening grid into a list")
-    val flattened = grid.flatten()
+    val flattened: Seq[Cell] = grid.flatten()
     Then("flattened list's length should equal original grid's rows multiplied by columns")
     flattened.length should equal (grid.rows * grid.columns)
     When("unflattening back to a grid")

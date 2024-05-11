@@ -131,39 +131,4 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
     module.linked(updated.get(3)(4), updated.get(4)(4), bidi=true) should be (true)
   }
 
-  it should "link a U on a 3x3 grid" in {
-    val original: Grid = Grid(3, 3)
-    val cells: Seq[Cell] = Seq(
-      original.get(0)(0).copy(linked = Set(Coordinates(0, 1), Coordinates(1, 0))),
-      original.get(0)(1).copy(linked = Set(Coordinates(0, 0), Coordinates(0, 2), Coordinates(1, 1))),
-      original.get(0)(2).copy(linked = Set(Coordinates(0, 1), Coordinates(1, 2))),
-      original.get(1)(0).copy(linked = Set(Coordinates(0, 0), Coordinates(2, 0))),
-      original.get(1)(1).copy(linked = Set(Coordinates(0, 1))),
-      original.get(1)(2).copy(linked = Set(Coordinates(0, 2), Coordinates(2, 2))),
-      original.get(2)(0).copy(linked = Set(Coordinates(1, 0))),
-      original.get(2)(1).copy(linked = Set(Coordinates(2, 2))),
-      original.get(2)(2).copy(linked = Set(Coordinates(2, 1), Coordinates(1, 2)))
-    ) 
-    val grid: Grid = Grid(3, 3).unflatten(cells)
-    var grid2 = grid
-    for (cell <- cells) {
-      grid2.set(cell)
-    }
-    println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
-    for (cell <- grid) {
-      println("CELL: " + cell)
-    }
-    println(grid)
-    println(grid2)
-    for (row <- grid.cells) {
-      for (cell <- row) {
-        println(cell.coords)
-      }
-    }
-    println("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
-  
-  
-  }
-
-
 }

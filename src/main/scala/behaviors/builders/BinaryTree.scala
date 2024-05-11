@@ -28,28 +28,7 @@ trait BinaryTree {
         }
       }
     }
-    // val flattened = unflattened.flatten
-    // val strandeds: Seq[Cell] = flattened.filter(c => c.linked == Nil)
-    // var unstrandeds: Seq[Cell] = flattened.filter(c => !c.linked.isEmpty) 
-    // for (stranded <- strandeds) {
-    //   val neighborsLinked: Seq[Cell] = flattened.filter(c => c.linked.contains(stranded.coords))
-    //   for (neighbor <- neighborsLinked) {
-    //     unstrandeds = unstrandeds ++ linker.link(Seq(neighbor, stranded)).filter(c => c.coords == stranded.coords)
-    //   }
-    // } 
-    // nextGrid.unflatten(unstrandeds)
-    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-    val result = nextGrid.unflatten(unflattened.flatten) //.filter(c => c.linked != Set()))
-    for (cell <- result.cells.flatten) {
-      println("CELL: " + cell)
-    }
-    // for (row <- result.cells) {
-    //   println("\n\nROW: " + row.mkString)
-    //   for (cell <- row) {
-    //     println(cell.coords + " linked: " + cell.linked.mkString(", "))
-    //   }
-    // }
-    result
+    nextGrid.unflatten(unflattened.flatten)
   }
 
 }

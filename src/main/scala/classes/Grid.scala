@@ -52,7 +52,7 @@ case class Grid(
         acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked)))
       }
     }
-    val mergedCells: Seq[Cell] = merged.filter(_.isDefined).map(_.get).filter(_.linked != Set())
+    val mergedCells: Seq[Cell] = merged.filter(_.isDefined).map(_.get)
     var remaining: List[Cell] = mergedCells.toList.sorted
     val empty: Grid = Grid(rows, columns).copy(cells = Array.ofDim[Cell](rows, columns))
     empty.copy(cells =
