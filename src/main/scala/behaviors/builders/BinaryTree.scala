@@ -2,14 +2,15 @@ package maze.behaviors.builders
 
 import maze.classes.{ Grid, Cell, Coordinates }
 import maze.behaviors.Linkage
+import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 
-trait BinaryTree {
+trait BinaryTree extends Generator {
 
   type LINKAGE <: Linkage
   val linker: LINKAGE
 
-  def generate(grid: Grid): Grid = {
+  override def generate(grid: Grid): Grid = {
     var nextGrid: Grid = grid // to keep track of next random seeds
     val unflattened: Seq[Seq[Cell]] = for (cell <- grid.flatten()) yield {
       val neighbors: Seq[Coordinates] = (cell.neighbors.north, cell.neighbors.east) match {

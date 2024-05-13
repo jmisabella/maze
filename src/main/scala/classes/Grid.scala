@@ -105,6 +105,178 @@ case class Grid(
     }
     output 
   }
+
+  // override def toString(): String = {
+  //   val horizontalLineThick: String = "\u2501"
+  //   val verticalLineThick: String = "\u2503"
+  //   val fourWayJunctureThick: String = "\u254B"
+  //   val threeWayJunctureNorthwardThick: String = "\u253B"
+  //   val threeWayJunctureEastwardThick: String = "\u2523"
+  //   val threeWayJunctureSouthwardThick: String = "\u2533"
+  //   val threeWayJunctureWestwardThick: String = "\u252B" 
+  //   val northWestCornerThick: String = "\u250F"
+  //   val northEastCornerThick: String = "\u2513"
+  //   val southEastCornerThick: String = "\u251B"
+  //   val southWestCornerThick: String = "\u2517"
+  //   // var output: String = "+" + "---+" * columns + "\n"
+  //   // var output: String = "+" + horizontalLineThick * columns + "\n"
+  //   var output: String = "+" + horizontalLineThick * 4 * columns + "\n"
+  //   for (row <- cells) {
+  //     // var top: String = "|"
+  //     var top: String = verticalLineThick 
+  //     var bottom: String = "+"
+  //     for (cell <- row) {
+  //       val body = "   "
+  //       val eastBoundary: String = cell.neighbors.east match {
+  //         case Some(east) if (cell.isLinked(east)) => " "
+  //         // case _ => "|"
+  //         case _ => verticalLineThick
+  //       }
+  //       top += body + eastBoundary
+  //       val southBoundary: String = cell.neighbors.south match {
+  //         case Some(south) if (cell.isLinked(south)) => "   "
+  //         // case _ => "---"
+  //         case _ => horizontalLineThick * 3
+  //       }
+  //       // val corner: String= "+"
+  //       // bottom += southBoundary + corner
+  //       val linkEnding: String = (cell.neighbors.north, cell.neighbors.east, cell.neighbors.south, cell.neighbors.west) match {
+  //         // no boundaries 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(north) && cell.isLinked(east) && cell.isLinked(south) && cell.isLinked(west)) => fourWayJunctureThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(north) && cell.isLinked(east) && cell.isLinked(south)) => threeWayJunctureEastwardThick 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(east) && cell.isLinked(south) && cell.isLinked(west)) => threeWayJunctureSouthwardThick 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(north) && cell.isLinked(south) && cell.isLinked(west)) => threeWayJunctureWestwardThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(north) && cell.isLinked(east) && cell.isLinked(west)) => threeWayJunctureNorthwardThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(east) && cell.isLinked(south)) => northWestCornerThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(south) && cell.isLinked(west)) => northEastCornerThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(north) && cell.isLinked(west)) => southEastCornerThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(north) && cell.isLinked(east)) => southWestCornerThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(north)) => "A" //"0" // not sure which character to use for vertical line endings 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(east)) => "B" //horizontalLineThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(south)) => "C" //"0" // not sure which character to use for vertical line endings 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(west)) => "D" //horizontalLineThick
+  //         // northern boundaries
+  //         case (None, Some(east), Some(south), Some(west)) if (cell.isLinked(east) && cell.isLinked(south) && cell.isLinked(west)) => threeWayJunctureSouthwardThick
+  //         case (None, Some(east), Some(south), _) if (cell.isLinked(east) && cell.isLinked(south)) => northWestCornerThick
+  //         case (None, _, Some(south), Some(west)) if (cell.isLinked(south) && cell.isLinked(west)) => northEastCornerThick
+  //         case (None, Some(east), _, Some(west)) if (cell.isLinked(east) && cell.isLinked(west)) => horizontalLineThick 
+  //         // eastern boundaries
+  //         case (Some(north), None, Some(south), Some(west)) if (cell.isLinked(north) && cell.isLinked(south) && cell.isLinked(west)) => threeWayJunctureWestwardThick
+  //         case (Some(north), None, _, Some(west)) if (cell.isLinked(north) && cell.isLinked(west)) => southEastCornerThick
+  //         case (_, None, Some(south), Some(west)) if (cell.isLinked(south) && cell.isLinked(west)) => northEastCornerThick
+  //         case (Some(north), None, Some(south), _) if (cell.isLinked(north) && cell.isLinked(south)) => verticalLineThick
+  //         // southern boundaries
+  //         case (Some(north), Some(east), None, Some(west)) if (cell.isLinked(north) && cell.isLinked(east) && cell.isLinked(west)) => threeWayJunctureNorthwardThick
+  //         case (Some(north), Some(east), None, _) if (cell.isLinked(north) && cell.isLinked(east)) => southWestCornerThick
+  //         case (Some(north), _, None, Some(west)) if (cell.isLinked(north) && cell.isLinked(west)) => southEastCornerThick
+  //         case (_, Some(east), None, Some(west)) if (cell.isLinked(east) && cell.isLinked(west)) => horizontalLineThick
+  //         // western boundaries
+  //         case (Some(north), Some(east), Some(south), None) if (cell.isLinked(north) && cell.isLinked(east) && cell.isLinked(south)) => threeWayJunctureEastwardThick
+  //         case (Some(north), Some(east), _, None) if (cell.isLinked(north) && cell.isLinked(east)) => southWestCornerThick
+  //         case (_, Some(east), Some(south), None) if (cell.isLinked(south) && cell.isLinked(east)) => northWestCornerThick
+  //         case (Some(north), _, Some(south), None) if (cell.isLinked(north) && cell.isLinked(south)) => verticalLineThick
+  //         case _ => "o"
+  //       }
+  //       bottom += southBoundary + linkEnding
+  //     }
+  //     output += top + "\n"
+  //     output += bottom + "\n"
+  //   }
+  //   output 
+  // }
+
+  // override def toString(): String = {
+  //   val horizontalLineThick: String = "\u2501"
+  //   val verticalLineThick: String = "\u2503"
+  //   val fourWayJunctureThick: String = "\u254B"
+  //   val threeWayJunctureNorthwardThick: String = "\u253B"
+  //   val threeWayJunctureEastwardThick: String = "\u2523"
+  //   val threeWayJunctureSouthwardThick: String = "\u2533"
+  //   val threeWayJunctureWestwardThick: String = "\u252B" 
+  //   val northWestCornerThick: String = "\u250F"
+  //   val northEastCornerThick: String = "\u2513"
+  //   val southEastCornerThick: String = "\u251B"
+  //   val southWestCornerThick: String = "\u2517"
+
+  //   val topWall: String = northWestCornerThick + (horizontalLineThick * 4 * (columns - 1)) + (horizontalLineThick * 3) + northEastCornerThick + "\n" 
+  //   val bottomWall: String = southWestCornerThick + (horizontalLineThick * 4 * (columns - 1)) + (horizontalLineThick * 3) + southEastCornerThick + "\n" 
+
+  //   var output: String = ""
+  //   output += topWall 
+  //   for (row <- cells) {
+  //     // var top: String = "|"
+  //     var top: String = verticalLineThick 
+  //     // var bottom: String = "+"
+  //     var bottom: String = "" 
+  //     for (cell <- row) {
+  //       if (bottom.length() == 0) {
+  //         cell.neighbors.south match {
+  //           case Some(south) => bottom += verticalLineThick
+  //           case None => bottom += southWestCornerThick
+  //         }
+  //       }
+  //       val body = "   "
+  //       val eastward: String = cell.neighbors.east match {
+  //         case Some(east) if (cell.isLinked(east)) => " "
+  //         case _ => verticalLineThick
+  //       }
+  //       top += body + eastward
+  //       val southward: String = cell.neighbors.south match {
+  //         case Some(south) if (cell.isLinked(south)) => " " * 3
+  //         case _ => horizontalLineThick * 3
+  //       }
+  //       // bottom += southBoundary + corner
+  //       val linkEnding: String = (cell.neighbors.north, cell.neighbors.east, cell.neighbors.south, cell.neighbors.west) match {
+  //         // no boundaries 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(north) && !cell.isLinked(east) && !cell.isLinked(south) && !cell.isLinked(west)) => fourWayJunctureThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(north) && !cell.isLinked(east) && !cell.isLinked(south)) => threeWayJunctureEastwardThick 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(east) && !cell.isLinked(south) && !cell.isLinked(west)) => threeWayJunctureSouthwardThick 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(north) && !cell.isLinked(south) && !cell.isLinked(west)) => threeWayJunctureWestwardThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(north) && !cell.isLinked(east) && !cell.isLinked(west)) => threeWayJunctureNorthwardThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(east) && !cell.isLinked(south)) => northEastCornerThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(south) && !cell.isLinked(west)) => northWestCornerThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(north) && !cell.isLinked(west)) => southWestCornerThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(north) && !cell.isLinked(east)) => southEastCornerThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (!cell.isLinked(north) && !cell.isLinked(south)) => verticalLineThick //"0" // not sure which character to use for vertical line endings 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(north)) => "A" //"0" // not sure which character to use for vertical line endings 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(east)) => "B" //horizontalLineThick
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(south)) => "C" //"0" // not sure which character to use for vertical line endings 
+  //         case (Some(north), Some(east), Some(south), Some(west)) if (cell.isLinked(west)) => "D" //horizontalLineThick
+  //         // northern boundaries
+  //         // case (None, Some(east), Some(south), Some(west)) if (!cell.isLinked(east) && !cell.isLinked(south) && !cell.isLinked(west)) => threeWayJunctureSouthwardThick
+  //         case (None, Some(east), Some(south), Some(west)) if (!cell.isLinked(east) && !cell.isLinked(south) && !cell.isLinked(west)) => threeWayJunctureNorthwardThick
+  //         case (None, Some(east), Some(south), _) if (!cell.isLinked(east) && !cell.isLinked(south)) => northWestCornerThick
+  //         case (None, _, Some(south), Some(west)) if (!cell.isLinked(south) && !cell.isLinked(west)) => northEastCornerThick
+  //         case (None, Some(east), _, Some(west)) if (!cell.isLinked(east) && !cell.isLinked(west)) => horizontalLineThick 
+  //         // eastern boundaries
+  //         // case (Some(north), None, Some(south), Some(west)) if (!cell.isLinked(north) && !cell.isLinked(south) && !cell.isLinked(west)) => threeWayJunctureWestwardThick
+  //         case (Some(north), None, Some(south), Some(west)) if (!cell.isLinked(north) && !cell.isLinked(south) && !cell.isLinked(west)) => threeWayJunctureEastwardThick
+  //         case (Some(north), None, _, Some(west)) if (!cell.isLinked(north) && !cell.isLinked(west)) => southEastCornerThick
+  //         case (_, None, Some(south), Some(west)) if (!cell.isLinked(south) && !cell.isLinked(west)) => northEastCornerThick
+  //         case (Some(north), None, Some(south), _) if (!cell.isLinked(north) && !cell.isLinked(south)) => verticalLineThick
+  //         // southern boundaries
+  //         case (Some(north), Some(east), None, Some(west)) if (!cell.isLinked(north) && !cell.isLinked(east) && !cell.isLinked(west)) => threeWayJunctureSouthwardThick
+  //         case (Some(north), Some(east), None, _) if (!cell.isLinked(north) && !cell.isLinked(east)) => southWestCornerThick
+  //         case (Some(north), _, None, Some(west)) if (!cell.isLinked(north) && !cell.isLinked(west)) => southEastCornerThick
+  //         case (_, Some(east), None, Some(west)) if (!cell.isLinked(east) && !cell.isLinked(west)) => horizontalLineThick
+  //         // western boundaries
+  //         case (Some(north), Some(east), Some(south), None) if (!cell.isLinked(north) && !cell.isLinked(east) && !cell.isLinked(south)) => threeWayJunctureWestwardThick
+  //         case (Some(north), Some(east), _, None) if (!cell.isLinked(north) && !cell.isLinked(east)) => southWestCornerThick
+  //         case (_, Some(east), Some(south), None) if (!cell.isLinked(south) && !cell.isLinked(east)) => northWestCornerThick
+  //         case (Some(north), _, Some(south), None) if (!cell.isLinked(north) && !cell.isLinked(south)) => verticalLineThick
+  //         ///////// 
+  //         case (None, Some(east), Some(south), None) if (!cell.isLinked(east) && !cell.isLinked(south)) => horizontalLineThick 
+  //         case (None, Some(east), Some(south), None) if (!cell.isLinked(east) && !cell.isLinked(south)) => verticalLineThick 
+  //         case _ => "o"
+  //       }
+  //       bottom += southward + linkEnding
+  //     }
+  //     output += top + "\n"
+  //     output += bottom + "\n"
+  //   }
+  //   output 
+  // }
+
 }
 
 object Grid {
