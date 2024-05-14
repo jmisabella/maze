@@ -1,5 +1,13 @@
 package maze.classes
 
+object Direction extends Enumeration {
+  type Direction = Value
+  val North, East, South, West = Value
+  
+  def fromString(s: String): Option[Direction] = values.find(_.toString == s)
+}
+import Direction._
+
 case class Coordinates(x: Int, y: Int) {
   override def toString(): String = s"($x,$y)"
 }
@@ -27,6 +35,13 @@ case class Cell(
     case true => linked.contains(cell.coords) && cell.linked(this.coords)
   }
   def isLinked(coords: Coordinates): Boolean = linked.contains(coords)
+
+  def isLinked(direction: Direction): Boolean = direction match {
+    case North => neighbors.north.isDefined && isLinked(neighbors.north.get)
+    case East => neighbors.east.isDefined && isLinked(neighbors.east.get)
+    case South => neighbors.south.isDefined && isLinked(neighbors.south.get)
+    case West => neighbors.west.isDefined && isLinked(neighbors.west.get)
+  }
 
 //   override def toString(): String = 
 // s"""coords: $coords
