@@ -98,9 +98,11 @@ case class Grid(
     var acc: String = "" // all accumulated text
     for (row <- cells) {
       // represents accumulated characters making up horizontal portion (top walls) of the cells in this row
-      var horizontalAcc: String = "" 
+      var topAcc: String = "" 
       // represents accumulated characters making up vertical portion (left walls) of the cells in this row 
-      var verticalAcc: String = ""
+      var middleAcc: String = ""
+      // represents only the very bottom horizontal of the grid 
+      var bottomAcc: String = ""
       for (cell <- row) {
         // determine all neighboring cells
         val north: Option[Cell] = cell.neighbors.north match {
@@ -135,118 +137,57 @@ case class Grid(
           case None => None
           case Some(c) => Some(this.get(c))
         }
-        val (topWall, leftWall, rightWall, bottomWall) = (north, east, south, west, northeast, southeast, southwest, northwest) match {
-          case (None, None, None, None, None, None, None, None) => {
-            ("", "", "", "")            
-          } 
-          // northwest corner of grid
-          case (None, Some(e), Some(s), None, _, Some(se), _, _) => { 
-            (cell.isLinked(East), cell.isLinked(South)) match {
-              case (true, true) => ???
-              case (true, false) => ???
-              case (false, true) => ???
-              case (false, false) => ???
-            }
-            ???
+        val isNortheastCorner: Boolean = !north.isDefined && !east.isDefined && south.isDefined && west.isDefined && southwest.isDefined
+        val isSoutheastCorner: Boolean = north.isDefined && !east.isDefined && !south.isDefined && west.isDefined && northwest.isDefined
+        val isSouthwestCorner: Boolean = north.isDefined && east.isDefined && !south.isDefined && !west.isDefined && northeast.isDefined
+        val isNorthwestCorner: Boolean = !north.isDefined && east.isDefined && south.isDefined && !west.isDefined && southeast.isDefined
+        val isNorthWall: Boolean = !north.isDefined && east.isDefined && south.isDefined && west.isDefined
+        val isEastWall: Boolean = north.isDefined && !east.isDefined && south.isDefined && west.isDefined
+        val isSouthWall: Boolean = north.isDefined && east.isDefined && !south.isDefined && west.isDefined
+        val isWestWall: Boolean = north.isDefined && east.isDefined && south.isDefined && !west.isDefined
+        val cellWidth: Int = 3
+        val body = " " * cellWidth // "body" represents the empty space inside the cell
+        // only draw the top wall when we are in the first row
+        val cellTopWall: String = (isNorthwestCorner, isNorthWall, isNortheastCorner) match {
+          case (true, _, _) => cell.isLinked(East) match {
+            case true => upperLeftCorner + horizontalLine * cellWidth + horizontalLine // linked to east
+            case false => upperLeftCorner + horizontalLine + threeWayJunctureSouthward // 3-way juncture since not linked east
           }
-          // northeast corner of grid
-          case (None, None, Some(s), Some(w), _, _, Some(sw), _) => {
-            (cell.isLinked(South), cell.isLinked(West)) match {
-              case (true, true) => ???
-              case (true, false) => ???
-              case (false, true) => ???
-              case (false, false) => ???
-            }
-            ???
+          case (_, true, _) => cell.isLinked(East) match {
+            case true => horizontalLine * cellWidth + horizontalLine
+            case false => horizontalLine * cellWidth + threeWayJunctureSouthward
           }
-          // north wall of grid
-          case (None, Some(e), Some(s), Some(w), _, Some(se), Some(sw), _) => {
-            (cell.isLinked(East), cell.isLinked(South), cell.isLinked(West)) match {
-              case (true, true, true) => ???
-              case (true, true, false) => ???
-              case (true, false, true) => ???
-              case (false, true, true) => ???
-              case (true, false, false) => ???
-              case (false, true, false) => ???
-              case (false, false, true) => ???
-              case (false, false, false) => ???
-            } 
-            ???
+          case (_, _, true) => cell.isLinked(West) match {
+            case true => threeWayJunctureWestward + horizontalLine * cellWidth + upperRightCorner
+            case false => horizontalLine * cellWidth + upperRightCorner
           }
-          // southwest corner of grid
-          case (Some(n), Some(e), None, None, Some(ne), _, _, _) => {
-            ???
-          }
-          // southeast corner of grid
-          case (Some(n), None, None, Some(w), _, _, _, Some(nw)) => {
-            ???
-          }
-          // south wall of grid
-          case (Some(n), Some(e), None, Some(w), Some(ne), _, _, Some(nw)) => {
-            (cell.isLinked(North), cell.isLinked(East), cell.isLinked(West)) match {
-              case (true, true, true) => ???
-              case (true, true, false) => ???
-              case (true, false, true) => ???
-              case (false, true, true) => ???
-              case (true, false, false) => ???
-              case (false, true, false) => ???
-              case (false, false, true) => ???
-              case (false, false, false) => ???
-            } 
-            ???
-          }
-          // east wall of grid
-          case (Some(n), None, Some(s), Some(w), _, _, Some(sw), Some(nw)) => {
-            (cell.isLinked(North), cell.isLinked(South), cell.isLinked(West)) match {
-              case (true, true, true) => ???
-              case (true, true, false) => ???
-              case (true, false, true) => ???
-              case (false, true, true) => ???
-              case (true, false, false) => ???
-              case (false, true, false) => ???
-              case (false, false, true) => ???
-              case (false, false, false) => ???
-            } 
-            ???
-          }
-          // west wall of grid
-          case (Some(n), Some(e), Some(s), None, Some(ne), Some(se), _, _) => {
-            (cell.isLinked(North), cell.isLinked(East), cell.isLinked(South)) match {
-              case (true, true, true) => ???
-              case (true, true, false) => ???
-              case (true, false, true) => ???
-              case (false, true, true) => ???
-              case (true, false, false) => ???
-              case (false, true, false) => ???
-              case (false, false, true) => ???
-              case (false, false, false) => ???
-            } 
-            ???
-          }
-          // not at a boundary, neighbors on all sides  
-          case (Some(n), Some(e), Some(s), Some(w), Some(ne), Some(se), Some(sw), Some(nw)) => {
-            (cell.isLinked(North), cell.isLinked(East), cell.isLinked(South), cell.isLinked(West)) match {
-              case (true, true, true, true) => ???
-              case (true, true, true, false) => ???
-              case (true, true, false, true) => ???
-              case (true, false, true, true) => ???
-              case (false, true, true, true) => ???
-              case (true, true, false, false) => ???
-              case (true, false, true, false) => ???
-              case (true, false, false, true) => ???
-              case (false, true, true, false) => ???
-              case (false, true, false, true) => ???
-              case (false, false, true, true) => ???
-              case (true, false, false, false) => ???
-              case (false, true, false, false) => ???
-              case (false, false, true, false) => ???
-              case (false, false, false, true) => ???
-              case (false, false, false, false) => ???
-            }
-            ???
-          }
-          
-          
+          case (false, false, false) => "" // if not on northern boundary then don't draw anything for top line 
+        }
+        // only draw left wall when we are in the first column
+        val cellLeftWall: String = (isNorthwestCorner, isWestWall, isSouthwestCorner) match {
+          case (true, _, _) => verticalLine
+          case (_, true, _) => verticalLine
+          case (_, _, true) => verticalLine
+          case (false, false, false) => "" // if not on western boundary then don't draw anything for left wall
+        }
+        // always draw the bottom wall
+        val cellBottomWall: String = (isSoutheastCorner, isSouthWall, isSoutheastCorner) match {
+          case (true, _, _) => ???
+          case (_, true, _) => ???
+          case (_, _, true) => ???
+          case (false, false, false) => ???
+        }
+        // always draw the right wall
+        val cellRightWall: String = (isNorthWall, isNortheastCorner, isEastWall, isSoutheastCorner, isSouthWall, isSouthwestCorner, isWestWall, isNorthwestCorner) match {
+          case (true, _, _, _, _, _, _, _) => ???
+          case (_, true, _, _, _, _, _, _) => ???
+          case (_, _, true, _, _, _, _, _) => ???
+          case (_, _, _, true, _, _, _, _) => ???
+          case (_, _, _, _, true, _, _, _) => ???
+          case (_, _, _, _, _, true, _, _) => ???
+          case (_, _, _, _, _, _, true, _) => ???
+          case (_, _, _, _, _, _, _, true) => ???
+          case (false, false, false, false, false, false, false, false) => ???
         }
 
         if (horizontalAcc.length() == 0) {
