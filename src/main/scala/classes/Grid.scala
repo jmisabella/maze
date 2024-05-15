@@ -84,70 +84,192 @@ case class Grid(
   def contains[A <: Cell](cs: Seq[A]): Boolean = flatten().foldLeft(false)((acc, c) => contains(c)) 
 
   override def toString(): String = {
-    val horizontalLineThick: String = "\u2501"
-    val verticalLineThick: String = "\u2503"
-    val fourWayJunctureThick: String = "\u254B"
-    val threeWayJunctureNorthwardThick: String = "\u253B"
-    val threeWayJunctureEastwardThick: String = "\u2523"
-    val threeWayJunctureSouthwardThick: String = "\u2533"
-    val threeWayJunctureWestwardThick: String = "\u252B" 
-    val northWestCornerThick: String = "\u250F"
-    val northEastCornerThick: String = "\u2513"
-    val southEastCornerThick: String = "\u251B"
-    val southWestCornerThick: String = "\u2517"
-
-    val topWall: String = northWestCornerThick + (horizontalLineThick * 4 * (columns - 1)) + (horizontalLineThick * 3) + northEastCornerThick + "\n" 
-    val bottomWall: String = southWestCornerThick + (horizontalLineThick * 4 * (columns - 1)) + (horizontalLineThick * 3) + southEastCornerThick + "\n" 
-
-    // var output: String = "+" + horizontalLineThick * 4 * columns + "\n"
-    var output: String = "\u25C6" + horizontalLineThick * 4 * columns + "\n"
+    val horizontalLine: String = "\u2501"
+    val verticalLine: String = "\u2503"
+    val fourWayJuncture: String = "\u254B"
+    val threeWayJunctureNorthward: String = "\u253B"
+    val threeWayJunctureEastward: String = "\u2523"
+    val threeWayJunctureSouthward: String = "\u2533"
+    val threeWayJunctureWestward: String = "\u252B"
+    val upperLeftCorner: String = "\u250F"
+    val upperRightCorner: String = "\u2513"
+    val bottomRightCorner: String = "\u251B"
+    val bottomLeftCorner: String = "\u2517"
+    var acc: String = "" // all accumulated text
     for (row <- cells) {
-      // "top" represents the vertical portions of the cell we're drawing
-      var top: String = verticalLineThick 
-      // "bottom" represents the horizontal portion of the cell we're drawing 
-      var bottom: String = ""
+      // represents accumulated characters making up horizontal portion (top walls) of the cells in this row
+      var horizontalAcc: String = "" 
+      // represents accumulated characters making up vertical portion (left walls) of the cells in this row 
+      var verticalAcc: String = ""
       for (cell <- row) {
-        if (bottom.length() == 0) {
+        // determine all neighboring cells
+        val north: Option[Cell] = cell.neighbors.north match {
+          case None => None
+          case Some(c) => Some(this.get(c))
+        }
+        val east: Option[Cell] = cell.neighbors.east match {
+          case None => None
+          case Some(c) => Some(this.get(c))
+        }
+        val south: Option[Cell] = cell.neighbors.south match {
+          case None => None
+          case Some(c) => Some(this.get(c))
+        }
+        val west: Option[Cell] = cell.neighbors.west match {
+          case None => None
+          case Some(c) => Some(this.get(c))
+        }
+        val northeast: Option[Cell] = cell.neighbors.northeast match {
+          case None => None
+          case Some(c) => Some(this.get(c))
+        }
+        val southeast: Option[Cell] = cell.neighbors.southeast match {
+          case None => None
+          case Some(c) => Some(this.get(c))
+        }
+        val southwest: Option[Cell] = cell.neighbors.southwest match {
+          case None => None
+          case Some(c) => Some(this.get(c))
+        }
+        val northwest: Option[Cell] = cell.neighbors.northwest match {
+          case None => None
+          case Some(c) => Some(this.get(c))
+        }
+        val (topWall, leftWall, rightWall, bottomWall) = (north, east, south, west, northeast, southeast, southwest, northwest) match {
+          case (None, None, None, None, None, None, None, None) => {
+            ("", "", "", "")            
+          } 
+          // northwest corner of grid
+          case (None, Some(e), Some(s), None, _, Some(se), _, _) => { 
+            (cell.isLinked(East), cell.isLinked(South)) match {
+              case (true, true) => ???
+              case (true, false) => ???
+              case (false, true) => ???
+              case (false, false) => ???
+            }
+            ???
+          }
+          // northeast corner of grid
+          case (None, None, Some(s), Some(w), _, _, Some(sw), _) => {
+            (cell.isLinked(South), cell.isLinked(West)) match {
+              case (true, true) => ???
+              case (true, false) => ???
+              case (false, true) => ???
+              case (false, false) => ???
+            }
+            ???
+          }
+          // north wall of grid
+          case (None, Some(e), Some(s), Some(w), _, Some(se), Some(sw), _) => {
+            (cell.isLinked(East), cell.isLinked(South), cell.isLinked(West)) match {
+              case (true, true, true) => ???
+              case (true, true, false) => ???
+              case (true, false, true) => ???
+              case (false, true, true) => ???
+              case (true, false, false) => ???
+              case (false, true, false) => ???
+              case (false, false, true) => ???
+              case (false, false, false) => ???
+            } 
+            ???
+          }
+          // southwest corner of grid
+          case (Some(n), Some(e), None, None, Some(ne), _, _, _) => {
+            ???
+          }
+          // southeast corner of grid
+          case (Some(n), None, None, Some(w), _, _, _, Some(nw)) => {
+            ???
+          }
+          // south wall of grid
+          case (Some(n), Some(e), None, Some(w), Some(ne), _, _, Some(nw)) => {
+            (cell.isLinked(North), cell.isLinked(East), cell.isLinked(West)) match {
+              case (true, true, true) => ???
+              case (true, true, false) => ???
+              case (true, false, true) => ???
+              case (false, true, true) => ???
+              case (true, false, false) => ???
+              case (false, true, false) => ???
+              case (false, false, true) => ???
+              case (false, false, false) => ???
+            } 
+            ???
+          }
+          // east wall of grid
+          case (Some(n), None, Some(s), Some(w), _, _, Some(sw), Some(nw)) => {
+            (cell.isLinked(North), cell.isLinked(South), cell.isLinked(West)) match {
+              case (true, true, true) => ???
+              case (true, true, false) => ???
+              case (true, false, true) => ???
+              case (false, true, true) => ???
+              case (true, false, false) => ???
+              case (false, true, false) => ???
+              case (false, false, true) => ???
+              case (false, false, false) => ???
+            } 
+            ???
+          }
+          // west wall of grid
+          case (Some(n), Some(e), Some(s), None, Some(ne), Some(se), _, _) => {
+            (cell.isLinked(North), cell.isLinked(East), cell.isLinked(South)) match {
+              case (true, true, true) => ???
+              case (true, true, false) => ???
+              case (true, false, true) => ???
+              case (false, true, true) => ???
+              case (true, false, false) => ???
+              case (false, true, false) => ???
+              case (false, false, true) => ???
+              case (false, false, false) => ???
+            } 
+            ???
+          }
+          // not at a boundary, neighbors on all sides  
+          case (Some(n), Some(e), Some(s), Some(w), Some(ne), Some(se), Some(sw), Some(nw)) => {
+            (cell.isLinked(North), cell.isLinked(East), cell.isLinked(South), cell.isLinked(West)) match {
+              case (true, true, true, true) => ???
+              case (true, true, true, false) => ???
+              case (true, true, false, true) => ???
+              case (true, false, true, true) => ???
+              case (false, true, true, true) => ???
+              case (true, true, false, false) => ???
+              case (true, false, true, false) => ???
+              case (true, false, false, true) => ???
+              case (false, true, true, false) => ???
+              case (false, true, false, true) => ???
+              case (false, false, true, true) => ???
+              case (true, false, false, false) => ???
+              case (false, true, false, false) => ???
+              case (false, false, true, false) => ???
+              case (false, false, false, true) => ???
+              case (false, false, false, false) => ???
+            }
+            ???
+          }
+          
+          
+        }
+
+        if (horizontalAcc.length() == 0) {
           // first character of bottom; other characters will be appended 
           val cellLeftVerticalWall: String = (cell.neighbors.south, cell.isLinked(South)) match {
-            case (None, false) => southWestCornerThick // bottom left corner of grid
-            case (Some(neighbor), false) => threeWayJunctureEastwardThick // no vertical linkage, so 3-way juncture
-            case (_, true) => verticalLineThick // vertical linkage, so no juncture here
+            case (None, false) => bottomLeftCorner // bottom left corner of grid
+            case (Some(neighbor), false) => threeWayJunctureEastward // no vertical linkage, so 3-way juncture
+            case (_, true) => verticalLine // vertical linkage, so no juncture here
           }
           bottom += cellLeftVerticalWall
         }
         val body = "   " // "body" represents the empty space inside the cell
         val cellRightVerticalWall: String = cell.isLinked(East) match {
           case true => " "
-          case false => verticalLineThick
+          case false => verticalLine
         }
         top += body + cellRightVerticalWall
         val cellBottomHorizontalWall: String = cell.isLinked(South) match {
           case true => " " * 3
-          case false => horizontalLineThick * 3
+          case false => horizontalLine * 3
         }
-
         // val cellBottomRightCorner: String = "\u25AA"
         val cellBottomRightCorner: String = "\u25C6"
-        // val cellBottomRightCorner: String = (cell.isLinked(North), cell.isLinked(East), cell.isLinked(South), cell.isLinked(West)) match {
-        //   case (false, false, false, false) => fourWayJunctureThick
-        //   case (true, false, false, false) => threeWayJunctureSouthwardThick
-        //   case (false, true, false, false) => threeWayJunctureWestwardThick
-        //   case (false, false, true, false) => threeWayJunctureNorthwardThick
-        //   case (false, false, false, true) => threeWayJunctureEastwardThick
-        //   case (true, true, false, false) => southWestCornerThick
-        //   case (true, false, true, false) => "o" // verticalLineThick // ???
-        //   case (true, false, false, true) => southEastCornerThick
-        //   case (false, true, true, false) => northWestCornerThick
-        //   case (false, true, false, true) => "o" // horizontalLineThick // ???
-        //   case (false, false, true, true) => northEastCornerThick
-        //   case (_, _, _, _) => "o"
-        //   // case (true, true, true, false) => " " // ??? 
-        //   // case (true, true, false, true) => horizontalLineThick // ??? 
-        //   // case (true, false, true, true) => " " // ??? 
-        //   // case (false, true, true, true) => horizontalLineThick // ??? 
-        //   // case (true, true, true, true) => " " // ??? 
-        // }
         bottom += cellBottomHorizontalWall + cellBottomRightCorner
       }
       output += top + "\n"
@@ -155,6 +277,58 @@ case class Grid(
     }
     output 
   }
+
+
+  // override def toString(): String = {
+  //   val horizontalLineThick: String = "\u2501"
+  //   val verticalLineThick: String = "\u2503"
+  //   val fourWayJunctureThick: String = "\u254B"
+  //   val threeWayJunctureNorthwardThick: String = "\u253B"
+  //   val threeWayJunctureEastwardThick: String = "\u2523"
+  //   val threeWayJunctureSouthwardThick: String = "\u2533"
+  //   val threeWayJunctureWestwardThick: String = "\u252B" 
+  //   val northWestCornerThick: String = "\u250F"
+  //   val northEastCornerThick: String = "\u2513"
+  //   val southEastCornerThick: String = "\u251B"
+  //   val southWestCornerThick: String = "\u2517"
+  //   val topWall: String = northWestCornerThick + (horizontalLineThick * 4 * (columns - 1)) + (horizontalLineThick * 3) + northEastCornerThick + "\n" 
+  //   val bottomWall: String = southWestCornerThick + (horizontalLineThick * 4 * (columns - 1)) + (horizontalLineThick * 3) + southEastCornerThick + "\n" 
+  //   // var output: String = "+" + horizontalLineThick * 4 * columns + "\n"
+  //   var output: String = "\u25C6" + horizontalLineThick * 4 * columns + "\n"
+  //   for (row <- cells) {
+  //     // "top" represents the vertical portions of the cell we're drawing
+  //     var top: String = verticalLineThick 
+  //     // "bottom" represents the horizontal portion of the cell we're drawing 
+  //     var bottom: String = ""
+  //     for (cell <- row) {
+  //       if (bottom.length() == 0) {
+  //         // first character of bottom; other characters will be appended 
+  //         val cellLeftVerticalWall: String = (cell.neighbors.south, cell.isLinked(South)) match {
+  //           case (None, false) => southWestCornerThick // bottom left corner of grid
+  //           case (Some(neighbor), false) => threeWayJunctureEastwardThick // no vertical linkage, so 3-way juncture
+  //           case (_, true) => verticalLineThick // vertical linkage, so no juncture here
+  //         }
+  //         bottom += cellLeftVerticalWall
+  //       }
+  //       val body = "   " // "body" represents the empty space inside the cell
+  //       val cellRightVerticalWall: String = cell.isLinked(East) match {
+  //         case true => " "
+  //         case false => verticalLineThick
+  //       }
+  //       top += body + cellRightVerticalWall
+  //       val cellBottomHorizontalWall: String = cell.isLinked(South) match {
+  //         case true => " " * 3
+  //         case false => horizontalLineThick * 3
+  //       }
+  //       // val cellBottomRightCorner: String = "\u25AA"
+  //       val cellBottomRightCorner: String = "\u25C6"
+  //       bottom += cellBottomHorizontalWall + cellBottomRightCorner
+  //     }
+  //     output += top + "\n"
+  //     output += bottom + "\n"
+  //   }
+  //   output 
+  // }
 
   // override def toString(): String = {
   //   var output: String = "+" + "---+" * columns + "\n"
@@ -280,22 +454,42 @@ object Grid {
         (for (col <- 0 until grid.columns) yield {
           val cell = grid.cells(row)(col)
           val north = cell.coords.x match {
-            case 0 => None
+            case 0 => None // nothing exists north
             case _ => Some((grid.cells(cell.coords.x - 1)(cell.coords.y)).coords)
           }
           val east = cell.coords.y match {
-            case y if (y >= grid.columns - 1) => None
+            case y if (y >= grid.columns - 1) => None // nothing exists east
             case _ => Some((grid.cells(cell.coords.x)(cell.coords.y + 1)).coords)
           }
           val south = cell.coords.x match {
-            case x if (x >= grid.rows - 1) => None
+            case x if (x >= grid.rows - 1) => None // nothing exists south
             case _ => Some((grid.cells(cell.coords.x + 1)(cell.coords.y)).coords)
           }
           val west = cell.coords.y match {
-            case 0 => None
+            case 0 => None // nothing exists west
             case _ => Some((grid.cells(cell.coords.x)(cell.coords.y - 1)).coords)
           }
-          cell.copy(neighbors = Neighbors(north, east, south, west))
+          val northeast = (cell.coords.x, cell.coords.y) match {
+            case (0, _) => None // nothing exists north
+            case (_, y) if (y >= grid.columns - 1) => None // nothing exists east
+            case (x, y) => Some((grid.cells(cell.coords.x - 1)(cell.coords.y + 1)).coords)
+          }
+          val southeast = (cell.coords.x, cell.coords.y) match {
+             case (x, _) if (x >= grid.rows - 1) => None // nothing exists south
+             case (_, y) if (y >= grid.columns - 1) => None // nothing exists east
+             case (x, y) => Some((grid.cells(cell.coords.x + 1)(cell.coords.y + 1)).coords)
+          }
+          val southwest = (cell.coords.x, cell.coords.y) match {
+            case (x, _) if (x >= grid.rows - 1) => None // nothing exists south
+            case (_, 0) => None // nothing exists west
+            case (x, y) => Some((grid.cells(cell.coords.x + 1)(cell.coords.y - 1)).coords)
+          }
+          val northwest = (cell.coords.x, cell.coords.y) match {
+            case (0, _) => None // nothing exists north
+            case (_, 0) => None // nothing exists west
+            case (x, y) => Some((grid.cells(cell.coords.x - 1)(cell.coords.y - 1)).coords)
+          }
+          cell.copy(neighbors = Neighbors(north, east, south, west, northeast, southeast, southwest, northwest))
         }).toArray
       }).toArray
     )
