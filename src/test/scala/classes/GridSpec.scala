@@ -57,5 +57,43 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     grid2.columns should equal (unflattened2.columns)
     grid2.cells should equal (unflattened2.cells)
   }
-  
+
+  it should "use hard-coded unicode box characters to display to screen" in {
+    val horizontalLine: String = "\u2501"
+    val verticalLine: String = "\u2503"
+    val fourWayJuncture: String = "\u254B"
+    val threeWayJunctureNorthward: String = "\u253B"
+    val threeWayJunctureEastward: String = "\u2523"
+    val threeWayJunctureSouthward: String = "\u2533"
+    val threeWayJunctureWestward: String = "\u252B"
+    val upperLeftCorner: String = "\u250F"
+    val upperRightCorner: String = "\u2513"
+    val bottomRightCorner: String = "\u251B"
+    val bottomLeftCorner: String = "\u2517"
+    val cellWidth = 3
+    val cell: String = " " * cellWidth
+    var top: String = ""
+    var middle: String = ""
+    var bottom: String = ""
+
+    top += upperLeftCorner + horizontalLine * cellWidth + threeWayJunctureSouthward
+    top += horizontalLine * cellWidth + horizontalLine
+    top += horizontalLine * cellWidth + upperRightCorner
+    top += "\n"
+    middle += verticalLine + cell + verticalLine
+    middle += cell + " "
+    middle += cell + verticalLine
+    middle += "\n"
+    bottom += bottomLeftCorner + horizontalLine * cellWidth + threeWayJunctureNorthward
+    bottom += horizontalLine * cellWidth + horizontalLine
+    bottom += horizontalLine * cellWidth + bottomRightCorner
+    bottom += "\n"
+
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    println(top + middle + bottom)
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+  }
+
 }

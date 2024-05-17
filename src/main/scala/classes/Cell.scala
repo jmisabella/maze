@@ -1,38 +1,14 @@
 package maze.classes
 
-object Direction extends Enumeration {
-  type Direction = Value
-  val North, East, South, West = Value
-  
-  def fromString(s: String): Option[Direction] = values.find(_.toString == s)
-}
-import Direction._
-
-case class Coordinates(x: Int, y: Int) {
-  override def toString(): String = s"($x,$y)"
-}
-object Coordinates {
-  implicit def ordering [A <: Coordinates]: Ordering[A] = Ordering.by(c => (c.x, c.y))
-}
-case class Neighbors(
-  north: Option[Coordinates] = None,
-  east: Option[Coordinates] = None,
-  south: Option[Coordinates] = None,
-  west: Option[Coordinates] = None,
-  northeast: Option[Coordinates] = None,
-  southeast: Option[Coordinates] = None,
-  southwest: Option[Coordinates] = None,
-  northwest: Option[Coordinates] = None
-) {
-  override def toString(): String = 
-    s"""north: ${north.getOrElse("NONE")}, east: ${east.getOrElse("NONE")}, south: ${south.getOrElse("NONE")}, west: ${west.getOrElse("NONE")}, northeast: ${northeast.getOrElse("NONE")}, southeast: ${southeast.getOrElse("NONE")}, southwest: ${southwest.getOrElse("NONE")}, northwest: ${northwest.getOrElse("NONE")}"""
-}
+import maze.classes.{ Coordinates, Neighbors }
+import maze.classes.Direction._
 
 case class Cell(
   coords: Coordinates, 
   neighbors: Neighbors = Neighbors(), 
   linked: Set[Coordinates] = Set(),
-  visited: Boolean = false
+  visited: Boolean = false,
+  value: String = "   "
 ) {
   def isLinked(cell: Cell, bidi: Boolean = true): Boolean = bidi match {
     case false => linked.contains(cell.coords)
@@ -47,16 +23,32 @@ case class Cell(
     case West => neighbors.west.isDefined && isLinked(neighbors.west.get)
   }
 
+  def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
+  def padLeft(s: String, c: Char, n: Int): String = n match {
+    case 0 => s
+    case x if (x < 0) => s
+    case _ => padRight(s, c, n).split(s).tail.mkString + s
+  }
+  // evenly pad left and right; left has 1 extra padding in case of an odd length 
+  def pad(s:String, c: Char, n:Int): String = {
+    val left = (n - s.length) / 2
+    val right = n - left - s.length 
+    c.toString * left + s + c.toString * right
+  }
+
+  override def toString(): String = 
+s"""coords: $coords
+linked: ${linked}
+"""
+  // override def toString(): String = ""
+
 //   override def toString(): String = 
 // s"""coords: $coords
 // visited: ${visited}
 // neighbors: ${neighbors}
 // linked: ${linked}
 // """
-  override def toString(): String = 
-s"""coords: $coords
-linked: ${linked}
-"""
+
 }
 
 object Cell {
