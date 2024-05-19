@@ -1,6 +1,8 @@
 package maze.classes
 
 import maze.classes.{ Cell, Grid }
+import maze.behaviors.Linkage
+import maze.behaviors.builders.{ Sidewinder, BinaryTree }
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
@@ -57,6 +59,66 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     grid2.columns should equal (unflattened2.columns)
     grid2.cells should equal (unflattened2.cells)
   }
+  
+  it should "determine distances from upper-left cell to all others in a 5x5 maze generated using Sidewinder" in {
+    case object module extends Sidewinder {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+    }
+    Given("5x5 grid generated using Sidewinder")
+    val unlinked = Grid(5, 5)
+    val grid: Grid = module.generate(unlinked)
+    When("determining distances from upper-left cell to each other cell")
+    val result = grid.showDistances(0)(0)
+    Then("all cells linked to (0, 0) should have non-empty values")
+    for (cell <- result) {
+      if (cell.linked.contains(Coordinates(0, 0))) {
+        cell.value.trim() shouldNot be (empty)
+      }
+    }
+    println(result)
+  }
+  
+  it should "determine distances from upper-left cell to all others in a 12x12 maze generated using Sidewinder" in {
+    case object module extends Sidewinder {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+    }
+    Given("12x12 grid generated using Sidewinder")
+    val unlinked = Grid(12, 12)
+    val grid: Grid = module.generate(unlinked)
+    When("determining distances from upper-left cell to each other cell")
+    val result = grid.showDistances(0)(0)
+    Then("all cells linked to (0, 0) should have non-empty values")
+    for (cell <- result) {
+      if (cell.linked.contains(Coordinates(0, 0))) {
+        cell.value.trim() shouldNot be (empty)
+      }
+    }
+    println(result)
+  }
+  
+  it should "determine distances from upper-left cell to all others in a 12x12 maze generated using Binary Tree" in {
+    case object module extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+    }
+    Given("12x12 grid generated using Binary Tree")
+    val unlinked = Grid(12, 12)
+    val grid: Grid = module.generate(unlinked)
+    When("determining distances from upper-left cell to each other cell")
+    val result = grid.showDistances(0)(0)
+    Then("all cells linked to (0, 0) should have non-empty values")
+    for (cell <- result) {
+      if (cell.linked.contains(Coordinates(0, 0))) {
+        cell.value.trim() shouldNot be (empty)
+      }
+    }
+    println(result)
+  }
 
   it should "use hard-coded unicode box characters to display to screen" in {
     val horizontalLine: String = "\u2501"
@@ -95,5 +157,6 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
   }
+
 
 }

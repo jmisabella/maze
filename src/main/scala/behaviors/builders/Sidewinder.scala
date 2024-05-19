@@ -10,6 +10,33 @@ trait Sidewinder extends Generator {
   type LINKAGE <: Linkage
   val linker: LINKAGE
 
+  // override def generate(grid: Grid): Grid = {
+  //   var nextGrid: Grid = grid // to keep track of next random seeds
+  //   var run: Seq[Cell] = Nil
+  //   val unflattened: Seq[Seq[Cell]] = for (cell <- grid.flatten()) yield {
+  //     run = run ++ Seq(cell)
+  //     val atNorthernBoundary = !cell.neighbors.north.isDefined
+  //     val atEasternBoundary = !cell.neighbors.east.isDefined
+  //     val (randomBool, seed) = nextGrid.randomBoolean()
+  //     nextGrid = nextGrid.copy(seed = seed)
+  //     val shouldCloseOut: Boolean = atEasternBoundary || (!atNorthernBoundary && randomBool)
+  //     if (shouldCloseOut) {
+  //       val (randomIndex, nextSeed)  = nextGrid.randomInt(run.length)
+  //       nextGrid = nextGrid.copy(seed = nextSeed)
+  //       val member = run(randomIndex)
+  //       run = Nil // clear current run, onto the next run
+  //       if (!atNorthernBoundary) {
+  //         linker.link(Seq(member, nextGrid.get(cell.neighbors.north.get)))
+  //       } else {
+  //         Nil: Seq[Cell]
+  //       }
+  //     } else {
+  //       linker.link(Seq(cell, nextGrid.get(cell.neighbors.east.get)))
+  //     }
+  //   }
+  //   nextGrid.unflatten(unflattened.flatten)
+  // }
+
   override def generate(grid: Grid): Grid = {
     var nextGrid: Grid = grid // to keep track of next random seeds
     var run: Seq[Cell] = Nil
@@ -46,6 +73,9 @@ trait Sidewinder extends Generator {
         }
       }
     }
-    nextGrid.unflatten(unflattened.flatten)
+    nextGrid = nextGrid.unflatten(unflattened.flatten)
+    // deal with any unreachable cells by linking them accordingly
+    linkUnreachables(nextGrid)
   }
+
 }

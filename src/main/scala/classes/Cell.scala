@@ -10,6 +10,29 @@ case class Cell(
   visited: Boolean = false,
   value: String = "   "
 ) {
+  def availableNeighbors(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
+    // 4 
+    case (Some(n), Some(e), Some(s), Some(w)) => Seq(n, e, s, w)
+    // 3 
+    case (Some(n), Some(e), Some(s), None) => Seq(n, e, s)
+    case (Some(n), Some(e), None, Some(w)) => Seq(n, e, w)
+    case (Some(n), None, Some(s), Some(w)) => Seq(n, s, w)
+    case (None, Some(e), Some(s), Some(w)) => Seq(e, s, w)
+    // 2 
+    case (Some(n), Some(e), None, None) => Seq(n, e)
+    case (Some(n), None, Some(s), None) => Seq(n, s)
+    case (Some(n), None, None, Some(w)) => Seq(n, w)
+    case (None, Some(e), Some(s), None) => Seq(e, s)
+    case (None, Some(e), None, Some(w)) => Seq(e, w)
+    case (None, None, Some(s), Some(w)) => Seq(s, w)
+    // 1
+    case (Some(n), None, None, None) => Seq(n)
+    case (None, Some(e), None, None) => Seq(e)
+    case (None, None, Some(s), None) => Seq(s)
+    case (None, None, None, Some(w)) => Seq(w)
+    // 0 
+    case (None, None, None, None) => Nil
+  }
   def isLinked(cell: Cell, bidi: Boolean = true): Boolean = bidi match {
     case false => linked.contains(cell.coords)
     case true => linked.contains(cell.coords) && cell.linked(this.coords)

@@ -36,17 +36,31 @@ case class Grid(
 
   def linked(cell1: Cell, cell2: Cell): Boolean = cell1.isLinked(cell2)
 
+  def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
+  def padLeft(s: String, c: Char, n: Int): String = n match {
+    case 0 => s
+    case x if (x < 0) => s
+    case _ => padRight(s, c, n).split(s).tail.mkString + s
+  }
+  // evenly pad left and right; left has 1 extra padding in case of an odd length 
+  def pad(s:String, c: Char, n:Int): String = {
+    val left = (n - s.length) / 2
+    val right = n - left - s.length 
+    c.toString * left + s + c.toString * right
+  }
+
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
   def unflatten(flattened: Seq[Cell]): Grid = {
-    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors))
+    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value))
     val merged: Seq[Option[Cell]] = grouped.foldLeft(Nil: Seq[Option[Cell]]) {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
         val neighbors: Neighbors = k._3
+        val value: String = k._4
         val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
-        acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked)))
+        acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked, value = value)))
       }
     }
     val mergedCells: Seq[Cell] = merged.filter(_.isDefined).map(_.get)
@@ -73,7 +87,7 @@ case class Grid(
       var newFrontier: Seq[Cell] = Nil
       for (c <- frontier) {
         for (linked <- c.linked) {
-          if (distances.keySet.contains(linked)) {
+          if (!distances.keySet.contains(linked)) {
             distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
             newFrontier = newFrontier ++ Seq(this.get(linked))
           }
@@ -83,6 +97,33 @@ case class Grid(
     }
     distances
   }
+
+  def showDistances(x: Int)(y: Int): Grid = {
+    val dist: Map[Coordinates, Int] = distances(x)(y)
+    val withDinstances: Seq[Cell] = cells.flatten.map(c => c.copy(value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3)))
+    unflatten(withDinstances)
+  }
+  def showDistances(coords: Coordinates): Grid = showDistances(coords.x)(coords.y)
+
+  // def distances(cell: Cell): Map[Coordinates, Int] = {
+  //   var distances: Map[Coordinates, Int] = Map(cell.coords -> 0)
+  //   var frontier: Seq[Cell] = Seq(cell)
+  //   while (!frontier.isEmpty) {
+  //     var newFrontier: Seq[Cell] = Nil
+  //     for (c <- frontier) {
+  //       for (linked <- c.linked) {
+  //         if (distances.keySet.contains(linked)) {
+  //           distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
+  //           newFrontier = newFrontier ++ Seq(this.get(linked))
+  //         }
+  //       }
+  //     }
+  //     frontier = newFrontier
+  //   }
+  //   distances
+  // }
+  def distances(x: Int)(y: Int): Map[Coordinates, Int] = this.distances(this.get(x)(y))
+  def distances(coords: Coordinates): Map[Coordinates, Int] = this.distances(this.get(coords))
 
   // common monad and other useful functions
   def flatten(): List[Cell] = cells.flatten.toList
@@ -102,7 +143,8 @@ case class Grid(
       var top: String = "|"
       var bottom: String = "+"
       for (cell <- row) {
-        val body = "   "
+        // val body = " X "
+        val body = cell.value
         val eastBoundary: String = cell.neighbors.east match {
           case Some(east) if (cell.isLinked(east)) => " "
           case _ => "|"
