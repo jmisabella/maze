@@ -1,6 +1,6 @@
 package maze.behaviors
 
-import maze.behaviors.Linkage
+import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.BinaryTree
 import maze.classes.{ Cell, Grid }
 
@@ -14,6 +14,10 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
     case object _linkage extends Linkage
     override type LINKAGE = Linkage
     override val linker = _linkage
+
+    case object _distance extends Distance
+    override type DISTANCE = Distance
+    override val distance = _distance
   }
 
   "BinaryTree" should "generate a 5x5 maze using Binary Tree and print it to screen" in {
@@ -110,7 +114,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
     grid.columns should be (20)
     grid.cells.count(c => c.length == 20) should be (20)
     Then("each cell should be accessible from all other cells")
-    val dist = grid.distances(0)(0)
+    val dist = module.distance.distances(grid, 0, 0)
     for (cell <- grid) {
       dist.keySet should contain (cell.coords) 
     }

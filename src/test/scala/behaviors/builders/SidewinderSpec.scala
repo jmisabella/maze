@@ -1,6 +1,6 @@
 package maze.behaviors.builders
 
-import maze.behaviors.Linkage
+import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.Sidewinder
 import maze.classes.{ Cell, Grid, Coordinates }
 
@@ -14,6 +14,9 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     case object _linkage extends Linkage
     override type LINKAGE = Linkage
     override val linker = _linkage
+    case object _distance extends Distance
+    override type DISTANCE = Distance
+    override val distance = _distance
   }
   
   "Sidewinder" should "generate a 5x5 maze using Sidewinder and print it to screen" in {
@@ -72,17 +75,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     val unlinked = Grid(5, 5)
     val grid: Grid = module.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
-    // val distances: Map[Coordinates, Int] = grid.distances(0)(0)
-    // for ((k, v) <- distances) {
-    //   println(s"Key $k, Value $v")
-    // }
-    // println(grid)
-    // val flattened = grid.flatten()
-    // flattened.map(println)
-    // val updated = for (cell <- flattened) yield cell.copy(value = cell.pad(distances.get(cell.coords).getOrElse(" ").toString(), ' ', 3))
-    // val unflattened = grid.unflatten(updated)
-    // println(unflattened.toString())
-    val result = grid.showDistances(0)(0)
+    val result = module.distance.showDistances(grid, 0, 0)
     println(result)
 
   }
@@ -99,14 +92,14 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     grid.columns should be (5)
     grid.cells.count(c => c.length == 5) should be (5)
     Then("each cell should be accessible from the upper-left cell")
-    val dist = grid.distances(0)(0)
+    val dist = module.distance.distances(grid, 0, 0)
     for (cell <- grid) {
       dist.keySet should contain (cell.coords) 
       println(s"COORDS: ${cell.coords.x}, ${cell.coords.y}")
       println(s"DIST: ${dist.get(cell.coords)}")
     }
     println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-    println(grid.showDistances(0)(0))
+    println(module.distance.showDistances(grid, 0, 0))
     println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
   }
 

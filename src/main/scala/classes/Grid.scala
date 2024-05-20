@@ -79,32 +79,6 @@ case class Grid(
   def randomInt(upperBoundary: Int): (Int, RNG) = seed.boundedPositiveInt(upperBoundary)
   def randomBoolean(): (Boolean, RNG) = seed.nextBoolean
 
-  // TODO: test
-  def distances(cell: Cell): Map[Coordinates, Int] = {
-    var distances: Map[Coordinates, Int] = Map(cell.coords -> 0)
-    var frontier: Seq[Cell] = Seq(cell)
-    while (!frontier.isEmpty) {
-      var newFrontier: Seq[Cell] = Nil
-      for (c <- frontier) {
-        for (linked <- c.linked) {
-          if (!distances.keySet.contains(linked)) {
-            distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
-            newFrontier = newFrontier ++ Seq(this.get(linked))
-          }
-        }
-      }
-      frontier = newFrontier
-    }
-    distances
-  }
-
-  def showDistances(x: Int)(y: Int): Grid = {
-    val dist: Map[Coordinates, Int] = distances(x)(y)
-    val withDinstances: Seq[Cell] = cells.flatten.map(c => c.copy(value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3)))
-    unflatten(withDinstances)
-  }
-  def showDistances(coords: Coordinates): Grid = showDistances(coords.x)(coords.y)
-
   // def distances(cell: Cell): Map[Coordinates, Int] = {
   //   var distances: Map[Coordinates, Int] = Map(cell.coords -> 0)
   //   var frontier: Seq[Cell] = Seq(cell)
@@ -112,7 +86,7 @@ case class Grid(
   //     var newFrontier: Seq[Cell] = Nil
   //     for (c <- frontier) {
   //       for (linked <- c.linked) {
-  //         if (distances.keySet.contains(linked)) {
+  //         if (!distances.keySet.contains(linked)) {
   //           distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
   //           newFrontier = newFrontier ++ Seq(this.get(linked))
   //         }
@@ -122,8 +96,32 @@ case class Grid(
   //   }
   //   distances
   // }
-  def distances(x: Int)(y: Int): Map[Coordinates, Int] = this.distances(this.get(x)(y))
-  def distances(coords: Coordinates): Map[Coordinates, Int] = this.distances(this.get(coords))
+  // def showDistances(x: Int, y: Int): Grid = {
+  //   val dist: Map[Coordinates, Int] = distances(x, y)
+  //   val withDinstances: Seq[Cell] = cells.flatten.map(c => c.copy(value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3)))
+  //   unflatten(withDinstances)
+  // }
+  // def showDistances(coords: Coordinates): Grid = showDistances(coords.x, coords.y)
+
+  // // def distances(cell: Cell): Map[Coordinates, Int] = {
+  // //   var distances: Map[Coordinates, Int] = Map(cell.coords -> 0)
+  // //   var frontier: Seq[Cell] = Seq(cell)
+  // //   while (!frontier.isEmpty) {
+  // //     var newFrontier: Seq[Cell] = Nil
+  // //     for (c <- frontier) {
+  // //       for (linked <- c.linked) {
+  // //         if (distances.keySet.contains(linked)) {
+  // //           distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
+  // //           newFrontier = newFrontier ++ Seq(this.get(linked))
+  // //         }
+  // //       }
+  // //     }
+  // //     frontier = newFrontier
+  // //   }
+  // //   distances
+  // // }
+  // def distances(x: Int, y: Int): Map[Coordinates, Int] = this.distances(this.get(x)(y))
+  // def distances(coords: Coordinates): Map[Coordinates, Int] = this.distances(this.get(coords))
 
   // common monad and other useful functions
   def flatten(): List[Cell] = cells.flatten.toList

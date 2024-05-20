@@ -1,7 +1,7 @@
 package maze.classes
 
 import maze.classes.{ Cell, Grid }
-import maze.behaviors.Linkage
+import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ Sidewinder, BinaryTree }
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -65,12 +65,15 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
       case object _linkage extends Linkage
       override type LINKAGE = Linkage
       override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
     }
     Given("5x5 grid generated using Sidewinder")
     val unlinked = Grid(5, 5)
     val grid: Grid = module.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
-    val result = grid.showDistances(0)(0)
+    val result = module.distance.showDistances(grid, 0, 0)
     Then("all cells linked to (0, 0) should have non-empty values")
     for (cell <- result) {
       if (cell.linked.contains(Coordinates(0, 0))) {
@@ -85,12 +88,15 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
       case object _linkage extends Linkage
       override type LINKAGE = Linkage
       override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
     }
     Given("12x12 grid generated using Sidewinder")
     val unlinked = Grid(12, 12)
     val grid: Grid = module.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
-    val result = grid.showDistances(0)(0)
+    val result = module.distance.showDistances(grid, 0, 0)
     Then("all cells linked to (0, 0) should have non-empty values")
     for (cell <- result) {
       if (cell.linked.contains(Coordinates(0, 0))) {
@@ -105,12 +111,15 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
       case object _linkage extends Linkage
       override type LINKAGE = Linkage
       override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
     }
     Given("12x12 grid generated using Binary Tree")
     val unlinked = Grid(12, 12)
     val grid: Grid = module.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
-    val result = grid.showDistances(0)(0)
+    val result = module.distance.showDistances(grid, 0, 0)
     Then("all cells linked to (0, 0) should have non-empty values")
     for (cell <- result) {
       if (cell.linked.contains(Coordinates(0, 0))) {

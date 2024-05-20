@@ -1,18 +1,21 @@
 package maze.behaviors.builders
 
 import maze.classes.{ Cell, Grid, Coordinates }
-import maze.behaviors.Linkage
+import maze.behaviors.{ Linkage, Distance }
 
 trait Generator {
   
   type LINKAGE <: Linkage
   val linker: LINKAGE
+
+  type DISTANCE <: Distance
+  val distance: DISTANCE
  
   def generate(grid: Grid): Grid
 
-  def linkUnreachables(grid: Grid): Grid = {
+  protected def linkUnreachables(grid: Grid): Grid = {
     var nextGrid: Grid = grid
-    var dist = nextGrid.distances(0)(0)
+    var dist = distance.distances(nextGrid, 0, 0)
     var unreachables: Seq[Cell] = nextGrid.flatten.filter(c => !dist.keySet.contains(c.coords))
     while (!unreachables.isEmpty) {
       val unreached: Cell = unreachables.head
@@ -23,7 +26,7 @@ trait Generator {
       nextGrid = nextGrid.copy(seed = nextSeed)
       nextGrid = nextGrid.set(linkedCells.head)
       nextGrid = nextGrid.set(linkedCells.reverse.head)
-      dist = nextGrid.distances(0)(0)
+      dist = distance.distances(nextGrid, 0, 0)
       unreachables = nextGrid.flatten().filter(c => !dist.keySet.contains(c.coords))
     }
     nextGrid
