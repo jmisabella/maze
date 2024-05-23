@@ -167,5 +167,56 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
   }
 
+  it should "know when lower-right corner cell is unreachable (e.g. not linked to uppr-left corner cell)" in {
+    case object linker extends Linkage
+    
+    case object module extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
+    Given("5x5 grid with a completely isolated (e.g. isolated from all cells) bottom-right corner cell") 
+    var grid: Grid = module.generate(5, 5)
+    var bottomRightCell: Cell = grid.get(4)(4)
+    for (linked <- bottomRightCell.linked) {
+      val linkedCell: Cell = grid.get(linked.x)(linked.y)
+      val unlinked: Cell = linkedCell.copy(linked = linkedCell.linked.filter(c => c != linkedCell.coords))
+      grid = grid.set(unlinked)
+    }
+    grid = grid.set(bottomRightCell.copy(linked = Set()))
+    bottomRightCell = grid.get(bottomRightCell.coords.x)(bottomRightCell.coords.y)
+    grid.reachable(0, 0, 4, 4) shouldBe (false)
+    // module.distance.distances(grid, 4, 4).toSeq should have length (1)
+    // info(module.distance.distances(grid, 4, 4).get(Coordinates(4, 4)).getOrElse("").toString())
+    // module.distance.distances(grid, 0, 0).keySet should not contain (Coordinates(4, 4))
+  }
+
+  it should "know when lower-right corner cell is linked to upper-left corner cell via other cells" in {
+    case object linker extends Linkage
+    
+    case object module extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
+    Given("5x5 grid with a completely isolated (e.g. isolated from all cells) bottom-right corner cell") 
+    var grid: Grid = module.generate(5, 5)
+    var bottomRightCell: Cell = grid.get(4)(4)
+    for (linked <- bottomRightCell.linked) {
+      val linkedCell: Cell = grid.get(linked.x)(linked.y)
+      val unlinked: Cell = linkedCell.copy(linked = linkedCell.linked.filter(c => c != linkedCell.coords))
+      grid = grid.set(unlinked)
+    }
+    grid = grid.set(bottomRightCell.copy(linked = Set(Coordinates(4, 3))))
+    bottomRightCell = grid.get(bottomRightCell.coords.x)(bottomRightCell.coords.y)
+    grid.reachable(0, 0, 4, 4) shouldBe (true)
+  }
+
 
 }

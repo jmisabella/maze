@@ -5,6 +5,8 @@ import maze.classes.Direction
 import maze.classes.Direction._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
+import scala.annotation.tailrec
+import java.net.CookieStore
 
 case class Grid(
   rows: Int, 
@@ -47,6 +49,30 @@ case class Grid(
     val left = (n - s.length) / 2
     val right = n - left - s.length 
     c.toString * left + s + c.toString * right
+  }
+
+  def reachable(startX: Int, startY: Int, goalX: Int, goalY: Int): Boolean = {
+    def linked(grid: Grid, coords: Coordinates): Seq[Coordinates] = {
+      var linkedCoords: Seq[Coordinates] = Nil
+      var frontier: Seq[Coordinates] = Seq(coords)
+      while (!frontier.isEmpty) {
+        var newFrontier: Seq[Coordinates] = Nil
+        for (c <- frontier.map(c => grid.get(c.x)(c.y))) {
+          for (linked <- c.linked) {
+            if (!linkedCoords.contains(linked)) {
+              linkedCoords = linkedCoords ++ Seq(linked)
+              // distances = distances + (linked -> (distances.get(c.coords).getOrElse(-99999999) + 1))
+              newFrontier = newFrontier ++ Seq(linked)
+            }
+          }
+        }
+        frontier = newFrontier
+      }
+      linkedCoords.distinct
+    }
+    val startLinkedCoordinates = linked(this, Coordinates(startX, startY))
+    val endLinkedCoordinates = linked(this, Coordinates(goalX, goalY))
+    !startLinkedCoordinates.intersect(endLinkedCoordinates).isEmpty
   }
 
   // given list of Cells, converts list to grid (array of arrays of cells)
@@ -436,7 +462,6 @@ case class Grid(
   //   }
   //   output 
   // }
-
 
 }
 
