@@ -18,7 +18,8 @@ trait Generator {
   def deisolateCells(grid: Grid): Grid = {
     def deisolate(grid: Grid): Grid = {
       var nextGrid: Grid = grid
-      var unreachables: Seq[Cell] = nextGrid.flatten.filter(c => !nextGrid.reachable(0, 0, c.coords.x, c.coords.y))
+      // var unreachables: Seq[Cell] = nextGrid.flatten.filter(c => !nextGrid.reachable(0, 0, c.coords.x, c.coords.y))
+      var unreachables: Seq[Cell] = nextGrid.flatten.filter(c => !linker.reachable(nextGrid, 0, 0, c.coords.x, c.coords.y))
       while (!unreachables.isEmpty) {
         val unreached: Cell = unreachables.head
         val unlinkedNeighbors: Seq[Coordinates] = unreached.availableNeighbors().filter(c => !unreached.linked.contains(c)).toSeq
@@ -29,11 +30,11 @@ trait Generator {
         for (linked <- linkedCells) {
           nextGrid = nextGrid.set(linked)
         }
-        unreachables = nextGrid.flatten.filter(c => !nextGrid.reachable(0, 0, c.coords.x, c.coords.y))
+        // unreachables = nextGrid.flatten.filter(c => !nextGrid.reachable(0, 0, c.coords.x, c.coords.y))
+        unreachables = nextGrid.flatten.filter(c => !linker.reachable(nextGrid, 0, 0, c.coords.x, c.coords.y))
       }
       nextGrid
     }
-    // deisolate(deisolate(deisolate(grid)))
     // deisolate(deisolate(grid))
     deisolate(grid)
   }

@@ -1,6 +1,8 @@
 package maze.behaviors
 
 import maze.classes.{ Cell, Grid, Coordinates }
+import maze.behaviors.{ Linkage, Distance }
+import maze.behaviors.builders.{ BinaryTree, Sidewinder }
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
@@ -9,6 +11,16 @@ import org.scalatest.GivenWhenThen
 class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
 
   case object module extends Linkage
+
+  case object sidewinder extends Sidewinder {
+    case object _linkage extends Linkage
+    override type LINKAGE = Linkage
+    override val linker = _linkage
+    case object _distance extends Distance
+    override type DISTANCE = Distance
+    override val distance = _distance
+  }
+
 
   "Linkage" should "update cell to be visited" in {
     Given("3x3 grid with all unvisited cells") 
@@ -129,6 +141,108 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
     module.linked(updated.get(1)(2), updated.get(2)(2), bidi=true) should be (true)
     module.linked(updated.get(2)(3), updated.get(3)(3), bidi=true) should be (true)
     module.linked(updated.get(3)(4), updated.get(4)(4), bidi=true) should be (true)
+  }
+  
+  it should "generate a 5x5 maze using Sidewinder and have bottom right corner cell and its left neighbor isolated from rest of grid" in {
+    Given("5x5 grid generated using Sidewinder with bottom right corner cell and cell to its left isolated from the rest of the grid")
+    val unlinked = Grid(5, 5)
+    var grid: Grid = sidewinder.generate(unlinked)
+    // bottom right corner cell and cell to its left are linked to each other but isolated from all other cells
+    var bottomRightCell: Cell = (grid.get(4)(4))//.copy(linked = Set(Coordinates(4, 3)))
+    var leftOFBottomRightCell: Cell = (grid.get(4)(3))//.copy(linked = Set(Coordinates(4, 4)))
+    def unlinkUnwantedCells(cell: Cell, unwanted: Seq[Cell]): Cell = {
+      cell.copy(linked = cell.linked.filter(c => unwanted.count(c2 => c2.coords == c) == 0))
+    }
+    val unreachables: Seq[Cell] = Seq(bottomRightCell, leftOFBottomRightCell)
+    var cell: Cell = grid.get(4)(2)
+    cell = unlinkUnwantedCells(cell, unreachables)
+    grid = grid.set(cell)
+    cell = grid.get(3)(3)
+    cell = unlinkUnwantedCells(cell, unreachables)
+    grid = grid.set(cell)
+    cell = grid.get(3)(4)
+    cell = unlinkUnwantedCells(cell, unreachables)
+    grid = grid.set(cell)
+    bottomRightCell = bottomRightCell.copy(linked = Set(Coordinates(4, 3)))
+    leftOFBottomRightCell = leftOFBottomRightCell.copy(linked = Set(Coordinates(4, 4)))
+    grid = grid.set(leftOFBottomRightCell)
+    grid = grid.set(bottomRightCell) 
+    // info(grid.toString())
+    When("determining whether bottom right corner cell is reachable from the cell to its left")
+    Then("these 2 cells are reachable from each other")
+    module.reachable(grid, 4, 3, 4, 4) shouldBe (true)
+    When("determining whether bottom right corner cell is reachable from the upper left corner cell")
+    Then("these 2 cells are unreachable from each other")
+    module.reachable(grid, 0, 0, 4, 3) shouldBe (false)
+    When("deisolating cells in the grid")
+    grid = sidewinder.deisolateCells(grid)
+    Then("bottom right corner cell is still reachable from the cell to its left")
+    module.reachable(grid, 4, 3, 4, 4) shouldBe (true)
+    Then("bottom right corner cell should now be reachable from upper left corner cell")
+    module.reachable(grid, 0, 0, 4, 4) shouldBe (true)
+  }
+
+  it should "know when lower-right corner cell is unreachable (e.g. not linked to uppr-left corner cell)" in {
+    case object linker extends Linkage
+    
+    case object binaryTree extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
+    Given("5x5 grid with a completely isolated (e.g. isolated from all cells) bottom-right corner cell") 
+    var grid: Grid = binaryTree.generate(5, 5)
+    var bottomRightCell: Cell = grid.get(4)(4)
+    for (linked <- bottomRightCell.linked) {
+      val linkedCell: Cell = grid.get(linked.x)(linked.y)
+      val unlinked: Cell = linkedCell.copy(linked = linkedCell.linked.filter(c => c != linkedCell.coords))
+      grid = grid.set(unlinked)
+    }
+    grid = grid.set(bottomRightCell.copy(linked = Set()))
+    def unlinkUnwantedCells(cell: Cell, unwanted: Seq[Cell]): Cell = {
+      cell.copy(linked = cell.linked.filter(c => unwanted.count(c2 => c2.coords == c) == 0))
+    }
+    val unreachables: Seq[Cell] = Seq(bottomRightCell)
+    var cell: Cell = grid.get(4)(3)
+    cell = unlinkUnwantedCells(cell, unreachables)
+    grid = grid.set(cell)
+    cell = grid.get(3)(4)
+    grid = grid.set(cell)
+    cell = unlinkUnwantedCells(cell, unreachables)
+    grid = grid.set(cell)
+    bottomRightCell = grid.get(bottomRightCell.coords.x)(bottomRightCell.coords.y)
+    // info(grid.toString)
+    module.reachable(grid, 0, 0, 4, 4) shouldBe (false)
+    binaryTree.distance.distances(grid, 4, 4).toSeq should have length (1)
+    info(binaryTree.distance.distances(grid, 4, 4).get(Coordinates(4, 4)).getOrElse("").toString())
+    binaryTree.distance.distances(grid, 0, 0).keySet should not contain (Coordinates(4, 4))
+  }
+
+  it should "know when lower-right corner cell is linked to upper-left corner cell via other cells" in {
+    case object linker extends Linkage
+    
+    case object binaryTree extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
+    Given("5x5 grid with a completely isolated (e.g. isolated from all cells) bottom-right corner cell") 
+    var grid: Grid = binaryTree.generate(5, 5)
+    var bottomRightCell: Cell = grid.get(4)(4)
+    for (linked <- bottomRightCell.linked) {
+      val linkedCell: Cell = grid.get(linked.x)(linked.y)
+      val unlinked: Cell = linkedCell.copy(linked = linkedCell.linked.filter(c => c != linkedCell.coords))
+      grid = grid.set(unlinked)
+    }
+    grid = grid.set(bottomRightCell.copy(linked = Set(Coordinates(4, 3))))
+    bottomRightCell = grid.get(bottomRightCell.coords.x)(bottomRightCell.coords.y)
+    module.reachable(grid, 0, 0, 4, 4) shouldBe (true)
   }
 
 }
