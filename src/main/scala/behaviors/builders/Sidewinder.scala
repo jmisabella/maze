@@ -48,8 +48,8 @@ trait Sidewinder extends Generator {
     }
     nextGrid = nextGrid.unflatten(unflattened.flatten)
     // deal with any unreachable cells by linking them accordingly
-    linkUnreachables(linkUnreachables(nextGrid))
-    // linkUnreachables(nextGrid)
+    // deisolateCells(deisolateCells(nextGrid))
+    deisolateCells(nextGrid)
   }
 
 }

@@ -187,11 +187,23 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
       grid = grid.set(unlinked)
     }
     grid = grid.set(bottomRightCell.copy(linked = Set()))
+    def unlinkUnwantedCells(cell: Cell, unwanted: Seq[Cell]): Cell = {
+      cell.copy(linked = cell.linked.filter(c => unwanted.count(c2 => c2.coords == c) == 0))
+    }
+    val unreachables: Seq[Cell] = Seq(bottomRightCell)
+    var cell: Cell = grid.get(4)(3)
+    cell = unlinkUnwantedCells(cell, unreachables)
+    grid = grid.set(cell)
+    cell = grid.get(3)(4)
+    grid = grid.set(cell)
+    cell = unlinkUnwantedCells(cell, unreachables)
+    grid = grid.set(cell)
     bottomRightCell = grid.get(bottomRightCell.coords.x)(bottomRightCell.coords.y)
+    // info(grid.toString)
     grid.reachable(0, 0, 4, 4) shouldBe (false)
-    // module.distance.distances(grid, 4, 4).toSeq should have length (1)
-    // info(module.distance.distances(grid, 4, 4).get(Coordinates(4, 4)).getOrElse("").toString())
-    // module.distance.distances(grid, 0, 0).keySet should not contain (Coordinates(4, 4))
+    module.distance.distances(grid, 4, 4).toSeq should have length (1)
+    info(module.distance.distances(grid, 4, 4).get(Coordinates(4, 4)).getOrElse("").toString())
+    module.distance.distances(grid, 0, 0).keySet should not contain (Coordinates(4, 4))
   }
 
   it should "know when lower-right corner cell is linked to upper-left corner cell via other cells" in {

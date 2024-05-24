@@ -104,7 +104,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     Then("these 2 cells are unreachable from each other")
     grid.reachable(0, 0, 4, 3) shouldBe (false)
     When("deisolating cells in the grid")
-    grid = sidewinder.linkUnreachables(grid)
+    grid = sidewinder.deisolateCells(grid)
     Then("bottom right corner cell is still reachable from the cell to its left")
     grid.reachable(4, 3, 4, 4) shouldBe (true)
     Then("bottom right corner cell should now be reachable from upper left corner cell")
