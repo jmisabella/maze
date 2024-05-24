@@ -53,23 +53,33 @@ case class Grid(
 
   def reachable(startX: Int, startY: Int, goalX: Int, goalY: Int): Boolean = {
     def linked(grid: Grid, coords: Coordinates): Seq[Coordinates] = {
-      var linkedCoords: Seq[Coordinates] = Nil
-      var frontier: Seq[Coordinates] = Seq(coords)
-      while (!frontier.isEmpty) {
-        var newFrontier: Seq[Coordinates] = Nil
-        for (c <- frontier.map(c => grid.get(c.x)(c.y))) {
-          for (linked <- c.linked) {
-            if (!linkedCoords.contains(linked)) {
-              linkedCoords = linkedCoords ++ Seq(linked)
-              // distances = distances + (linked -> (distances.get(c.coords).getOrElse(-99999999) + 1))
-              newFrontier = newFrontier ++ Seq(linked)
-            }
-          }
-        }
-        frontier = newFrontier
+      var remaining: Seq[Cell] = grid.cells.flatMap(c => c).toSeq
+      var linkedCoords: Seq[Coordinates] = Seq(coords)
+      var currentBatch: Seq[Coordinates] = remaining.filter(c => !c.linked.toSeq.intersect(linkedCoords).isEmpty).map(_.coords)
+      while (currentBatch != Nil) {
+        linkedCoords = linkedCoords ++ currentBatch
+        remaining = remaining.filter(c => !linkedCoords.contains(c.coords))
+        currentBatch = remaining.filter(c => !c.linked.toSeq.intersect(linkedCoords).isEmpty).map(_.coords)
       }
       linkedCoords.distinct
     }
+    // def linkedOriginal(grid: Grid, coords: Coordinates): Seq[Coordinates] = {
+    //   var linkedCoords: Seq[Coordinates] = Nil
+    //   var frontier: Seq[Coordinates] = Seq(coords)
+    //   while (!frontier.isEmpty) {
+    //     var newFrontier: Seq[Coordinates] = Nil
+    //     for (c <- frontier.map(c => grid.get(c.x)(c.y))) {
+    //       for (linked <- c.linked) {
+    //         if (!linkedCoords.contains(linked)) {
+    //           linkedCoords = linkedCoords ++ Seq(linked)
+    //           newFrontier = newFrontier ++ Seq(linked)
+    //         }
+    //       }
+    //     }
+    //     frontier = newFrontier
+    //   }
+    //   linkedCoords.distinct
+    // }
     val startLinkedCoordinates = linked(this, Coordinates(startX, startY))
     val endLinkedCoordinates = linked(this, Coordinates(goalX, goalY))
     !startLinkedCoordinates.intersect(endLinkedCoordinates).isEmpty

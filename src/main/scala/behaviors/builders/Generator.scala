@@ -15,7 +15,7 @@ trait Generator {
   def generate(x: Int, y: Int): Grid = generate(Grid(x, y))
 
   // given grid, randomly removes a wall from any unreachable cells 
-  protected def linkUnreachables(grid: Grid): Grid = {
+  def linkUnreachables(grid: Grid): Grid = {
     def deisolate(grid: Grid): Grid = {
       var nextGrid: Grid = grid
       var unreachables: Seq[Cell] = nextGrid.flatten.filter(c => !nextGrid.reachable(0, 0, c.coords.x, c.coords.y))
@@ -33,6 +33,7 @@ trait Generator {
       }
       nextGrid
     }
+    // deisolate(deisolate(deisolate(grid)))
     // deisolate(deisolate(grid))
     deisolate(grid)
   }
