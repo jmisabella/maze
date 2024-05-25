@@ -15,6 +15,7 @@ trait Distance {
     val right = n - left - s.length 
     c.toString * left + s + c.toString * right
   }
+  // TODO: this seems to lead to an infinite loop, need to fix
   def distances(grid: Grid, startCell: Cell): Map[Coordinates, Int] = {
     var distances: Map[Coordinates, Int] = Map(startCell.coords -> 0)
     var frontier: Seq[Cell] = Seq(startCell)
@@ -43,6 +44,7 @@ trait Distance {
   }
   def showDistances(grid: Grid, startCoords: Coordinates): Grid = showDistances(grid, startCoords.x, startCoords.y)
   // TODO: test
+  // TODO: this no longer seems to work, is seemingly leading to an infinite loop 
   def pathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Map[Coordinates, Int] = {
     val dist: Map[Coordinates, Int] = distances(grid, startX, startY)
     var current: Coordinates = Coordinates(goalX, goalY)
@@ -57,6 +59,7 @@ trait Distance {
     }
     breadcrumbs 
   }
+  // TODO: this no longer seems to work, is seemingly leading to an infinite loop 
   def showPathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Grid = {
     val shortestPath: Map[Coordinates, Int] = pathTo(grid, startX, startY, goalX, goalY)
     val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq

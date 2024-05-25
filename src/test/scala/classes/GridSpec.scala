@@ -112,67 +112,67 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     println(result)
   }
   
-  // it should "determine distances from upper-left cell to all others in a 12x12 maze generated using Binary Tree" in {
-  //   case object module extends BinaryTree {
-  //     case object _linkage extends Linkage
-  //     override type LINKAGE = Linkage
-  //     override val linker = _linkage
-  //     case object _distance extends Distance
-  //     override type DISTANCE = Distance
-  //     override val distance = _distance
-  //   }
-  //   Given("12x12 grid generated using Binary Tree")
-  //   val unlinked = Grid(12, 12)
-  //   val grid: Grid = module.generate(unlinked)
-  //   println(grid) 
-  //   When("determining distances from upper-left cell to each other cell")
-  //   val result = module.distance.showDistances(grid, 0, 0)
-  //   Then("all cells linked to (0, 0) should have non-empty values")
-  //   for (cell <- result) {
-  //     if (cell.linked.contains(Coordinates(0, 0))) {
-  //       cell.value.trim() shouldNot be (empty)
-  //     }
-  //   }
-  //   println(result)
-  // }
+  it should "determine distances from upper-left cell to all others in a 12x12 maze generated using Binary Tree" in {
+    case object module extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
+    Given("12x12 grid generated using Binary Tree")
+    val unlinked = Grid(12, 12)
+    val grid: Grid = module.generate(unlinked)
+    println(grid) 
+    When("determining distances from upper-left cell to each other cell")
+    val result = module.distance.showDistances(grid, 0, 0)
+    Then("all cells linked to (0, 0) should have non-empty values")
+    for (cell <- result) {
+      if (cell.linked.contains(Coordinates(0, 0))) {
+        cell.value.trim() shouldNot be (empty)
+      }
+    }
+    println(result)
+  }
 
-  // it should "use hard-coded unicode box characters to display to screen" in {
-  //   val horizontalLine: String = "\u2501"
-  //   val verticalLine: String = "\u2503"
-  //   val fourWayJuncture: String = "\u254B"
-  //   val threeWayJunctureNorthward: String = "\u253B"
-  //   val threeWayJunctureEastward: String = "\u2523"
-  //   val threeWayJunctureSouthward: String = "\u2533"
-  //   val threeWayJunctureWestward: String = "\u252B"
-  //   val upperLeftCorner: String = "\u250F"
-  //   val upperRightCorner: String = "\u2513"
-  //   val bottomRightCorner: String = "\u251B"
-  //   val bottomLeftCorner: String = "\u2517"
-  //   val cellWidth = 3
-  //   val cell: String = " " * cellWidth
-  //   var top: String = ""
-  //   var middle: String = ""
-  //   var bottom: String = ""
+  it should "use hard-coded unicode box characters to display to screen" in {
+    val horizontalLine: String = "\u2501"
+    val verticalLine: String = "\u2503"
+    val fourWayJuncture: String = "\u254B"
+    val threeWayJunctureNorthward: String = "\u253B"
+    val threeWayJunctureEastward: String = "\u2523"
+    val threeWayJunctureSouthward: String = "\u2533"
+    val threeWayJunctureWestward: String = "\u252B"
+    val upperLeftCorner: String = "\u250F"
+    val upperRightCorner: String = "\u2513"
+    val bottomRightCorner: String = "\u251B"
+    val bottomLeftCorner: String = "\u2517"
+    val cellWidth = 3
+    val cell: String = " " * cellWidth
+    var top: String = ""
+    var middle: String = ""
+    var bottom: String = ""
 
-  //   top += upperLeftCorner + horizontalLine * cellWidth + threeWayJunctureSouthward
-  //   top += horizontalLine * cellWidth + horizontalLine
-  //   top += horizontalLine * cellWidth + upperRightCorner
-  //   top += "\n"
-  //   middle += verticalLine + cell + verticalLine
-  //   middle += cell + " "
-  //   middle += cell + verticalLine
-  //   middle += "\n"
-  //   bottom += bottomLeftCorner + horizontalLine * cellWidth + threeWayJunctureNorthward
-  //   bottom += horizontalLine * cellWidth + horizontalLine
-  //   bottom += horizontalLine * cellWidth + bottomRightCorner
-  //   bottom += "\n"
+    top += upperLeftCorner + horizontalLine * cellWidth + threeWayJunctureSouthward
+    top += horizontalLine * cellWidth + horizontalLine
+    top += horizontalLine * cellWidth + upperRightCorner
+    top += "\n"
+    middle += verticalLine + cell + verticalLine
+    middle += cell + " "
+    middle += cell + verticalLine
+    middle += "\n"
+    bottom += bottomLeftCorner + horizontalLine * cellWidth + threeWayJunctureNorthward
+    bottom += horizontalLine * cellWidth + horizontalLine
+    bottom += horizontalLine * cellWidth + bottomRightCorner
+    bottom += "\n"
 
-  //   println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  //   println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  //   println(top + middle + bottom)
-  //   println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  //   println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-  // }
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    println(top + middle + bottom)
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+  }
 
 
 }
