@@ -62,13 +62,20 @@ trait Sidewinder extends Generator {
           if (member.neighbors.north.isDefined) {
             linker.link(Seq(cell, member))
           } else {
+            // // TODO: should we link east here if possible??
+            // if (member.neighbors.east.isDefined) { // ??
+            //   linker.link(Seq(cell, nextGrid.get(member.neighbors.east.get.x)(member.neighbors.east.get.y))) // ??
+            // } else { // ??
+            //   Nil // ??
+            // } // ??
             Nil
           }
         }
-        case (Some(north), _, (false, seed)) => { // cannot go north, randomly coninue run eastward 
-          nextGrid = nextGrid.copy(seed = seed)
-          linker.link(Seq(cell, nextGrid.get(north))) // go north ?? TODO: is this correct as per Sidewinder algorithm?? 
-        }
+        //// after removing this section, Sidewinder no longer has unreachable cells, however Scala complains that not all permutations are checked... 
+        // case (Some(north), _, (false, seed)) => { // cannot go north, randomly coninue run eastward 
+        //   nextGrid = nextGrid.copy(seed = seed)
+        //   linker.link(Seq(cell, nextGrid.get(north))) // go north ?? TODO: is this correct as per Sidewinder algorithm?? 
+        // }
         case (Some(north), Some(east), (_, seed)) => { // continue run eastward
           nextGrid = nextGrid.copy(seed = seed)
           linker.link(Seq(cell, nextGrid.get(east))) // go east
@@ -76,19 +83,15 @@ trait Sidewinder extends Generator {
       }
     }
     nextGrid = nextGrid.unflatten(unflattened.flatten)
-    // for Sidewinder only, I have unreachable cells which are made reachable if last column is linked
-    val lastColumn: Seq[Cell] = (for (row <- 0 until nextGrid.rows) yield nextGrid.cells(row)(nextGrid.columns - 1)).toSeq
-    for ((c1, c2) <- lastColumn zip lastColumn.drop(1)) {
-      val linked = linker.link(Seq(c1, c2))
-      nextGrid = nextGrid.set(linked.head)
-      if (linked.length > 1) {
-        nextGrid = nextGrid.set(linked.tail.head)
-      }
-    }
-    // nextGrid
-    // deal with any unreachable cells by linking them accordingly
-    // deisolateCells(deisolateCells(nextGrid))
-    // deisolateCells(nextGrid)
+    //// for Sidewinder only, I have unreachable cells which are made reachable if last column is linked
+    // val lastColumn: Seq[Cell] = (for (row <- 0 until nextGrid.rows) yield nextGrid.cells(row)(nextGrid.columns - 1)).toSeq
+    // for ((c1, c2) <- lastColumn zip lastColumn.drop(1)) {
+    //   val linked = linker.link(Seq(c1, c2))
+    //   nextGrid = nextGrid.set(linked.head)
+    //   if (linked.length > 1) {
+    //     nextGrid = nextGrid.set(linked.tail.head)
+    //   }
+    // }
     nextGrid
   }
 

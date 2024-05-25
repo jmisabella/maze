@@ -51,23 +51,25 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
   it should "generate a 5x5 maze using Sidewinder and determine shortest path from upper-left cell to botom-right cell" in {
     Given("5x5 grid generated using Sidewinder")
     val grid: Grid = sidewinder.generate(5, 5)
+    println(grid)
     When("determining distances from upper-left cell to each other cell")
-    // val result = sidewinder.distance.pathTo(grid, 0, 0, 4, 4)
-    // info(sidewinder.distance.showPathTo(grid, 0, 0, 4, 4).toString)
-    // val cellCountOnShortestPath: Int = grid.count(c => result.keySet.contains(c.coords))
-    // cellCountOnShortestPath shouldBe > (0)
-    // cellCountOnShortestPath shouldBe >= (4 + 4)
+    val result = sidewinder.distance.pathTo(grid, 0, 0, 4, 4)
+    info(sidewinder.distance.showPathTo(grid, 0, 0, 4, 4).toString)
+    val cellCountOnShortestPath: Int = grid.count(c => result.keySet.contains(c.coords))
+    cellCountOnShortestPath shouldBe > (0)
+    cellCountOnShortestPath shouldBe >= (4 + 4)
   }
 
   //// this seems to result in infinite loop 
-  // it should "generate a 5x5 maze using Binary Tree and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
-  //   Given("5x5 grid generated using BinaryTree")
-  //   val unlinked = Grid(5, 5)
-  //   val grid: Grid = binaryTree.generate(unlinked)
-  //   When("determining distances from upper-left cell to each other cell")
-  //   val result = sidewinder.distance.showDistances(grid, 0, 0)
-  //   println(result)
-  // }
+  it should "generate a 5x5 maze using Binary Tree and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
+    Given("5x5 grid generated using BinaryTree")
+    val unlinked = Grid(5, 5)
+    val grid: Grid = binaryTree.generate(unlinked)
+    println(grid)
+    When("determining distances from upper-left cell to each other cell")
+    val result = sidewinder.distance.showDistances(grid, 0, 0)
+    println(result)
+  }
 
 
 
