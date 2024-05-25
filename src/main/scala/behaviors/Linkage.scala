@@ -40,17 +40,20 @@ trait Linkage {
     def linked(grid: Grid, coords: Coordinates): Seq[Coordinates] = {
       var remaining: Seq[Cell] = grid.cells.flatMap(c => c).toSeq
       var linkedCoords: Seq[Coordinates] = Seq(coords)
-      var currentBatch: Seq[Coordinates] = remaining.filter(c => !c.linked.toSeq.intersect(linkedCoords).isEmpty).map(_.coords)
+      var currentBatch: Seq[Coordinates] = remaining.filter(c => c.linked.isEmpty || !c.linked.toSeq.intersect(linkedCoords).isEmpty).map(_.coords)
+      // var currentBatch: Seq[Coordinates] = remaining.filter(c => c.linked.isEmpty || !c.linked.toSeq.intersect(linkedCoords).isEmpty).map(_.coords)
       while (currentBatch != Nil) {
         linkedCoords = linkedCoords ++ currentBatch
         remaining = remaining.filter(c => !linkedCoords.contains(c.coords))
         currentBatch = remaining.filter(c => !c.linked.toSeq.intersect(linkedCoords).isEmpty).map(_.coords)
+        // currentBatch = remaining.filter(c => c.linked.isEmpty || !c.linked.toSeq.intersect(linkedCoords).isEmpty).map(_.coords)
       }
       linkedCoords.distinct
     }
     val startLinkedCoordinates = linked(grid, Coordinates(startX, startY))
     val endLinkedCoordinates = linked(grid, Coordinates(goalX, goalY))
     !startLinkedCoordinates.intersect(endLinkedCoordinates).isEmpty
+    // startLinkedCoordinates != Nil && endLinkedCoordinates != Nil && !startLinkedCoordinates.intersect(endLinkedCoordinates).isEmpty
   }
 
 }

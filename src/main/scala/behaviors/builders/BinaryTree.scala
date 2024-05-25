@@ -30,6 +30,7 @@ trait BinaryTree extends Generator {
       }
     }
     nextGrid.unflatten(unflattened.flatten)
+    // deisolateCells(nextGrid.unflatten(unflattened.flatten))
   }
 
 }

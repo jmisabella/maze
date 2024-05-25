@@ -9,6 +9,35 @@ trait Sidewinder extends Generator {
 
   type LINKAGE <: Linkage
   val linker: LINKAGE
+  
+  // override def generate(grid: Grid): Grid = {
+  //   var nextGrid: Grid = grid // to keep track of next random seeds
+  //   for (row <- (0 until nextGrid.rows)) {
+  //     var current: Int = 0 
+  //     for (col <- (0 until nextGrid.columns)) {
+  //       val (randomOutcome, seed): (Boolean, RNG) = nextGrid.randomBoolean()
+  //       nextGrid = nextGrid.copy(seed = seed)
+  //       if (row > 0 && (col == nextGrid.columns - 1 || randomOutcome)) {
+  //         val (randomIndex, nextSeed): (Int, RNG) = nextGrid.randomInt(col - current + 1)
+  //         nextGrid = nextGrid.copy(seed = nextSeed)
+  //         val passageCol: Int = current + randomIndex
+  //         val north: Cell = grid.get(row - 1)(passageCol)
+  //         val south: Cell = grid.get(row)(passageCol)
+  //         val linked: Seq[Cell] = linker.link(Seq(north, south))
+  //         nextGrid = nextGrid.set(linked.head)
+  //         nextGrid = nextGrid.set(linked.tail.head)
+  //         current = col + 1 
+  //       } else if (col == grid.columns - 1) {
+  //         val west = nextGrid.get(row)(col)
+  //         val east = nextGrid.get(row)(col + 1)
+  //         val linked: Seq[Cell] = linker.link(Seq(east, west))
+  //         nextGrid = nextGrid.set(linked.head)
+  //         nextGrid = nextGrid.set(linked.tail.head)
+  //       }
+  //     }
+  //   }
+  //   nextGrid
+  // }
 
   override def generate(grid: Grid): Grid = {
     var nextGrid: Grid = grid // to keep track of next random seeds
@@ -47,9 +76,20 @@ trait Sidewinder extends Generator {
       }
     }
     nextGrid = nextGrid.unflatten(unflattened.flatten)
+    // for Sidewinder only, I have unreachable cells which are made reachable if last column is linked
+    val lastColumn: Seq[Cell] = (for (row <- 0 until nextGrid.rows) yield nextGrid.cells(row)(nextGrid.columns - 1)).toSeq
+    for ((c1, c2) <- lastColumn zip lastColumn.drop(1)) {
+      val linked = linker.link(Seq(c1, c2))
+      nextGrid = nextGrid.set(linked.head)
+      if (linked.length > 1) {
+        nextGrid = nextGrid.set(linked.tail.head)
+      }
+    }
+    // nextGrid
     // deal with any unreachable cells by linking them accordingly
     // deisolateCells(deisolateCells(nextGrid))
-    deisolateCells(nextGrid)
+    // deisolateCells(nextGrid)
+    nextGrid
   }
 
 }
