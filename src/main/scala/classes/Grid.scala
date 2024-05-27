@@ -81,6 +81,8 @@ case class Grid(
   def randomInt(upperBoundary: Int): (Int, RNG) = seed.boundedPositiveInt(upperBoundary)
   def randomBoolean(): (Boolean, RNG) = seed.nextBoolean
 
+  def reverseRows(): Array[Array[Cell]] = cells.toList.reverse.toArray
+
   // common monad and other useful functions
   def flatten(): List[Cell] = cells.flatten.toList
   def foreach(block: Cell => Unit): Unit = cells.foreach(row => row.foreach(block))

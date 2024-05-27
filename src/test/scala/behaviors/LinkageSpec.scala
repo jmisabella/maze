@@ -71,6 +71,108 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
     module.linked(updated.get(3)(2), updated.get(3)(3), bidi=true) should be (true)
   }
 
+  it should "preserve historic links when adding new links to linked cells in zig-zag pattern upper-left to bottom-right of a 5x5 grid" in {
+    Given("5x5 grid") 
+    val originalGrid: Grid = Grid(5, 5)
+    When("linking cells together in a zig-zag pattern from upper-left to bottom-right")
+    def zigZagCells(g: Grid): Seq[Cell] = Seq(
+          g.get(0)(0), 
+          g.get(0)(1), 
+          g.get(1)(1), 
+          g.get(1)(2), 
+          g.get(2)(2), 
+          g.get(2)(3), 
+          g.get(3)(3), 
+          g.get(3)(4), 
+          g.get(4)(4) )
+    
+    val linked: Seq[Cell] = module.link(zigZagCells(originalGrid))
+    var updated: Grid = originalGrid
+    for (cell <- linked) {
+      updated = updated.set(cell)
+    }
+    Then("updated grid should reflect cells which are linked")
+    updated.get(0)(0).linked should not be (empty)
+    updated.get(0)(1).linked should not be (empty)
+    updated.get(0)(2).linked should be (empty)
+    updated.get(0)(3).linked should be (empty)
+    updated.get(0)(4).linked should be (empty)
+    updated.get(1)(0).linked should be (empty)
+    updated.get(1)(1).linked should not be (empty)
+    updated.get(1)(2).linked should not be (empty)
+    updated.get(1)(3).linked should be (empty)
+    updated.get(1)(4).linked should be (empty)
+    updated.get(2)(0).linked should be (empty)
+    updated.get(2)(1).linked should be (empty)
+    updated.get(2)(2).linked should not be (empty)
+    updated.get(2)(3).linked should not be (empty)
+    updated.get(2)(4).linked should be (empty)
+    updated.get(3)(0).linked should be (empty)
+    updated.get(3)(1).linked should be (empty)
+    updated.get(3)(2).linked should be (empty)
+    updated.get(3)(3).linked should not be (empty)
+    updated.get(3)(4).linked should not be (empty)
+    updated.get(4)(0).linked should be (empty)
+    updated.get(4)(1).linked should be (empty)
+    updated.get(4)(2).linked should be (empty)
+    updated.get(4)(3).linked should be (empty)
+    updated.get(4)(4).linked should not be (empty)
+    module.linked(updated.get(0)(0), updated.get(0)(1), bidi=true) should be (true)
+    module.linked(updated.get(0)(1), updated.get(0)(2), bidi=true) should be (false)
+    module.linked(updated.get(0)(2), updated.get(0)(3), bidi=true) should be (false)
+    module.linked(updated.get(0)(3), updated.get(0)(4), bidi=true) should be (false)
+    module.linked(updated.get(1)(0), updated.get(1)(1), bidi=true) should be (false)
+    module.linked(updated.get(1)(1), updated.get(1)(2), bidi=true) should be (true)
+    module.linked(updated.get(1)(2), updated.get(1)(3), bidi=true) should be (false)
+    module.linked(updated.get(1)(3), updated.get(1)(4), bidi=true) should be (false)
+    module.linked(updated.get(2)(0), updated.get(2)(1), bidi=true) should be (false)
+    module.linked(updated.get(2)(1), updated.get(2)(2), bidi=true) should be (false)
+    module.linked(updated.get(2)(2), updated.get(2)(3), bidi=true) should be (true)
+    module.linked(updated.get(2)(3), updated.get(2)(4), bidi=true) should be (false)
+    module.linked(updated.get(3)(0), updated.get(3)(1), bidi=true) should be (false)
+    module.linked(updated.get(3)(1), updated.get(3)(2), bidi=true) should be (false)
+    module.linked(updated.get(3)(2), updated.get(3)(3), bidi=true) should be (false)
+    module.linked(updated.get(3)(3), updated.get(3)(4), bidi=true) should be (true)
+    module.linked(updated.get(4)(0), updated.get(4)(1), bidi=true) should be (false)
+    module.linked(updated.get(4)(1), updated.get(4)(2), bidi=true) should be (false)
+    module.linked(updated.get(4)(2), updated.get(4)(3), bidi=true) should be (false)
+    module.linked(updated.get(4)(3), updated.get(4)(4), bidi=true) should be (false)
+    module.linked(updated.get(0)(1), updated.get(1)(1), bidi=true) should be (true)
+    module.linked(updated.get(1)(2), updated.get(2)(2), bidi=true) should be (true)
+    module.linked(updated.get(2)(3), updated.get(3)(3), bidi=true) should be (true)
+    module.linked(updated.get(3)(4), updated.get(4)(4), bidi=true) should be (true)
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println(updated)
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    When("linking each of the currently-linked zig-zag's cells to one cell to the left")
+    Then("original links of the zig-zag should be preserved")
+    for (cell <- zigZagCells(updated)) {
+      val originalLinked: Set[Coordinates] = cell.linked
+      if (cell.neighbors.west.isDefined) {
+        val linked: Seq[Cell] = module.link(Seq(cell, updated.get(cell.neighbors.west.get)))
+        for (linkedCell <- linked) {
+          updated = updated.set(linkedCell)
+        }
+        updated.get(cell.coords).linked.toList.containsSlice(originalLinked.toList) shouldBe (true)
+        updated.get(cell.coords).linked.contains(cell.neighbors.west.get) shouldBe (true)
+      }
+    }
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println(updated)
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    
+  }
+
+
+
   it should "bi-directionaly link a zig-zag pattern upper-left to bottom-right of a 5x5 grid" in {
     Given("5x5 grid") 
     val originalGrid: Grid = Grid(5, 5)
