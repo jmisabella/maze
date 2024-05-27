@@ -43,7 +43,7 @@ trait Sidewinder extends Generator {
           case (_, None, _) => { // cannot go east, close run and randomly choose cell from current run from which to move north 
             println(s"row $rowNum, col $colNum: NORTH (last column)")
             val (randomIndex, nextSeed)  = nextGrid.randomInt(run.length)
-            val member = run(randomIndex)
+            val member = nextGrid.get(run(randomIndex).coords)
             println("CURRENT RUN MEMBERS: " + run.mkString(", ")) 
             println("RANDOM MEMBER COORDS: " + member.coords)
             println("RANDOM MEMBER'S NORTHERN : " + member.neighbors.north)
@@ -59,7 +59,7 @@ trait Sidewinder extends Generator {
           case (Some(north), _, true) => { // coint toss is heads: close run and randomly chose one cell from current run from which to move north
             println(s"row $rowNum, col $colNum: NORTH (random close-out)")
             val (randomIndex, nextSeed)  = nextGrid.randomInt(run.length)
-            val member = run(randomIndex)
+            val member = nextGrid.get(run(randomIndex).coords)
             println("CURRENT RUN MEMBERS: " + run.mkString(", ")) 
             println("RANDOM MEMBER COORDS: " + member.coords)
             println("RANDOM MEMBER'S NORTHERN : " + member.neighbors.north)
