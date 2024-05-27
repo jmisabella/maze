@@ -59,7 +59,6 @@ trait Distance {
     }
     breadcrumbs 
   }
-  // TODO: this no longer seems to work, is seemingly leading to an infinite loop 
   def showPathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Grid = {
     val shortestPath: Map[Coordinates, Int] = pathTo(grid, startX, startY, goalX, goalY)
     val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq

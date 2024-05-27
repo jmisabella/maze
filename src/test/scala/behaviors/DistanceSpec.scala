@@ -30,23 +30,23 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   
-  // "Distance" should "generate a 5x5 maze using Sidewinder and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
-  //   Given("5x5 grid generated using Sidewinder")
-  //   val unlinked = Grid(5, 5)
-  //   val grid: Grid = sidewinder.generate(unlinked)
-  //   When("determining distances from upper-left cell to each other cell")
-  //   val result = sidewinder.distance.showDistances(grid, 0, 0)
-  //   println(result)
-  // }
+  "Distance" should "generate a 5x5 maze using Sidewinder and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
+    Given("5x5 grid generated using Sidewinder")
+    val unlinked = Grid(5, 5)
+    val grid: Grid = sidewinder.generate(unlinked)
+    When("determining distances from upper-left cell to each other cell")
+    val result = sidewinder.distance.showDistances(grid, 0, 0)
+    println(result)
+  }
 
-  // it should "generate a 5x5 maze using Sidewinder and show shortest path from upper-left cell to botom-right cell before printing to screen" in {
-  //   Given("5x5 grid generated using Sidewinder")
-  //   val unlinked = Grid(5, 5)
-  //   val grid: Grid = sidewinder.generate(unlinked)
-  //   When("determining distances from upper-left cell to each other cell")
-  //   val result = sidewinder.distance.showPathTo(grid, 0, 0, 4, 4)
-  //   println(result)
-  // }
+  it should "generate a 5x5 maze using Sidewinder and show shortest path from upper-left cell to botom-right cell before printing to screen" in {
+    Given("5x5 grid generated using Sidewinder")
+    val unlinked = Grid(5, 5)
+    val grid: Grid = sidewinder.generate(unlinked)
+    When("determining distances from upper-left cell to each other cell")
+    val result = sidewinder.distance.showPathTo(grid, 0, 0, 4, 4)
+    println(result)
+  }
 
   it should "generate a 5x5 maze using Sidewinder and determine shortest path from upper-left cell to botom-right cell" in {
     Given("5x5 grid generated using Sidewinder")
