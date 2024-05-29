@@ -35,7 +35,7 @@ trait Distance {
     distances
     // distances.filter(entry => entry._2 >= 0) // remove unlinked cells
   }
-  def distances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.get(startX)(startY))
+  def distances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.get(startX, startY))
   def distances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.get(startCoords))
   def showDistances(grid: Grid, startX: Int, startY: Int): Grid = {
     val dist: Map[Coordinates, Int] = distances(grid, startX, startY)
@@ -59,8 +59,11 @@ trait Distance {
     }
     breadcrumbs 
   }
-  def showPathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Grid = {
-    val shortestPath: Map[Coordinates, Int] = pathTo(grid, startX, startY, goalX, goalY)
+  def showPathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int, overrideChar: Option[Char] = None): Grid = {
+    val shortestPath: Map[Coordinates, String] = overrideChar match {
+      case None => pathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> kv._2.toString()).toMap
+      case Some(c) => pathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> c.toString()).toMap
+    }
     val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq
     grid.unflatten(withDinstances)
   }

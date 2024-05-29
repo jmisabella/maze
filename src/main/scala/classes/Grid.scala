@@ -15,7 +15,7 @@ case class Grid(
   seed: RNG) {
 
   // retrieve cell residing at provided row and column coordinates
-  def get(x: Int)(y: Int): Cell = cells(x)(y)
+  def get(x: Int, y: Int): Cell = cells(x)(y)
   def get(coords: Coordinates): Cell = cells(coords.x)(coords.y)
   // retrieve row
   def row(x: Int): List[Cell] = cells(x).toList
