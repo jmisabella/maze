@@ -45,7 +45,7 @@ trait Distance {
   def showDistances(grid: Grid, startCoords: Coordinates): Grid = showDistances(grid, startCoords.x, startCoords.y)
   // TODO: test
   // TODO: this no longer seems to work, is seemingly leading to an infinite loop 
-  def pathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Map[Coordinates, Int] = {
+  def getShortestPath(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Map[Coordinates, Int] = {
     val dist: Map[Coordinates, Int] = distances(grid, startX, startY)
     var current: Coordinates = Coordinates(goalX, goalY)
     var breadcrumbs: Map[Coordinates, Int] = Map(current -> dist(current))
@@ -59,14 +59,14 @@ trait Distance {
     }
     breadcrumbs 
   }
-  def showPathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int, overrideChar: Option[Char] = None): Grid = {
+  def shortestPath(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int, overrideChar: Option[Char] = None): Grid = {
     val shortestPath: Map[Coordinates, String] = overrideChar match {
-      case None => pathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> kv._2.toString()).toMap
-      case Some(c) => pathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> c.toString()).toMap
+      case None => getShortestPath(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> kv._2.toString()).toMap
+      case Some(c) => getShortestPath(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> c.toString()).toMap
     }
     val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq
     grid.unflatten(withDinstances)
   }
-  def showPathTo(grid: Grid, startCoords: Coordinates, goalCoords: Coordinates): Grid = showPathTo(grid, startCoords.x, startCoords.y, goalCoords.x, goalCoords.y)
+  def shortestPath(grid: Grid, startCoords: Coordinates, goalCoords: Coordinates): Grid = shortestPath(grid, startCoords.x, startCoords.y, goalCoords.x, goalCoords.y)
 
 }

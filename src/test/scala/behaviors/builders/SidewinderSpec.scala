@@ -86,7 +86,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println("35x35 Sidewinder")
     println(generated.toString())
-    println(module.distance.showPathTo(generated, 0, 34, 34, 0))
+    println(module.distance.shortestPath(generated, 0, 34, 34, 0))
   }
 
   it should "generate a 40x40 maze using Sidewinder and print it to screen" in {
@@ -104,7 +104,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println("40x40 Sidewinder")
     println(generated.toString())
-    println(module.distance.showPathTo(generated, 0, 39, 39, 0))
+    println(module.distance.shortestPath(generated, 0, 39, 39, 0))
   }
   
   it should "generate a maze in which each cell is accessible from the upper-left corner cell" in {

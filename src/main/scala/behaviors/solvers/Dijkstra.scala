@@ -11,6 +11,6 @@ trait Dijkstra extends Solver {
 
   // TODO: test 
   override def solve(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int, overrideChar: Option[Char] = None): Grid = {
-    distance.showPathTo(grid, startX, startY, goalX, goalY, overrideChar)
+    distance.shortestPath(grid, startX, startY, goalX, goalY, overrideChar)
   }
 }

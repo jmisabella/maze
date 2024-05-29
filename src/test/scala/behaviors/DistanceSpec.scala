@@ -44,7 +44,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     val unlinked = Grid(5, 5)
     val grid: Grid = sidewinder.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
-    val result = sidewinder.distance.showPathTo(grid, 0, 0, 4, 4)
+    val result = sidewinder.distance.shortestPath(grid, 0, 0, 4, 4)
     println(result)
   }
 
@@ -53,8 +53,8 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     val grid: Grid = sidewinder.generate(5, 5)
     println(grid)
     When("determining distances from upper-left cell to each other cell")
-    val result = sidewinder.distance.pathTo(grid, 0, 0, 4, 4)
-    info(sidewinder.distance.showPathTo(grid, 0, 0, 4, 4).toString)
+    val result = sidewinder.distance.getShortestPath(grid, 0, 0, 4, 4)
+    info(sidewinder.distance.shortestPath(grid, 0, 0, 4, 4).toString)
     val cellCountOnShortestPath: Int = grid.count(c => result.keySet.contains(c.coords))
     cellCountOnShortestPath shouldBe > (0)
     cellCountOnShortestPath shouldBe >= (4 + 4)
