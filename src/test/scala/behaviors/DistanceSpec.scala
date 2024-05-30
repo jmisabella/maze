@@ -70,6 +70,18 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     cellCountOnShortestPath shouldBe > (0)
     cellCountOnShortestPath shouldBe >= (4 + 4)
   }
+  
+  it should "generate a 5x5 maze using Sidewinder and determine longest path but print in overriding o character" in {
+    Given("5x5 grid generated using Sidewinder")
+    val grid: Grid = sidewinder.generate(5, 5)
+    println(grid)
+    When("determining longest path")
+    val result = sidewinder.distance.getLongestPath(grid)
+    info(sidewinder.distance.longestPath(grid, Some('o')).toString() )
+    val cellCountOnShortestPath: Int = grid.count(c => result.keySet.contains(c.coords))
+    cellCountOnShortestPath shouldBe > (0)
+    cellCountOnShortestPath shouldBe >= (4 + 4)
+  }
 
   //// this seems to result in infinite loop 
   it should "generate a 5x5 maze using Binary Tree and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
