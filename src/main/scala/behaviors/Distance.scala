@@ -60,7 +60,6 @@ trait Distance {
     val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(path.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq
     grid.unflatten(withDinstances)
   }
-  def longestPath(grid: Grid): Grid = longestPath(grid)
   def getPathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Map[Coordinates, Int] = {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     var current: Coordinates = Coordinates(goalX, goalY)
