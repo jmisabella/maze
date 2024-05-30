@@ -35,18 +35,34 @@ trait Distance {
     distances
     // distances.filter(entry => entry._2 >= 0) // remove unlinked cells
   }
-  def distances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.get(startX, startY))
-  def distances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.get(startCoords))
-  def showDistances(grid: Grid, startX: Int, startY: Int): Grid = {
-    val dist: Map[Coordinates, Int] = distances(grid, startX, startY)
+  def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.get(startX, startY))
+  def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.get(startCoords))
+  def distances(grid: Grid, startX: Int, startY: Int): Grid = {
+    val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq
     grid.unflatten(withDinstances)
   }
-  def showDistances(grid: Grid, startCoords: Coordinates): Grid = showDistances(grid, startCoords.x, startCoords.y)
-  // TODO: test
-  // TODO: this no longer seems to work, is seemingly leading to an infinite loop 
-  def getShortestPath(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Map[Coordinates, Int] = {
-    val dist: Map[Coordinates, Int] = distances(grid, startX, startY)
+  def distances(grid: Grid, startCoords: Coordinates): Grid = distances(grid, startCoords.x, startCoords.y)
+
+  // TODO: test 
+  def getLongestPath(grid: Grid): Map[Coordinates, Int] = {
+    val distances: Map[Coordinates, Int] = getDistances(grid, 0, 0)
+    val (newStart, _): (Coordinates, Int) = distances.maxBy(_._2) 
+    val newDistances: Map[Coordinates, Int] = getDistances(grid, newStart) 
+    val (goal, _): (Coordinates, Int) = newDistances.maxBy(_._2) 
+    getPathTo(grid, newStart.x, newStart.y, goal.x, goal.y) 
+  }
+  def longestPath(grid: Grid, overrideChar: Option[Char] = None): Grid = {
+    val path: Map[Coordinates, String] = overrideChar match {
+      case None => getLongestPath(grid).map(kv => kv._1 -> kv._2.toString()).toMap
+      case Some(c) => getLongestPath(grid).map(kv => kv._1 -> c.toString()).toMap
+    }
+    val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(path.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq
+    grid.unflatten(withDinstances)
+  }
+  def longestPath(grid: Grid): Grid = longestPath(grid)
+  def getPathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Map[Coordinates, Int] = {
+    val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     var current: Coordinates = Coordinates(goalX, goalY)
     var breadcrumbs: Map[Coordinates, Int] = Map(current -> dist(current))
     while (current != Coordinates(startX, startY)) {
@@ -59,14 +75,14 @@ trait Distance {
     }
     breadcrumbs 
   }
-  def shortestPath(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int, overrideChar: Option[Char] = None): Grid = {
+  def pathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int, overrideChar: Option[Char] = None): Grid = {
     val shortestPath: Map[Coordinates, String] = overrideChar match {
-      case None => getShortestPath(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> kv._2.toString()).toMap
-      case Some(c) => getShortestPath(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> c.toString()).toMap
+      case None => getPathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> kv._2.toString()).toMap
+      case Some(c) => getPathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> c.toString()).toMap
     }
     val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq
     grid.unflatten(withDinstances)
   }
-  def shortestPath(grid: Grid, startCoords: Coordinates, goalCoords: Coordinates): Grid = shortestPath(grid, startCoords.x, startCoords.y, goalCoords.x, goalCoords.y)
+  def pathTo(grid: Grid, startCoords: Coordinates, goalCoords: Coordinates): Grid = pathTo(grid, startCoords.x, startCoords.y, goalCoords.x, goalCoords.y)
 
 }

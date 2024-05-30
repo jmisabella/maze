@@ -73,7 +73,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
   //   val unlinked = Grid(5, 5)
   //   val grid: Grid = module.generate(unlinked)
   //   When("determining distances from upper-left cell to each other cell")
-  //   val result = module.distance.showDistances(grid, 0, 0)
+  //   val result = module.distance.distances(grid, 0, 0)
   //   Then("all cells linked to (0, 0) should have non-empty values")
   //   for (cell <- result) {
   //     if (cell.linked.contains(Coordinates(0, 0))) {
@@ -102,7 +102,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     //   }
     // }
     When("determining distances from upper-left cell to each other cell")
-    val result = module.distance.showDistances(grid, 0, 0)
+    val result = module.distance.distances(grid, 0, 0)
     Then("all cells linked to (0, 0) should have non-empty values")
     for (cell <- result) {
       if (cell.linked.contains(Coordinates(0, 0))) {
@@ -126,7 +126,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     val grid: Grid = module.generate(unlinked)
     println(grid) 
     When("determining distances from upper-left cell to each other cell")
-    val result = module.distance.showDistances(grid, 0, 0)
+    val result = module.distance.distances(grid, 0, 0)
     Then("all cells linked to (0, 0) should have non-empty values")
     for (cell <- result) {
       if (cell.linked.contains(Coordinates(0, 0))) {

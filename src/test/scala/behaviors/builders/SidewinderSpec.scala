@@ -86,7 +86,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println("35x35 Sidewinder")
     println(generated.toString())
-    println(module.distance.shortestPath(generated, 0, 34, 34, 0))
+    println(module.distance.pathTo(generated, 0, 34, 34, 0))
   }
 
   it should "generate a 40x40 maze using Sidewinder and print it to screen" in {
@@ -104,7 +104,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println("40x40 Sidewinder")
     println(generated.toString())
-    println(module.distance.shortestPath(generated, 0, 39, 39, 0))
+    println(module.distance.pathTo(generated, 0, 39, 39, 0))
   }
   
   it should "generate a maze in which each cell is accessible from the upper-left corner cell" in {
@@ -117,13 +117,13 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     grid.columns should be (5)
     grid.cells.count(c => c.length == 5) should be (5)
     Then("each cell should be accessible from the upper-left cell")
-    val dist = module.distance.distances(grid, 0, 0)
+    val dist = module.distance.getDistances(grid, 0, 0)
     for (cell <- grid) {
       dist.keySet should contain (cell.coords) 
       println(s"COORDS: ${cell.coords.x}, ${cell.coords.y}")
       println(s"DIST: ${dist.get(cell.coords)}")
     }
-    println(module.distance.showDistances(grid, 0, 0))
+    println(module.distance.distances(grid, 0, 0))
   }
   
 

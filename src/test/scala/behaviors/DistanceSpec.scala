@@ -29,13 +29,12 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     override val distance = _distance
   }
   
-  
   "Distance" should "generate a 5x5 maze using Sidewinder and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
     Given("5x5 grid generated using Sidewinder")
     val unlinked = Grid(5, 5)
     val grid: Grid = sidewinder.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
-    val result = sidewinder.distance.showDistances(grid, 0, 0)
+    val result = sidewinder.distance.distances(grid, 0, 0)
     println(result)
   }
 
@@ -44,7 +43,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     val unlinked = Grid(5, 5)
     val grid: Grid = sidewinder.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
-    val result = sidewinder.distance.shortestPath(grid, 0, 0, 4, 4)
+    val result = sidewinder.distance.pathTo(grid, 0, 0, 4, 4)
     println(result)
   }
 
@@ -53,8 +52,20 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     val grid: Grid = sidewinder.generate(5, 5)
     println(grid)
     When("determining distances from upper-left cell to each other cell")
-    val result = sidewinder.distance.getShortestPath(grid, 0, 0, 4, 4)
-    info(sidewinder.distance.shortestPath(grid, 0, 0, 4, 4).toString)
+    val result = sidewinder.distance.getPathTo(grid, 0, 0, 4, 4)
+    info(sidewinder.distance.pathTo(grid, 0, 0, 4, 4).toString)
+    val cellCountOnShortestPath: Int = grid.count(c => result.keySet.contains(c.coords))
+    cellCountOnShortestPath shouldBe > (0)
+    cellCountOnShortestPath shouldBe >= (4 + 4)
+  }
+  
+  it should "generate a 5x5 maze using Sidewinder and determine longest path" in {
+    Given("5x5 grid generated using Sidewinder")
+    val grid: Grid = sidewinder.generate(5, 5)
+    println(grid)
+    When("determining longest path")
+    val result = sidewinder.distance.getLongestPath(grid)
+    info(sidewinder.distance.longestPath(grid).toString)
     val cellCountOnShortestPath: Int = grid.count(c => result.keySet.contains(c.coords))
     cellCountOnShortestPath shouldBe > (0)
     cellCountOnShortestPath shouldBe >= (4 + 4)
@@ -67,7 +78,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     val grid: Grid = binaryTree.generate(unlinked)
     println(grid)
     When("determining distances from upper-left cell to each other cell")
-    val result = sidewinder.distance.showDistances(grid, 0, 0)
+    val result = sidewinder.distance.distances(grid, 0, 0)
     println(result)
   }
 
