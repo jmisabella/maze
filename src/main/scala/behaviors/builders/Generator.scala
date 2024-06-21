@@ -14,5 +14,4 @@ trait Generator {
   def generate(grid: Grid): Grid
   def generate(x: Int, y: Int): Grid = generate(Grid(x, y))
 
-
 }
