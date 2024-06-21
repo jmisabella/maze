@@ -8,6 +8,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
+
 class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
 
   case object sidewinder extends Sidewinder {

@@ -22,7 +22,7 @@ server.pid
 .metals/metals.log
 .metals/metals.mv.db
 .metals/metals.trace.db
-.metals/.reports/metals/*/r_scala-toplevel-mtags_*.md
+.metals/.reports/*
 *.log
 .bsp/sbt.json
 .metals/.backup_logs/
