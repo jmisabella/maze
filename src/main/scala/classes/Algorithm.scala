@@ -8,4 +8,7 @@ object Algorithm extends Enumeration {
     Sidewinder = Value
   
   implicit val format: Format[Algorithm] = Json.formatEnum(this)
+
+  def fromString(s: String): Option[Algorithm] = values.find(_.toString.toLowerCase == s.toLowerCase())
+
 }
