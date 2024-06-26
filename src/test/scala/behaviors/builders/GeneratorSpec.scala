@@ -18,7 +18,7 @@ class GeneratorSpec extends AnyFlatSpec with GivenWhenThen {
     grid.rows should be (5)
     grid.columns should be (5)
     println(grid.toString())
-  }
+    println(grid.asci()) }
 
   it should "generate a 14x20 maze using Sidewinder algorithm from a request" in {
     Given("5x5 BinaryTree request")
@@ -29,6 +29,7 @@ class GeneratorSpec extends AnyFlatSpec with GivenWhenThen {
     grid.rows should be (14)
     grid.columns should be (20)
     println(grid.toString())
+    println(grid.asci())
   }
 
 }

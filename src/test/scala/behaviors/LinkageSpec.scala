@@ -143,6 +143,7 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
     module.linked(updated.get(3, 4), updated.get(4, 4), bidi=true) should be (true)
     println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     println(updated)
+    println(updated.asci())
     println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     When("linking each of the currently-linked zig-zag's cells to one cell to the left")
     Then("original links of the zig-zag should be preserved")

@@ -34,6 +34,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
     When("printing the maze")
     Then("the maze should be printed to screen")
     println(generated.toString())
+    println(generated.asci())
   }
 
 
@@ -51,6 +52,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
     When("printing the maze")
     Then("the maze should be printed to screen")
     println(generated.toString())
+    println(generated.asci())
   }
 
   it should "generate a 8x8 maze and print to screen" in {
@@ -67,6 +69,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
     When("printing the maze")
     Then("the maze should be printed to screen")
     println(generated.toString())
+    println(generated.asci())
   }
 
   it should "generate a 10x10 maze and print to screen" in {
@@ -83,6 +86,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
     When("printing the maze")
     Then("the maze should be printed to screen")
     println(generated.toString())
+    println(generated.asci())
   }
 
   it should "generate a 11x11 maze and print to screen" in {
@@ -100,6 +104,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
     When("printing the maze")
     Then("the maze should be printed to screen")
     println(generated.toString())
+    println(generated.asci())
   }
 
   //// TODO: this seems to result in infinite loop

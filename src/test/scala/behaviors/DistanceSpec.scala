@@ -90,6 +90,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     val unlinked = Grid(5, 5)
     val grid: Grid = binaryTree.generate(unlinked)
     println(grid)
+    println(grid.asci())
     When("determining distances from upper-left cell to each other cell")
     val result = sidewinder.distance.distances(grid, 0, 0)
     println(result)
