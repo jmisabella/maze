@@ -135,7 +135,6 @@ case class Grid(
     }
     output 
   }
-
 }
 
 object Grid {

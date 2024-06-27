@@ -107,23 +107,9 @@ case class Cell(
       "neighbors" -> neighborCells,
       "linked" -> linkedCells,
       "visited" -> visited,
-      "value" -> s"\"${value.trim()}\""
+      "value" -> value.trim()
     )).toString()
   }
-
-//   override def toString(): String = 
-// s"""coords: $coords
-// linked: ${linked}
-// """
-  // override def toString(): String = ""
-
-//   override def toString(): String = 
-// s"""coords: $coords
-// visited: ${visited}
-// neighbors: ${neighbors}
-// linked: ${linked}
-// """
-
 }
 
 object Cell {
