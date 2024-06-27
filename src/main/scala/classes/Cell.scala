@@ -2,6 +2,7 @@ package maze.classes
 
 import maze.classes.{ Coordinates, Neighbors }
 import maze.classes.Direction._
+import play.api.libs.json.Json
 
 case class Cell(
   coords: Coordinates, 
@@ -55,14 +56,65 @@ case class Cell(
   // evenly pad left and right; left has 1 extra padding in case of an odd length 
   def pad(s:String, c: Char, n:Int): String = {
     val left = (n - s.length) / 2
-    val right = n - left - s.length 
+    val right = n - left - s.length
     c.toString * left + s + c.toString * right
   }
 
-  override def toString(): String = 
-s"""coords: $coords
-linked: ${linked}
-"""
+  override def toString(): String = {
+    val linkedCells: Seq[String] = 
+      (linked.contains(neighbors.north.getOrElse(Coordinates(-1, -1))),
+       linked.contains(neighbors.east.getOrElse(Coordinates(-1, -1))),
+       linked.contains(neighbors.south.getOrElse(Coordinates(-1, -1))),
+       linked.contains(neighbors.west.getOrElse(Coordinates(-1, -1))),
+      ) match {
+        case (true, true, true, true) => Seq("north","east","south","west")
+        case (true, true, true, false) => Seq("north","east","south")
+        case (true, true, false, true) => Seq("north","east","west")
+        case (true, false, true, true) => Seq("north","south","west")
+        case (false, true, true, true) => Seq("east","south","west")
+        case (true, true, false, false) => Seq("north","east")
+        case (true, false, true, false) => Seq("north","south")
+        case (true, false, false, true) => Seq("north","west")
+        case (false, true, true, false) => Seq("east","south")
+        case (false, true, false, true) => Seq("east","west")
+        case (false, false, true, true) => Seq("south","west")
+        case (true, false, false, false) => Seq("north")
+        case (false, true, false, false) => Seq("east")
+        case (false, false, true, false) => Seq("south")
+        case (false, false, false, true) => Seq("west")
+        case (false, false, false, false) => Nil
+      }
+    val neighborCells: Seq[String] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
+      case (None, None, None, None) => Nil
+      case (Some(n), None, None, None) => Seq("north")
+      case (None, Some(e), None, None) => Seq("east")
+      case (None, None, Some(s), None) => Seq("south")
+      case (None, None, None, Some(w)) => Seq("west")
+      case (Some(n), Some(e), None, None) => Seq("north","east")
+      case (Some(n), None, Some(s), None) => Seq("north","south")
+      case (Some(n), None, None, Some(w)) => Seq("north","west")
+      case (None, Some(e), Some(s), None) => Seq("east","south")
+      case (None, Some(e), None, Some(w)) => Seq("east","west")
+      case (None, None, Some(s), Some(w)) => Seq("south","west")
+      case (Some(n), Some(e), Some(s), None) => Seq("north","east","south")
+      case (Some(n), Some(e), None, Some(w)) => Seq("north","east","west")
+      case (Some(n), None, Some(s), Some(w)) => Seq("north","south","west")
+      case (None, Some(e), Some(s), Some(w)) => Seq("east","south","west")
+      case (Some(n), Some(e), Some(s), Some(w)) => Seq("north","east","south","west")
+    }
+    (Json.obj(
+      "coords" -> coords,
+      "neighbors" -> neighborCells,
+      "linked" -> linkedCells,
+      "visited" -> visited,
+      "value" -> s"\"${value.trim()}\""
+    )).toString()
+  }
+
+//   override def toString(): String = 
+// s"""coords: $coords
+// linked: ${linked}
+// """
   // override def toString(): String = ""
 
 //   override def toString(): String = 

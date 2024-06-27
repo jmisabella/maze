@@ -96,6 +96,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     val unlinked = Grid(12, 12)
     val grid: Grid = module.generate(unlinked)
     println(grid) 
+    println(grid.asci()) 
     // for (cell <- grid.flatten()) {
     //   if (!module.linker.reachable(grid, 0, 0, cell.coords.x, cell.coords.y)) {
     //     println(s"CELL ${cell} IS UNREACHABLE")
@@ -125,6 +126,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     val unlinked = Grid(12, 12)
     val grid: Grid = module.generate(unlinked)
     println(grid) 
+    println(grid.asci()) 
     When("determining distances from upper-left cell to each other cell")
     val result = module.distance.distances(grid, 0, 0)
     Then("all cells linked to (0, 0) should have non-empty values")

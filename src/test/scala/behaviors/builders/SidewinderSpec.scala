@@ -34,6 +34,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println("5x5 Sidewinder")
     println(generated.toString())
+    println(generated.asci())
   }
 
   it should "generate a 12x12 maze using Sidewinder and print it to screen" in {
@@ -51,6 +52,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println("12x12 Sidewinder")
     println(generated.toString())
+    println(generated.asci())
   }
 
 
@@ -69,6 +71,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println("25x25 Sidewinder")
     println(generated.toString())
+    println(generated.asci())
   }
 
   it should "generate a 35x35 maze using Sidewinder and print it to screen" in {
@@ -86,7 +89,9 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println("35x35 Sidewinder")
     println(generated.toString())
+    println(generated.asci())
     println(module.distance.pathTo(generated, 0, 34, 34, 0))
+    println(module.distance.pathTo(generated, 0, 34, 34, 0).asci())
   }
 
   it should "generate a 40x40 maze using Sidewinder and print it to screen" in {
@@ -104,7 +109,9 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println("40x40 Sidewinder")
     println(generated.toString())
+    println(generated.asci())
     println(module.distance.pathTo(generated, 0, 39, 39, 0))
+    println(module.distance.pathTo(generated, 0, 39, 39, 0).asci())
   }
   
   it should "generate a maze in which each cell is accessible from the upper-left corner cell" in {
@@ -124,6 +131,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
       println(s"DIST: ${dist.get(cell.coords)}")
     }
     println(module.distance.distances(grid, 0, 0))
+    println(module.distance.distances(grid, 0, 0).asci())
   }
   
 
