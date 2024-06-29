@@ -1,7 +1,6 @@
 package maze.classes
 
 import maze.classes.Cell
-import maze.classes.Direction
 import maze.classes.Direction._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
