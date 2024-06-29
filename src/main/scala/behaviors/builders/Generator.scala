@@ -1,6 +1,6 @@
 package maze.behaviors.builders
 
-import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm }
+import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm, MazeType }
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ BinaryTree, Sidewinder }
 
@@ -14,7 +14,9 @@ trait Generator {
  
   def generate(grid: Grid): Grid
 
-  def generate(x: Int, y: Int): Grid = generate(Grid(x, y))
+  // def generate(x: Int, y: Int): Grid = generate(Grid(x, y))
+  //// x indicates horizontal (number of columns) while y indicates vertical (number of rows)
+  def generate(x: Int, y: Int): Grid = generate(Grid(y, x))
 
 }
 
@@ -36,12 +38,31 @@ object Generator {
       override type DISTANCE = Distance
       override val distance = _distance
     }
-
-    request.algorithm match {
-      case Algorithm.BinaryTree => binaryTree.generate(request.width, request.height)
-      case Algorithm.Sidewinder => sidewinder.generate(request.width, request.height)
+    val generator = request.algorithm match {
+      case Algorithm.BinaryTree => binaryTree
+      case Algorithm.Sidewinder => sidewinder
       case a => throw new IllegalArgumentException(s"Unexpected algorithm [$a]")
     }
+    request.mazeType match {
+      case MazeType.Unsolved => generator.generate(request.width, request.height)
+      case MazeType.DistanceMap => {
+        generator.distance.distances(
+          generator.generate(request.width, request.height)
+          , 0
+          , 0)
+      }
+      case MazeType.Solved => {
+        generator.distance.pathTo( 
+          generator.distance.distances(
+            generator.generate(request.width, request.height)
+            , 0
+            , 0)
+          , 0
+          , 0
+          , request.height - 1
+          , request.width - 1)
+      }
+    } 
   }
 
 }

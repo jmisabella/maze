@@ -84,27 +84,27 @@ case class Cell(
         case (false, false, false, true) => Seq("west")
         case (false, false, false, false) => Nil
       }
-    val neighborCells: Seq[String] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
-      case (None, None, None, None) => Nil
-      case (Some(n), None, None, None) => Seq("north")
-      case (None, Some(e), None, None) => Seq("east")
-      case (None, None, Some(s), None) => Seq("south")
-      case (None, None, None, Some(w)) => Seq("west")
-      case (Some(n), Some(e), None, None) => Seq("north","east")
-      case (Some(n), None, Some(s), None) => Seq("north","south")
-      case (Some(n), None, None, Some(w)) => Seq("north","west")
-      case (None, Some(e), Some(s), None) => Seq("east","south")
-      case (None, Some(e), None, Some(w)) => Seq("east","west")
-      case (None, None, Some(s), Some(w)) => Seq("south","west")
-      case (Some(n), Some(e), Some(s), None) => Seq("north","east","south")
-      case (Some(n), Some(e), None, Some(w)) => Seq("north","east","west")
-      case (Some(n), None, Some(s), Some(w)) => Seq("north","south","west")
-      case (None, Some(e), Some(s), Some(w)) => Seq("east","south","west")
-      case (Some(n), Some(e), Some(s), Some(w)) => Seq("north","east","south","west")
-    }
+    // val neighborCells: Seq[String] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
+    //   case (None, None, None, None) => Nil
+    //   case (Some(n), None, None, None) => Seq("north")
+    //   case (None, Some(e), None, None) => Seq("east")
+    //   case (None, None, Some(s), None) => Seq("south")
+    //   case (None, None, None, Some(w)) => Seq("west")
+    //   case (Some(n), Some(e), None, None) => Seq("north","east")
+    //   case (Some(n), None, Some(s), None) => Seq("north","south")
+    //   case (Some(n), None, None, Some(w)) => Seq("north","west")
+    //   case (None, Some(e), Some(s), None) => Seq("east","south")
+    //   case (None, Some(e), None, Some(w)) => Seq("east","west")
+    //   case (None, None, Some(s), Some(w)) => Seq("south","west")
+    //   case (Some(n), Some(e), Some(s), None) => Seq("north","east","south")
+    //   case (Some(n), Some(e), None, Some(w)) => Seq("north","east","west")
+    //   case (Some(n), None, Some(s), Some(w)) => Seq("north","south","west")
+    //   case (None, Some(e), Some(s), Some(w)) => Seq("east","south","west")
+    //   case (Some(n), Some(e), Some(s), Some(w)) => Seq("north","east","south","west")
+    // }
     (Json.obj(
       "coords" -> coords,
-      "neighbors" -> neighborCells,
+      // "neighbors" -> neighborCells,
       "linked" -> linkedCells,
       "visited" -> visited,
       "value" -> value.trim()
