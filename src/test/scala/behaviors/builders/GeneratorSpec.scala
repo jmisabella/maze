@@ -26,10 +26,22 @@ class GeneratorSpec extends AnyFlatSpec with GivenWhenThen {
     When("generating the grid")
     val grid: Grid = Generator.generate(request)
     Then("grid should be generated as 14x20")
-    grid.rows should be (14)
-    grid.columns should be (20)
+    grid.rows should be (20)
+    grid.columns should be (14)
     println(grid.toString())
     println(grid.asci())
   }
 
+  it should "generate a 5x10 maze using Sidewinder algorithm from a request" in {
+    Given("5x5 BinaryTree request")
+    val request = MazeRequest(5, 10, Algorithm.Sidewinder)
+    When("generating the grid")
+    val grid: Grid = Generator.generate(request)
+    Then("grid should be generated as 5x10")
+    grid.rows should be (10)
+    grid.columns should be (5)
+    println(grid.toString())
+    println("ATTENTION")
+    println(grid.asci())
+  }
 }
