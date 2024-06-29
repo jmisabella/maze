@@ -56,12 +56,23 @@ object Generator {
           generator.distance.distances(
             generator.generate(request.width, request.height)
             , 0
-            , 0)
+            , request.width - 1)
           , 0
-          , 0
+          , request.width - 1 
           , request.height - 1
-          , request.width - 1)
+          , 0)
       }
+      // case MazeType.Solved => {
+      //   generator.distance.pathTo( 
+      //     generator.distance.distances(
+      //       generator.generate(request.width, request.height)
+      //       , 0
+      //       , 0)
+      //     , 0
+      //     , 0
+      //     , request.height - 1
+      //     , request.width - 1)
+      // }
     } 
   }
 
