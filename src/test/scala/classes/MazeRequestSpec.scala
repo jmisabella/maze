@@ -39,7 +39,7 @@ class MazeRequestSpec extends AnyFlatSpec with GivenWhenThen {
     When(s"deserializing the string $json")
     val request: MazeRequest = MazeRequest(json)
     Then("a MazeRequest object should be created")
-    request should equal (MazeRequest(width=8, height=8, algorithm=Sidewinder, MazeType.Unsolved, start=Coordinates(0,7), goal=Coordinates(7,0)))
+    request should equal (MazeRequest(8, 8, Sidewinder, MazeType.Unsolved, Coordinates(0,7), Coordinates(7,0)))
   }
 
 }

@@ -16,7 +16,10 @@ trait Generator {
 
   // def generate(x: Int, y: Int): Grid = generate(Grid(x, y))
   //// x indicates horizontal (number of columns) while y indicates vertical (number of rows)
-  def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(y, x, start, goal))
+  // TODO: which order is correct ??? 
+  // def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(y, x, start, goal))
+  // TODO: which order is correct ??? 
+  def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(x, y, start, goal))
 
 }
 

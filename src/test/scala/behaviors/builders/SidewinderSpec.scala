@@ -134,5 +134,19 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     println(module.distance.distances(grid, 0, 0).asci())
   }
   
+  it should "generate a 5x10 maze using Sidewinder and print it to screen" in {
+    Given("5x10 grid")
+    val grid = Grid(10, 5, Coordinates(0, 9), Coordinates(4, 0))
+    When("generating maze using Sidewinder")
+    val generated: Grid = module.generate(grid)
+    Then("generated maze should have height of 10 cells")
+    generated.rows should be (10)
+    Then("generated maze should have width of 5 cells")
+    generated.columns should be (5)
+    When("printing the maze")
+    Then("the maze should be printed to screen")
+    info(generated.asci())
+    info(generated.toString())
+  }
 
 }

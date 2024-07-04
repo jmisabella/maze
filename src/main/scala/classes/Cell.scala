@@ -113,6 +113,14 @@ case class Cell(
 }
 
 object Cell {
-  def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(row, column))
+  def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(row, column)) // TODO: which order is correct ???
+  // def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(column, row)) // TODO: which order is correct ???
+  
+  def apply(row: Int, column: Int, start: Coordinates, goal: Coordinates): Cell = {
+    val coordinates: Coordinates = Coordinates(row, column) // TODO: which order is correct ???
+    // val coordinates: Coordinates = Coordinates(column, row) // TODO: which order is correct ???
+    Cell(coords = coordinates, isStart = coordinates == start, isGoal = coordinates == goal)
+  }
+ 
   implicit def ordering [A <: Cell]: Ordering[A] = Ordering.by(_.coords)
 }

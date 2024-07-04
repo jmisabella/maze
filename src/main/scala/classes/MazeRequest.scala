@@ -15,7 +15,10 @@ import com.fasterxml.jackson.core.JsonParseException
 // case class MazeRequest(width: Int, height: Int, algorithm: Algorithm, mazeType: MazeType = MazeType.Unsolved) {
 //   override def toString(): String = (Json.obj("width" -> width, "height" -> height, "algorithm" -> algorithm, "mazeType" -> mazeType)).toString()
 // }
-private case class SerializedMazeRequest(width: String, height: String, algorithm: String, mazeType: String, startX: String, startY: String, goalX: String, goalY: String) {
+// TODO: which order is correct ???
+// private case class SerializedMazeRequest(width: String, height: String, algorithm: String, mazeType: String, startX: String, startY: String, goalX: String, goalY: String) {
+// TODO: which order is correct ???
+private case class SerializedMazeRequest(height: String, width: String, algorithm: String, mazeType: String, startX: String, startY: String, goalX: String, goalY: String) {
   override def toString(): String = {
     (Json.obj(
       "width" -> width, 
@@ -29,7 +32,10 @@ private case class SerializedMazeRequest(width: String, height: String, algorith
 private object SerializedMazeRequest {
   implicit val format: Format[SerializedMazeRequest] = Json.format[SerializedMazeRequest]
 }
-case class MazeRequest(width: Int, height: Int, algorithm: Algorithm, mazeType: MazeType, start: Coordinates, goal: Coordinates) {
+// TODO: which order is correct ???
+// case class MazeRequest(width: Int, height: Int, algorithm: Algorithm, mazeType: MazeType, start: Coordinates, goal: Coordinates) {
+// TODO: which order is correct ???
+case class MazeRequest(height: Int, width: Int, algorithm: Algorithm, mazeType: MazeType, start: Coordinates, goal: Coordinates) {
   override def toString(): String = (Json.obj("width" -> width, "height" -> height, "algorithm" -> algorithm, "mazeType" -> mazeType, "start" -> start, "goal" -> goal)).toString()
 }
 object MazeRequest {
