@@ -2,7 +2,7 @@ package maze.behaviors
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.BinaryTree
-import maze.classes.{ Cell, Grid }
+import maze.classes.{ Cell, Grid, Coordinates }
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
@@ -22,7 +22,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   "BinaryTree" should "generate a 5x5 maze using Binary Tree and print it to screen" in {
     Given("5x5 grid")
-    val grid = Grid(5, 5)
+    val grid = Grid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     When("generating maze using BinaryTree")
     val generated: Grid = module.generate(grid)
     Then("generated maze should have height of 5 cells")
@@ -40,7 +40,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 20x20 maze and print to screen" in {
     Given("20x20 grid")
-    val grid = Grid(20, 20)
+    val grid = Grid(20, 20, Coordinates(0, 19), Coordinates(19, 0))
     When("generating maze using BinaryTree")
     val generated: Grid = module.generate(grid)
     Then("generated maze should have height of 20 cells")
@@ -57,7 +57,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 8x8 maze and print to screen" in {
     Given("8x8 grid")
-    val grid = Grid(8, 8)
+    val grid = Grid(8, 8, Coordinates(0, 7), Coordinates(7, 0))
     When("generating maze using BinaryTree")
     val generated: Grid = module.generate(grid)
     Then("generated maze should have height of 8 cells")
@@ -74,7 +74,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 10x10 maze and print to screen" in {
     Given("10x10 grid")
-    val grid = Grid(10, 10)
+    val grid = Grid(10, 10, Coordinates(0, 9), Coordinates(9, 0))
     When("generating maze using BinaryTree")
     val generated: Grid = module.generate(grid)
     Then("generated maze should have height of 10 cells")
@@ -91,7 +91,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 11x11 maze and print to screen" in {
     Given("11x11 grid")
-    val grid = Grid(11, 11)
+    val grid = Grid(11, 11, Coordinates(0, 10), Coordinates(10, 0))
     When("generating maze using BinaryTree")
     val generated: Grid = module.generate(grid)
     Then("generated maze should have height of 11 cells")

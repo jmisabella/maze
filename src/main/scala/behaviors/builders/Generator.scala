@@ -16,7 +16,7 @@ trait Generator {
 
   // def generate(x: Int, y: Int): Grid = generate(Grid(x, y))
   //// x indicates horizontal (number of columns) while y indicates vertical (number of rows)
-  def generate(x: Int, y: Int): Grid = generate(Grid(y, x))
+  def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(y, x, start, goal))
 
 }
 
@@ -44,17 +44,17 @@ object Generator {
       case a => throw new IllegalArgumentException(s"Unexpected algorithm [$a]")
     }
     request.mazeType match {
-      case MazeType.Unsolved => generator.generate(request.width, request.height)
+      case MazeType.Unsolved => generator.generate(request.width, request.height, request.start, request.goal)
       case MazeType.DistanceMap => {
         generator.distance.distances(
-          generator.generate(request.width, request.height)
+          generator.generate(request.width, request.height, request.start, request.goal)
           , 0
           , 0)
       }
       case MazeType.Solved => {
         generator.distance.pathTo( 
           generator.distance.distances(
-            generator.generate(request.width, request.height)
+            generator.generate(request.width, request.height, request.start, request.goal)
             , 0
             , request.width - 1)
           , 0

@@ -1,17 +1,18 @@
 package maze.classes
 
-import maze.classes.Cell
+import maze.classes.{ Cell, Coordinates }
 import maze.classes.Direction._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
 import scala.annotation.tailrec
-import java.net.CookieStore
 
 case class Grid(
   rows: Int, 
   columns: Int, 
   cells: Array[Array[Cell]],
-  seed: RNG) {
+  seed: RNG,
+  startCoords: Coordinates,
+  goalCoords: Coordinates) {
 
   // retrieve cell residing at provided row and column coordinates
   def get(x: Int, y: Int): Cell = cells(x)(y)
@@ -66,7 +67,7 @@ case class Grid(
     }
     val mergedCells: Seq[Cell] = merged.filter(_.isDefined).map(_.get)
     var remaining: List[Cell] = mergedCells.toList.sorted
-    val empty: Grid = Grid(rows, columns).copy(cells = Array.ofDim[Cell](rows, columns))
+    val empty: Grid = Grid(rows, columns, startCoords, goalCoords).copy(cells = Array.ofDim[Cell](rows, columns))
     empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {
@@ -137,9 +138,9 @@ case class Grid(
 }
 
 object Grid {
-  def apply(rows: Int, columns: Int): Grid = {
+  def apply(rows: Int, columns: Int, start: Coordinates, goal: Coordinates): Grid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(rows * columns + 1))
-    val empty: Grid = Grid(rows, columns, Array[Array[Cell]](), seed).copy(cells = Array.ofDim[Cell](rows, columns))
+    val empty: Grid = Grid(rows, columns, Array[Array[Cell]](), seed, start, goal).copy(cells = Array.ofDim[Cell](rows, columns))
     val grid: Grid = empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {

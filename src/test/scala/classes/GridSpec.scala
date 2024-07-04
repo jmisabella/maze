@@ -12,7 +12,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
   
   "Grid" should "initialize a 3x3 grid" in {
     When("initializing a 3x3 grid") 
-    val grid = Grid(3, 3)
+    val grid = Grid(3, 3, Coordinates(0, 2), Coordinates(2, 0))
     Then("grid should have 3 rows and 3 columns")
     grid.cells.length should be (3)   
     for (row <- grid.cells) {
@@ -93,7 +93,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
       override val distance = _distance
     }
     Given("12x12 grid generated using Sidewinder")
-    val unlinked = Grid(12, 12)
+    val unlinked = Grid(12, 12, Coordinates(0, 11), Coordinates(11, 0))
     val grid: Grid = module.generate(unlinked)
     println(grid) 
     println(grid.asci()) 
@@ -123,7 +123,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
       override val distance = _distance
     }
     Given("12x12 grid generated using Binary Tree")
-    val unlinked = Grid(12, 12)
+    val unlinked = Grid(12, 12, Coordinates(0, 11), Coordinates(11, 0))
     val grid: Grid = module.generate(unlinked)
     println(grid) 
     println(grid.asci()) 

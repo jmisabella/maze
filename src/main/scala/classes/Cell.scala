@@ -106,9 +106,9 @@ case class Cell(
       "distance" -> distance,
       "isStart" -> isStart,
       "isGoal" -> isGoal, 
-      "onSolutionPath" -> onSolutionPath,
-      "visited" -> visited,
-      "value" -> value.trim()
+      "onSolutionPath" -> onSolutionPath//,
+      // "visited" -> visited,
+      // "value" -> value.trim()
     )).toString()}
 }
 

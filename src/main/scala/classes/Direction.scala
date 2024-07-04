@@ -5,4 +5,5 @@ object Direction extends Enumeration {
   val North, East, South, West = Value
   
   def fromString(s: String): Option[Direction] = values.find(_.toString == s)
+
 }
