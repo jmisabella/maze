@@ -229,7 +229,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
       override val distance = _distance
     }
     Given("5x10 BinaryTree request")
-    val request = MazeRequest(5, 10, Algorithm.BinaryTree, MazeType.Unsolved, Coordinates(4, 0), Coordinates(0, 9))
+    val request = MazeRequest(5, 10, Algorithm.BinaryTree, MazeType.Unsolved, Coordinates(9, 0), Coordinates(0, 4))
     When("generating the grid")
     // BUG // TODO: Generator.generate(Grid) preserves correct x,y coords in Cells
     // BUG // TODO: however Generator.generate(MazeRequest) incorrectly mixes up x,y coords in Cells

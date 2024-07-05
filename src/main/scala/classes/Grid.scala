@@ -11,8 +11,12 @@ case class Grid(
   columns: Int, 
   cells: Array[Array[Cell]],
   seed: RNG,
-  startCoords: Coordinates,
-  goalCoords: Coordinates) {
+  // TODO: which order is correct ??? 
+  // startCoords: Coordinates,
+  // goalCoords: Coordinates) {
+  // TODO: which order is correct ??? 
+  goalCoords: Coordinates,
+  startCoords: Coordinates) {
 
   // retrieve cell residing at provided row and column coordinates
   def get(x: Int, y: Int): Cell = cells(x)(y) // TODO: which order is correct ???
@@ -142,7 +146,10 @@ case class Grid(
 }
 
 object Grid {
-  def apply(rows: Int, columns: Int, start: Coordinates, goal: Coordinates): Grid = {
+  // TODO: which order is correct ???  
+  // def apply(rows: Int, columns: Int, start: Coordinates, goal: Coordinates): Grid = {
+  // TODO: which order is correct ??? 
+  def apply(rows: Int, columns: Int, goal: Coordinates, start: Coordinates): Grid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(rows * columns + 1))
     val empty: Grid = Grid(rows, columns, Array[Array[Cell]](), seed, start, goal).copy(cells = Array.ofDim[Cell](rows, columns))
     val grid: Grid = empty.copy(cells =
