@@ -11,18 +11,18 @@ case class Grid(
   columns: Int, 
   cells: Array[Array[Cell]],
   seed: RNG,
-  // TODO: which order is correct ??? 
+  // TODO: A which order is correct ??? 
   // startCoords: Coordinates,
   // goalCoords: Coordinates) {
-  // TODO: which order is correct ??? 
+  // TODO: B which order is correct ??? 
   goalCoords: Coordinates,
   startCoords: Coordinates) {
 
   // retrieve cell residing at provided row and column coordinates
-  def get(x: Int, y: Int): Cell = cells(x)(y) // TODO: which order is correct ???
-  def get(coords: Coordinates): Cell = cells(coords.x)(coords.y) // TODO: which order is correct ???
-  // def get(x: Int, y: Int): Cell = cells(y)(x) // TODO: which order is correct ???
-  // def get(coords: Coordinates): Cell = cells(coords.y)(coords.x) // TODO: which order is correct ???
+  def get(x: Int, y: Int): Cell = cells(x)(y) // TODO: ? which order is correct ???
+  def get(coords: Coordinates): Cell = cells(coords.x)(coords.y) // TODO: ? which order is correct ???
+  // def get(x: Int, y: Int): Cell = cells(y)(x) // TODO: ? which order is correct ???
+  // def get(coords: Coordinates): Cell = cells(coords.y)(coords.x) // TODO: ? which order is correct ???
   // retrieve row
   def row(x: Int): List[Cell] = cells(x).toList
   // retrieve column
@@ -79,8 +79,8 @@ case class Grid(
         (for (col <- 0 until empty.columns) yield {
           val cell = remaining.head
           remaining = remaining.tail
-          val coordinates: Coordinates = Coordinates(row, col) // TODO: which order is correct ???
-          // val coordinates: Coordinates = Coordinates(col, row) // TODO: which order is correct ???
+          val coordinates: Coordinates = Coordinates(row, col) // TODO: B which order is correct ???
+          // val coordinates: Coordinates = Coordinates(col, row) // TODO: A which order is correct ???
           cell.copy(isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
         }).toArray
       }).toArray
@@ -146,17 +146,17 @@ case class Grid(
 }
 
 object Grid {
-  // TODO: which order is correct ???  
+  // TODO: A which order is correct ???  
   // def apply(rows: Int, columns: Int, start: Coordinates, goal: Coordinates): Grid = {
-  // TODO: which order is correct ??? 
+  // TODO: B which order is correct ??? 
   def apply(rows: Int, columns: Int, goal: Coordinates, start: Coordinates): Grid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(rows * columns + 1))
     val empty: Grid = Grid(rows, columns, Array[Array[Cell]](), seed, start, goal).copy(cells = Array.ofDim[Cell](rows, columns))
     val grid: Grid = empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {
-          Cell(row, col, start, goal) // TODO: which order is correct ???
-          // Cell(col, row, start, goal) // TODO: which order is correct ???
+          Cell(row, col, start, goal) // TODO: B which order is correct ???
+          // Cell(col, row, start, goal) // TODO: A which order is correct ???
         }).toArray
       }).toArray
     )
@@ -164,8 +164,8 @@ object Grid {
       cells = (for (row <- 0 until grid.rows) yield {
         // set cells' neighbors
         (for (col <- 0 until grid.columns) yield {
-          val coordinates: Coordinates = Coordinates(row, col) // TODO: which order is correct ???
-          // val coordinates: Coordinates = Coordinates(col, row) // TODO: which order is correct ???
+          val coordinates: Coordinates = Coordinates(row, col) // TODO: B which order is correct ???
+          // val coordinates: Coordinates = Coordinates(col, row) // TODO: A which order is correct ???
           val cell = grid.cells(row)(col).copy(isStart = coordinates == start, isGoal = coordinates == goal)
           val north = cell.coords.x match {
             case 0 => None // nothing exists north

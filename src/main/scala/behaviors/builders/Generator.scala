@@ -16,9 +16,9 @@ trait Generator {
 
   // def generate(x: Int, y: Int): Grid = generate(Grid(x, y))
   //// x indicates horizontal (number of columns) while y indicates vertical (number of rows)
-  // TODO: which order is correct ??? 
+  // TODO: A which order is correct ??? 
   // def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(y, x, start, goal))
-  // TODO: which order is correct ??? 
+  // TODO: B which order is correct ??? 
   def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(x, y, start, goal))
 
 }
@@ -47,15 +47,15 @@ object Generator {
       case a => throw new IllegalArgumentException(s"Unexpected algorithm [$a]")
     }
     request.mazeType match {
-      // TODO: which order is correct ??? 
+      // TODO: A which order is correct ??? 
       // case MazeType.Unsolved => generator.generate(request.width, request.height, request.start, request.goal)
-      // TODO: which order is correct ??? 
+      // TODO: B which order is correct ??? 
       case MazeType.Unsolved => generator.generate(request.height, request.width, request.start, request.goal)
       case MazeType.DistanceMap => {
         generator.distance.distances(
-          // TODO: which order is correct ??? 
+          // TODO: A which order is correct ??? 
           // generator.generate(request.width, request.height, request.start, request.goal)
-          // TODO: which order is correct ??? 
+          // TODO: B which order is correct ??? 
           generator.generate(request.height, request.width, request.start, request.goal)
           , 0
           , 0)
@@ -63,9 +63,9 @@ object Generator {
       case MazeType.Solved => {
         generator.distance.pathTo( 
           generator.distance.distances(
-            // TODO: which order is correct ??? 
+            // TODO: A which order is correct ??? 
             // generator.generate(request.width, request.height, request.start, request.goal)
-            // TODO: which order is correct ??? 
+            // TODO: B which order is correct ??? 
             generator.generate(request.height, request.width, request.start, request.goal)
             , 0
             , request.width - 1)
