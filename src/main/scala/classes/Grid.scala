@@ -12,11 +12,11 @@ case class Grid(
   cells: Array[Array[Cell]],
   seed: RNG,
   // TODO: A which order is correct ??? 
-  // startCoords: Coordinates,
-  // goalCoords: Coordinates) {
+  startCoords: Coordinates,
+  goalCoords: Coordinates) {
   // TODO: B which order is correct ??? 
-  goalCoords: Coordinates,
-  startCoords: Coordinates) {
+  // goalCoords: Coordinates,
+  // startCoords: Coordinates) {
 
   // retrieve cell residing at provided row and column coordinates
   def get(x: Int, y: Int): Cell = cells(x)(y) // TODO: ? which order is correct ???
@@ -79,8 +79,8 @@ case class Grid(
         (for (col <- 0 until empty.columns) yield {
           val cell = remaining.head
           remaining = remaining.tail
-          val coordinates: Coordinates = Coordinates(row, col) // TODO: B which order is correct ???
-          // val coordinates: Coordinates = Coordinates(col, row) // TODO: A which order is correct ???
+          // val coordinates: Coordinates = Coordinates(row, col) // TODO: B which order is correct ???
+          val coordinates: Coordinates = Coordinates(col, row) // TODO: A which order is correct ???
           cell.copy(isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
         }).toArray
       }).toArray
@@ -147,16 +147,16 @@ case class Grid(
 
 object Grid {
   // TODO: A which order is correct ???  
-  // def apply(rows: Int, columns: Int, start: Coordinates, goal: Coordinates): Grid = {
+  def apply(rows: Int, columns: Int, start: Coordinates, goal: Coordinates): Grid = {
   // TODO: B which order is correct ??? 
-  def apply(rows: Int, columns: Int, goal: Coordinates, start: Coordinates): Grid = {
+  // def apply(rows: Int, columns: Int, goal: Coordinates, start: Coordinates): Grid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(rows * columns + 1))
     val empty: Grid = Grid(rows, columns, Array[Array[Cell]](), seed, start, goal).copy(cells = Array.ofDim[Cell](rows, columns))
     val grid: Grid = empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {
-          Cell(row, col, start, goal) // TODO: B which order is correct ???
-          // Cell(col, row, start, goal) // TODO: A which order is correct ???
+          // Cell(row, col, start, goal) // TODO: B which order is correct ???
+          Cell(col, row, start, goal) // TODO: A which order is correct ???
         }).toArray
       }).toArray
     )
@@ -164,9 +164,10 @@ object Grid {
       cells = (for (row <- 0 until grid.rows) yield {
         // set cells' neighbors
         (for (col <- 0 until grid.columns) yield {
-          val coordinates: Coordinates = Coordinates(row, col) // TODO: B which order is correct ???
-          // val coordinates: Coordinates = Coordinates(col, row) // TODO: A which order is correct ???
-          val cell = grid.cells(row)(col).copy(isStart = coordinates == start, isGoal = coordinates == goal)
+          // val coordinates: Coordinates = Coordinates(row, col) // TODO: B which order is correct ???
+          val coordinates: Coordinates = Coordinates(col, row) // TODO: A which order is correct ???
+          val cell = grid.cells(row)(col).copy(isStart = coordinates == start, isGoal = coordinates == goal) // TODO: which order is correct ???
+          // val cell = grid.cells(col)(row).copy(isStart = coordinates == start, isGoal = coordinates == goal) // TODO: which order is correct ???
           val north = cell.coords.x match {
             case 0 => None // nothing exists north
             case _ => Some((grid.cells(cell.coords.x - 1)(cell.coords.y)).coords)

@@ -33,9 +33,9 @@ private object SerializedMazeRequest {
   implicit val format: Format[SerializedMazeRequest] = Json.format[SerializedMazeRequest]
 }
 // TODO: B which order is correct ???
-case class MazeRequest(width: Int, height: Int, algorithm: Algorithm, mazeType: MazeType, start: Coordinates, goal: Coordinates) {
+// case class MazeRequest(width: Int, height: Int, algorithm: Algorithm, mazeType: MazeType, start: Coordinates, goal: Coordinates) {
 // TODO: A which order is correct ???
-// case class MazeRequest(height: Int, width: Int, algorithm: Algorithm, mazeType: MazeType, start: Coordinates, goal: Coordinates) {
+case class MazeRequest(height: Int, width: Int, algorithm: Algorithm, mazeType: MazeType, start: Coordinates, goal: Coordinates) {
   override def toString(): String = (Json.obj("width" -> width, "height" -> height, "algorithm" -> algorithm, "mazeType" -> mazeType, "start" -> start, "goal" -> goal)).toString()
 }
 object MazeRequest {
@@ -43,10 +43,10 @@ object MazeRequest {
   
   def apply(req: SerializedMazeRequest): MazeRequest = { 
     MazeRequest(
-      // TODO: B which order is correct ???
+      // TODO: ? which order is correct ???
       req.width.toInt, 
       req.height.toInt, 
-      // TODO: A which order is correct ???
+      // TODO: ? which order is correct ???
       // req.height.toInt, 
       // req.width.toInt, 
       Algorithm.fromString(req.algorithm).getOrElse(

@@ -18,8 +18,9 @@ trait Generator {
   //// x indicates horizontal (number of columns) while y indicates vertical (number of rows)
   // TODO: A which order is correct ??? 
   // def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(y, x, start, goal))
+  def generate(width: Int, height: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(width, height, start, goal))
   // TODO: B which order is correct ??? 
-  def generate(height: Int, width: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(height, width, start, goal))
+  // def generate(height: Int, width: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(height, width, start, goal))
 
 }
 
@@ -48,15 +49,15 @@ object Generator {
     }
     request.mazeType match {
       // TODO: A which order is correct ??? 
-      // case MazeType.Unsolved => generator.generate(request.width, request.height, request.start, request.goal)
+      case MazeType.Unsolved => generator.generate(request.width, request.height, request.start, request.goal)
       // TODO: B which order is correct ??? 
-      case MazeType.Unsolved => generator.generate(request.height, request.width, request.start, request.goal)
+      // case MazeType.Unsolved => generator.generate(request.height, request.width, request.start, request.goal)
       case MazeType.DistanceMap => {
         generator.distance.distances(
           // TODO: A which order is correct ??? 
-          // generator.generate(request.width, request.height, request.start, request.goal)
+          generator.generate(request.width, request.height, request.start, request.goal)
           // TODO: B which order is correct ??? 
-          generator.generate(request.height, request.width, request.start, request.goal)
+          // generator.generate(request.height, request.width, request.start, request.goal)
           , 0
           , 0)
       }
@@ -64,9 +65,9 @@ object Generator {
         generator.distance.pathTo( 
           generator.distance.distances(
             // TODO: A which order is correct ??? 
-            // generator.generate(request.width, request.height, request.start, request.goal)
+            generator.generate(request.width, request.height, request.start, request.goal)
             // TODO: B which order is correct ??? 
-            generator.generate(request.height, request.width, request.start, request.goal)
+            // generator.generate(request.height, request.width, request.start, request.goal)
             , 0
             , request.width - 1)
           , 0
