@@ -19,7 +19,7 @@ trait Generator {
   // TODO: A which order is correct ??? 
   // def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(y, x, start, goal))
   // TODO: B which order is correct ??? 
-  def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(x, y, start, goal))
+  def generate(height: Int, width: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(height, width, start, goal))
 
 }
 
