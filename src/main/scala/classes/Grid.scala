@@ -60,15 +60,21 @@ case class Grid(
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
   def unflatten(flattened: Seq[Cell]): Grid = {
-    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value))
+    // val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value))
+    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value, c.distance))
+    // val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value, c.distance, c.isStart, c.isGoal))
     val merged: Seq[Option[Cell]] = grouped.foldLeft(Nil: Seq[Option[Cell]]) {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
         val neighbors: Neighbors = k._3
         val value: String = k._4
+        val distance: Int = k._5
+        // val isStart: Boolean = k._6
+        // val isGoal: Boolean = k._7
         val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
-        acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked, value = value, isStart = coords == startCoords, isGoal = coords == goalCoords)))
+        acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked, value = value, distance = distance, isStart = coords == startCoords, isGoal = coords == goalCoords)))
+        // acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked, value = value, isStart = isStart, isGoal = isGoal)))
       }
     }
     val mergedCells: Seq[Cell] = merged.filter(_.isDefined).map(_.get)
@@ -82,6 +88,7 @@ case class Grid(
           // val coordinates: Coordinates = Coordinates(row, col) // TODO: B which order is correct ???
           val coordinates: Coordinates = Coordinates(col, row) // TODO: A which order is correct ???
           cell.copy(isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
+          // cell
         }).toArray
       }).toArray
     )
@@ -166,8 +173,7 @@ object Grid {
         (for (col <- 0 until grid.columns) yield {
           // val coordinates: Coordinates = Coordinates(row, col) // TODO: B which order is correct ???
           val coordinates: Coordinates = Coordinates(col, row) // TODO: A which order is correct ???
-          val cell = grid.cells(row)(col).copy(isStart = coordinates == start, isGoal = coordinates == goal) // TODO: which order is correct ???
-          // val cell = grid.cells(col)(row).copy(isStart = coordinates == start, isGoal = coordinates == goal) // TODO: which order is correct ???
+          val cell = grid.get(row, col).copy(isStart = coordinates == start, isGoal = coordinates == goal) // TODO: which order is correct ???
           val north = cell.coords.x match {
             case 0 => None // nothing exists north
             case _ => Some((grid.cells(cell.coords.x - 1)(cell.coords.y)).coords)

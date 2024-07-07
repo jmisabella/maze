@@ -120,6 +120,7 @@ object Cell {
     // val coordinates: Coordinates = Coordinates(row, column) // TODO: ? which order is correct ???
     val coordinates: Coordinates = Coordinates(column, row) // TODO: ? which order is correct ???
     Cell(coords = coordinates, isStart = coordinates == start, isGoal = coordinates == goal)
+    // Cell(coords = coordinates, isStart = coordinates == goal, isGoal = coordinates == start)
   }
  
   implicit def ordering [A <: Cell]: Ordering[A] = Ordering.by(_.coords)

@@ -18,7 +18,8 @@ trait Generator {
   //// x indicates horizontal (number of columns) while y indicates vertical (number of rows)
   // TODO: A which order is correct ??? 
   // def generate(x: Int, y: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(y, x, start, goal))
-  def generate(width: Int, height: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(width, height, start, goal))
+  // def generate(width: Int, height: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(width, height, start, goal))
+  def generate(width: Int, height: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(height, width, start, goal))
   // TODO: B which order is correct ??? 
   // def generate(height: Int, width: Int, start: Coordinates, goal: Coordinates): Grid = generate(Grid(height, width, start, goal))
 
