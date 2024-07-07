@@ -16,9 +16,9 @@ import com.fasterxml.jackson.core.JsonParseException
 //   override def toString(): String = (Json.obj("width" -> width, "height" -> height, "algorithm" -> algorithm, "mazeType" -> mazeType)).toString()
 // }
 // TODO: B which order is correct ???
-private case class SerializedMazeRequest(width: String, height: String, algorithm: String, mazeType: String, startX: String, startY: String, goalX: String, goalY: String) {
+// private case class SerializedMazeRequest(width: String, height: String, algorithm: String, mazeType: String, startX: String, startY: String, goalX: String, goalY: String) {
 // TODO: A which order is correct ???
-// private case class SerializedMazeRequest(height: String, width: String, algorithm: String, mazeType: String, startX: String, startY: String, goalX: String, goalY: String) {
+private case class SerializedMazeRequest(height: String, width: String, algorithm: String, mazeType: String, startX: String, startY: String, goalX: String, goalY: String) {
   override def toString(): String = {
     (Json.obj(
       "width" -> width, 

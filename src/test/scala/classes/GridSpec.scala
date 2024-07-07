@@ -216,9 +216,9 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     info("REQUEST HEIGHT: " + request.height.toString())
     info("GRID WIDTH: " + grid.columns.toString())
     info("GRID HEIGHT: " + grid.rows.toString())
-    // grid.startCoords should equal (Coordinates(0, request.height - 1))
-    // Then("grid's goal should be northeast")
-    // grid.goalCoords should equal (Coordinates(request.width - 1, 0))
+    grid.startCoords should equal (Coordinates(0, 9))
+    Then("grid's goal should be northeast")
+    grid.goalCoords should equal (Coordinates(4, 0))
     Then("exactly one cell should be the goal cell (isGoal == true)")
     grid.count(c => c.isGoal) should equal (1)
     Then("exactly one cell should be the starting cell (isStart == true)")
@@ -227,7 +227,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     grid.get(0, 4).isGoal should be (true)
     info("\n" + grid.asci())
     info("\n" + grid.toString())
-    // BUG: TODO: start and goal are mixed up
+    // BUG: request width and height are mixed up, however everything else works correctly with this mix-up
   }
   
   // it should "honor start and goal coordinates specified in MazeRequest when generating a non-square grid" in {
