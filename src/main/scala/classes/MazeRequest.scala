@@ -44,11 +44,11 @@ object MazeRequest {
   def apply(req: SerializedMazeRequest): MazeRequest = { 
     MazeRequest(
       // TODO: ? which order is correct ???
-      req.width.toInt, 
-      req.height.toInt, 
-      // TODO: ? which order is correct ???
-      // req.height.toInt, 
       // req.width.toInt, 
+      // req.height.toInt, 
+      // TODO: ? which order is correct ???
+      req.height.toInt, 
+      req.width.toInt, 
       Algorithm.fromString(req.algorithm).getOrElse(
         throw new IllegalArgumentException(s"Unexpected algorithm [${req.algorithm}] provided in request")),
       MazeType.fromString(req.mazeType).getOrElse(
