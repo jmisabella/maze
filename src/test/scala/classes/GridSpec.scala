@@ -156,7 +156,7 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     Then("exactly one cell should be the starting cell (isStart == true)")
     grid.count(c => c.isStart) should equal (1)
     Then("grid's start cell at 0,4 should have isStart set to true")
-    grid.get(0, 4).isGoal should be (true)
+    grid.get(0, 4).isStart should be (true)
     Then("grid's 0,0 cell should have isStart set to false")
     grid.get(0, 0).isStart should be (false)
     Then("grid's goal cell at 4,0 should have isGoal set to true")
@@ -193,31 +193,42 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     info("\n" + grid.asci())
   }
   
-  // it should "honor start and goal coordinates specified when generating a non-square grid using Generator" in {
-  //   case object module extends BinaryTree {
-  //     case object _linkage extends Linkage
-  //     override type LINKAGE = Linkage
-  //     override val linker = _linkage
-  //     case object _distance extends Distance
-  //     override type DISTANCE = Distance
-  //     override val distance = _distance
-  //   }
-  //   Given("5x10 BinaryTree request")
-  //   val request = MazeRequest(5, 10, Algorithm.BinaryTree, MazeType.Unsolved, Coordinates(9, 0), Coordinates(0, 4))
-  //   When("generating the grid")
-  //   val grid: Grid = Generator.generate(request)
-  //   // val empty = Grid(10, 5, Coordinates(0, 9), Coordinates(4, 0))
-  //   // val grid: Grid = module.generate(empty)
-  //   Then("grid's start should be southwest")
-  //   grid.startCoords should equal (Coordinates(request.height - 1, 0))
-  //   Then("grid's goal should be northeast")
-  //   grid.goalCoords should equal (Coordinates(0, request.width - 1))
-  //   Then("exactly one cell should be the goal cell (isGoal == true)")
-  //   grid.count(c => c.isGoal) should equal (1)
-  //   Then("exactly one cell should be the starting cell (isStart == true)")
-  //   grid.count(c => c.isStart) should equal (1)
-  //   info("\n" + grid.asci())
-  // }
+  it should "honor start and goal coordinates specified when generating a non-square grid using Generator" in {
+    case object module extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
+    Given("5x10 BinaryTree request")
+    // val request = MazeRequest(5, 10, Algorithm.BinaryTree, MazeType.Unsolved, Coordinates(9, 0), Coordinates(0, 4))
+    val request = MazeRequest(5, 10, Algorithm.BinaryTree, MazeType.Unsolved, Coordinates(0, 9), Coordinates(4, 0))
+    When("generating the grid")
+    val grid: Grid = Generator.generate(request)
+    // val empty = Grid(10, 5, Coordinates(0, 9), Coordinates(4, 0))
+    // val grid: Grid = module.generate(empty)
+    // Then("grid's start should be southwest")
+    info("START: " + grid.startCoords.toString())
+    info("GOAL: " + grid.goalCoords.toString())
+    info("REQUEST WIDTH: " + request.width.toString())
+    info("REQUEST HEIGHT: " + request.height.toString())
+    info("GRID WIDTH: " + grid.columns.toString())
+    info("GRID HEIGHT: " + grid.rows.toString())
+    // grid.startCoords should equal (Coordinates(0, request.height - 1))
+    // Then("grid's goal should be northeast")
+    // grid.goalCoords should equal (Coordinates(request.width - 1, 0))
+    Then("exactly one cell should be the goal cell (isGoal == true)")
+    grid.count(c => c.isGoal) should equal (1)
+    Then("exactly one cell should be the starting cell (isStart == true)")
+    grid.count(c => c.isStart) should equal (1)
+    grid.get(9, 0).isStart should be (true)
+    grid.get(0, 4).isGoal should be (true)
+    info("\n" + grid.asci())
+    info("\n" + grid.toString())
+    // BUG: TODO: start and goal are mixed up
+  }
   
   // it should "honor start and goal coordinates specified in MazeRequest when generating a non-square grid" in {
   //   case object module extends BinaryTree {
