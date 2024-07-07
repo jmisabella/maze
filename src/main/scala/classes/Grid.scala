@@ -18,8 +18,8 @@ case class Grid(
   // def get(row: Int, column: Int): Cell = cells(row)(column)
   // def get(column: Int, row: Int): Cell = cells(column)(row)
   // def get(coords: Coordinates): Cell = cells(coords.x)(coords.y)
-  def get(x: Int, y: Int): Cell = cells(x)(y)
-  // def get(x: Int, y: Int): Cell = cells(y)(x)
+  // def get(x: Int, y: Int): Cell = cells(x)(y)
+  def get(x: Int, y: Int): Cell = cells(y)(x)
   def get(coords: Coordinates): Cell = get(coords.x, coords.y)
   // retrieve row
   def row(y: Int): List[Cell] = cells(y).toList

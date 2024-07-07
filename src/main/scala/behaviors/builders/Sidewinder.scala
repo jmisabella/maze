@@ -51,9 +51,9 @@ trait Sidewinder extends Generator {
           }
           case (Some(north), _, true) => { // coin toss is heads: close run and randomly chose one cell from current run from which to move north
             val (randomIndex, nextSeed)  = nextGrid.randomInt(run.length)
-            val member = nextGrid.get(run(randomIndex).coords)
-            // val rand: Coordinates = run(randomIndex).coords 
-            // val member = nextGrid.cells(rand.x)(rand.y)
+            // val member = nextGrid.get(run(randomIndex).coords)
+            val rand: Coordinates = run(randomIndex).coords 
+            val member = nextGrid.cells(rand.x)(rand.y)
             run = Nil // clear current run, onto the next run
             if (member.neighbors.north.isDefined) {
               // for (c <- linker.link(Seq(member, nextGrid.get(member.neighbors.north.get)))) {
