@@ -14,11 +14,6 @@ case class Cell(
   onSolutionPath: Boolean = false, 
   visited: Boolean = false,
   value: String = "   "
-  // coords: Coordinates, 
-  // neighbors: Neighbors = Neighbors(), 
-  // linked: Set[Coordinates] = Set(),
-  // visited: Boolean = false,
-  // value: String = "   "
 ) {
   def availableNeighbors(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
     // 4 
@@ -93,13 +88,6 @@ case class Cell(
         case (false, false, false, true) => Seq("west")
         case (false, false, false, false) => Nil
       }
-    // (Json.obj(
-    //   "coords" -> coords,
-    //   // "neighbors" -> neighborCells,
-    //   "linked" -> linkedCells,
-    //   "visited" -> visited,
-    //   "value" -> value.trim()
-    // )).toString()
   (Json.obj(
       "coords" -> coords,
       "linked" -> linkedCells,
@@ -107,21 +95,12 @@ case class Cell(
       "isStart" -> isStart,
       "isGoal" -> isGoal, 
       "onSolutionPath" -> onSolutionPath//,
-      // "visited" -> visited,
-      // "value" -> value.trim()
-    )).toString()}
+    )).toString()
+  }
 }
 
 object Cell {
-  // def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(row, column)) // TODO: ? which order is correct ???
-  def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(column, row)) // TODO: ? which order is correct ???
-  
-  def apply(row: Int, column: Int, start: Coordinates, goal: Coordinates): Cell = {
-    // val coordinates: Coordinates = Coordinates(row, column) // TODO: ? which order is correct ???
-    val coordinates: Coordinates = Coordinates(column, row) // TODO: ? which order is correct ???
-    Cell(coords = coordinates, isStart = coordinates == start, isGoal = coordinates == goal)
-    // Cell(coords = coordinates, isStart = coordinates == goal, isGoal = coordinates == start)
-  }
+  def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(column, row))
  
   implicit def ordering [A <: Cell]: Ordering[A] = Ordering.by(_.coords)
 }
