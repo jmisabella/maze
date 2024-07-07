@@ -80,8 +80,8 @@ case class Grid(
           remaining = remaining.tail
           val coordinates: Coordinates = Coordinates(col, row)
           // // TODO ???: not sure why, but in this line only I needed to switch predicates' start/goal coords here
-          cell.copy(isStart = coordinates == goalCoords, isGoal = coordinates == startCoords)
-          // cell.copy(isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
+          // cell.copy(isStart = coordinates == goalCoords, isGoal = coordinates == startCoords)
+          cell.copy(isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
         }).toArray
       }).toArray
     )
