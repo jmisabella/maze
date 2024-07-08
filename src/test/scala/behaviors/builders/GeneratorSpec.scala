@@ -8,11 +8,12 @@ import maze.classes.MazeType._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
+import maze.classes.Coordinates
 
 class GeneratorSpec extends AnyFlatSpec with GivenWhenThen {
   "Generator" should "generate a 5x5 maze using BinaryTree algorithm from a request" in {
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(5, 5, Algorithm.BinaryTree)
+    val request = MazeRequest(5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
     When("generating the grid")
     val grid: Grid = Generator.generate(request)
     Then("grid should be generated as 5x5")
@@ -24,7 +25,7 @@ class GeneratorSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 14x20 maze using Sidewinder algorithm from a request" in {
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(14, 20, Algorithm.Sidewinder)
+    val request = MazeRequest(14, 20, Algorithm.Sidewinder, Coordinates(0, 13), Coordinates(19, 0))
     When("generating the grid")
     val grid: Grid = Generator.generate(request)
     Then("grid should be generated as 14x20")
@@ -36,7 +37,7 @@ class GeneratorSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 5x10 maze using Sidewinder algorithm from a request" in {
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(5, 10, Algorithm.Sidewinder)
+    val request = MazeRequest(5, 10, Algorithm.Sidewinder, Coordinates(0, 4), Coordinates(9, 0))
     When("generating the grid")
     val grid: Grid = Generator.generate(request)
     Then("grid should be generated as 5x10")
@@ -49,7 +50,7 @@ class GeneratorSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a solved 5x5 maze using BinaryTree algorithm from a request" in {
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(5, 5, Algorithm.BinaryTree, MazeType.Solved)
+    val request = MazeRequest(5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
     When("generating the grid")
     val grid: Grid = Generator.generate(request)
     Then("grid should be generated as 5x5")

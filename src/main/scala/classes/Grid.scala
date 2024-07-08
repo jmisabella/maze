@@ -1,25 +1,30 @@
 package maze.classes
 
-import maze.classes.Cell
+import maze.classes.{ Cell, Coordinates }
 import maze.classes.Direction._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
 import scala.annotation.tailrec
-import java.net.CookieStore
 
 case class Grid(
   rows: Int, 
   columns: Int, 
   cells: Array[Array[Cell]],
-  seed: RNG) {
+  seed: RNG,
+  startCoords: Coordinates,
+  goalCoords: Coordinates) {
 
   // retrieve cell residing at provided row and column coordinates
-  def get(x: Int, y: Int): Cell = cells(x)(y)
-  def get(coords: Coordinates): Cell = cells(coords.x)(coords.y)
+  // def get(row: Int, column: Int): Cell = cells(row)(column)
+  // def get(column: Int, row: Int): Cell = cells(column)(row)
+  // def get(coords: Coordinates): Cell = cells(coords.x)(coords.y)
+  // def get(x: Int, y: Int): Cell = cells(x)(y)
+  def get(x: Int, y: Int): Cell = cells(y)(x)
+  def get(coords: Coordinates): Cell = get(coords.x, coords.y)
   // retrieve row
-  def row(x: Int): List[Cell] = cells(x).toList
+  def row(y: Int): List[Cell] = cells(y).toList
   // retrieve column
-  def column(y: Int): List[Cell] = (for (i <- 0 until rows) yield cells(i)(y)).toList
+  def column(x: Int): List[Cell] = (for (i <- 0 until rows) yield cells(i)(x)).toList
 
   // given a cell (which tracks its own x,y coordinates) updates grid's cell at those coordinates
   def set(cell: Cell): Grid = {
@@ -53,26 +58,31 @@ case class Grid(
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
   def unflatten(flattened: Seq[Cell]): Grid = {
-    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value))
+    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value, c.distance, c.onSolutionPath))
     val merged: Seq[Option[Cell]] = grouped.foldLeft(Nil: Seq[Option[Cell]]) {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
         val neighbors: Neighbors = k._3
         val value: String = k._4
+        val distance: Int = k._5
+        val onSolutionPath: Boolean = k._6
         val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
-        acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked, value = value)))
+        acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked, value = value, distance = distance, onSolutionPath = onSolutionPath)))
       }
     }
     val mergedCells: Seq[Cell] = merged.filter(_.isDefined).map(_.get)
     var remaining: List[Cell] = mergedCells.toList.sorted
-    val empty: Grid = Grid(rows, columns).copy(cells = Array.ofDim[Cell](rows, columns))
+    val empty: Grid = Grid(rows, columns, startCoords, goalCoords).copy(cells = Array.ofDim[Cell](rows, columns))
     empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {
-          val cell = remaining.head
+          var cell = remaining.head
           remaining = remaining.tail
-          cell
+          val coordinates: Coordinates = Coordinates(col, row)
+          // // TODO ???: not sure why, but in this line only I needed to switch predicates' start/goal coords here
+          // cell.copy(isStart = coordinates == goalCoords, isGoal = coordinates == startCoords)
+          cell.copy(isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
         }).toArray
       }).toArray
     )
@@ -137,13 +147,13 @@ case class Grid(
 }
 
 object Grid {
-  def apply(rows: Int, columns: Int): Grid = {
+  def apply(rows: Int, columns: Int, start: Coordinates, goal: Coordinates): Grid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(rows * columns + 1))
-    val empty: Grid = Grid(rows, columns, Array[Array[Cell]](), seed).copy(cells = Array.ofDim[Cell](rows, columns))
+    val empty: Grid = Grid(rows, columns, Array[Array[Cell]](), seed, start, goal).copy(cells = Array.ofDim[Cell](rows, columns))
     val grid: Grid = empty.copy(cells =
       (for (row <- 0 until empty.rows) yield {
         (for (col <- 0 until empty.columns) yield {
-          Cell(row, col)
+          Cell(col, row)
         }).toArray
       }).toArray
     )
@@ -151,6 +161,7 @@ object Grid {
       cells = (for (row <- 0 until grid.rows) yield {
         // set cells' neighbors
         (for (col <- 0 until grid.columns) yield {
+          val coordinates: Coordinates = Coordinates(col, row)
           val cell = grid.cells(row)(col)
           val north = cell.coords.x match {
             case 0 => None // nothing exists north
@@ -188,7 +199,17 @@ object Grid {
             case (_, 0) => None // nothing exists west
             case (x, y) => Some((grid.cells(cell.coords.x - 1)(cell.coords.y - 1)).coords)
           }
-          cell.copy(neighbors = Neighbors(north, east, south, west, northeast, southeast, southwest, northwest))
+          // val result = cell.copy(
+          //   neighbors = Neighbors(north, east, south, west, northeast, southeast, southwest, northwest),
+          //   isStart = cell.coords == start,
+          //   isGoal = cell.coords == goal)
+          // assert(result.isStart == (result.coords == start))
+          // assert(result.isGoal == (result.coords == goal))
+          // result
+          cell.copy(
+            neighbors = Neighbors(north, east, south, west, northeast, southeast, southwest, northwest),
+            isStart = cell.coords == start,
+            isGoal = cell.coords == goal)
         }).toArray
       }).toArray
     )

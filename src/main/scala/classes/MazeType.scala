@@ -11,5 +11,6 @@ object MazeType extends Enumeration {
   implicit val format: Format[MazeType] = Json.formatEnum(this)
 
   def fromString(s: String): Option[MazeType] = values.find(_.toString.toLowerCase == s.replace("-", "").replace("_", "").toLowerCase())
+
 }
 

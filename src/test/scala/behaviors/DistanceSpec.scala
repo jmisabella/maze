@@ -32,7 +32,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
   
   "Distance" should "generate a 5x5 maze using Sidewinder and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
     Given("5x5 grid generated using Sidewinder")
-    val unlinked = Grid(5, 5)
+    val unlinked = Grid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     val grid: Grid = sidewinder.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
     val result = sidewinder.distance.distances(grid, 0, 0)
@@ -41,7 +41,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 5x5 maze using Sidewinder and show shortest path from upper-left cell to botom-right cell before printing to screen" in {
     Given("5x5 grid generated using Sidewinder")
-    val unlinked = Grid(5, 5)
+    val unlinked = Grid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     val grid: Grid = sidewinder.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
     val result = sidewinder.distance.pathTo(grid, 0, 0, 4, 4)
@@ -50,7 +50,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 5x5 maze using Sidewinder and determine shortest path from upper-left cell to botom-right cell" in {
     Given("5x5 grid generated using Sidewinder")
-    val grid: Grid = sidewinder.generate(5, 5)
+    val grid: Grid = sidewinder.generate(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     println(grid)
     When("determining distances from upper-left cell to each other cell")
     val result = sidewinder.distance.getPathTo(grid, 0, 0, 4, 4)
@@ -62,7 +62,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
   
   it should "generate a 5x5 maze using Sidewinder and determine longest path" in {
     Given("5x5 grid generated using Sidewinder")
-    val grid: Grid = sidewinder.generate(5, 5)
+    val grid: Grid = sidewinder.generate(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     println(grid)
     When("determining longest path")
     val result = sidewinder.distance.getLongestPath(grid)
@@ -74,7 +74,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
   
   it should "generate a 5x5 maze using Sidewinder and determine longest path but print in overriding o character" in {
     Given("5x5 grid generated using Sidewinder")
-    val grid: Grid = sidewinder.generate(5, 5)
+    val grid: Grid = sidewinder.generate(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     println(grid)
     When("determining longest path")
     val result = sidewinder.distance.getLongestPath(grid)
@@ -87,13 +87,16 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
   //// this seems to result in infinite loop 
   it should "generate a 5x5 maze using Binary Tree and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
     Given("5x5 grid generated using BinaryTree")
-    val unlinked = Grid(5, 5)
+    val unlinked = Grid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     val grid: Grid = binaryTree.generate(unlinked)
     println(grid)
     println(grid.asci())
     When("determining distances from upper-left cell to each other cell")
     val result = sidewinder.distance.distances(grid, 0, 0)
-    println(result)
+    Then("exactly 1 cell has distance of 0") 
+    result.count(c => c.distance == 0) should equal (1)
+    info(result.asci())
+    info(result.toString())
   }
 
 

@@ -26,7 +26,7 @@ class DijkstraSpec extends AnyFlatSpec with GivenWhenThen {
 
   "Dijkstra" should "generate a 20x20 maze using Sidewinder and print its solution steps from upper-right corner to lower-left corner" in {
     Given("a 20x20 grid generated using Sidewinder")
-    val generated: Grid = sidewinder.generate(20, 20)
+    val generated: Grid = sidewinder.generate(20, 20, Coordinates(0, 19), Coordinates(19, 0))
     Then("generated maze should have height of 20 cells")
     generated.rows should be (20)
     generated.cells.length should be (20)
@@ -45,7 +45,7 @@ class DijkstraSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 20x20 maze using Sidewinder and print its solution in letter Xs from upper-right corner to lower-left corner" in {
     Given("a 20x20 grid generated using Sidewinder")
-    val generated: Grid = sidewinder.generate(20, 20)
+    val generated: Grid = sidewinder.generate(20, 20, Coordinates(0, 19), Coordinates(19, 0))
     Then("generated maze should have height of 20 cells")
     generated.rows should be (20)
     generated.cells.length should be (20)

@@ -15,7 +15,6 @@ trait Distance {
     val right = n - left - s.length 
     c.toString * left + s + c.toString * right
   }
-  // TODO: this seems to lead to an infinite loop, need to fix
   def distances(grid: Grid, startCell: Cell): Map[Coordinates, Int] = {
     var distances: Map[Coordinates, Int] = Map(startCell.coords -> 0)
     var frontier: Seq[Cell] = Seq(startCell)
@@ -25,21 +24,27 @@ trait Distance {
         for (linked <- c.linked) {
           if (!distances.keySet.contains(linked)) {
             distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
-            // distances = distances + (linked -> (distances.get(c.coords).getOrElse(-99999999) + 1))
-            newFrontier = newFrontier ++ Seq(grid.get(linked))
+            // newFrontier = newFrontier ++ Seq(grid.get(linked))
+            newFrontier = newFrontier ++ Seq(grid.cells(linked.x)(linked.y))
           }
         }
       }
       frontier = newFrontier
     }
     distances
-    // distances.filter(entry => entry._2 >= 0) // remove unlinked cells
   }
-  def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.get(startX, startY))
-  def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.get(startCoords))
+  // def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.get(startX, startY))
+  // def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.get(startCoords))
+  def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startX)(startY))
+  def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.x)(startCoords.y))
   def distances(grid: Grid, startX: Int, startY: Int): Grid = {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
-    val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq
+    val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => 
+      c.copy(
+        value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3),
+        onSolutionPath = dist.get(c.coords).isDefined, 
+        distance = dist.get(c.coords).getOrElse(0)
+      )).toSeq
     grid.unflatten(withDinstances)
   }
   def distances(grid: Grid, startCoords: Coordinates): Grid = distances(grid, startCoords.x, startCoords.y)
@@ -57,15 +62,27 @@ trait Distance {
       case None => getLongestPath(grid).map(kv => kv._1 -> kv._2.toString()).toMap
       case Some(c) => getLongestPath(grid).map(kv => kv._1 -> c.toString()).toMap
     }
-    val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(path.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq
-    grid.unflatten(withDinstances)
+    val withDistances: Seq[Cell] = grid.cells.flatten.map(c => 
+      c.copy(
+        value = pad(path.get(c.coords).getOrElse(" ").toString(), ' ', 3),
+        onSolutionPath = path.get(c.coords).isDefined, 
+        distance = try {
+          path.get(c.coords).getOrElse("0").toInt
+        } catch {
+          case _: java.lang.NumberFormatException => 0
+        }
+    )).toSeq
+    grid.unflatten(withDistances)
   }
   def getPathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Map[Coordinates, Int] = {
+  // def getPathTo(grid: Grid, goalX: Int, goalY: Int, startX: Int, startY: Int): Map[Coordinates, Int] = {
+  // def getPathTo(grid: Grid, goalY: Int, goalX: Int, startY: Int, startX: Int): Map[Coordinates, Int] = {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     var current: Coordinates = Coordinates(goalX, goalY)
     var breadcrumbs: Map[Coordinates, Int] = Map(current -> dist(current))
     while (current != Coordinates(startX, startY)) {
-      for (neighbor <- grid.get(current).linked) {
+      // for (neighbor <- grid.get(current).linked) {
+      for (neighbor <- grid.cells(current.x)(current.y).linked) {
         if (dist(neighbor) < dist(current)) {
           breadcrumbs = breadcrumbs ++ Map(neighbor -> dist(neighbor))
           current = neighbor
@@ -79,8 +96,17 @@ trait Distance {
       case None => getPathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> kv._2.toString()).toMap
       case Some(c) => getPathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> c.toString()).toMap
     }
-    val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => c.copy(value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3))).toSeq
-    grid.unflatten(withDinstances)
+    val withDistances: Seq[Cell] = grid.cells.flatten.map(c => 
+      c.copy(
+        value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3),
+        onSolutionPath = shortestPath.get(c.coords).isDefined, 
+        distance = try {
+          shortestPath.get(c.coords).getOrElse("0").toInt
+        } catch {
+          case _: java.lang.NumberFormatException => 0
+        }
+      )).toSeq
+    grid.unflatten(withDistances)
   }
   def pathTo(grid: Grid, startCoords: Coordinates, goalCoords: Coordinates): Grid = pathTo(grid, startCoords.x, startCoords.y, goalCoords.x, goalCoords.y)
 
