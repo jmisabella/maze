@@ -93,7 +93,10 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     println(grid.asci())
     When("determining distances from upper-left cell to each other cell")
     val result = sidewinder.distance.distances(grid, 0, 0)
-    println(result)
+    Then("exactly 1 cell has distance of 0") 
+    result.count(c => c.distance == 0) should equal (1)
+    info(result.asci())
+    info(result.toString())
   }
 
 
