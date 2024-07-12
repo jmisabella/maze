@@ -33,10 +33,10 @@ trait Distance {
     }
     distances
   }
-  // def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.get(startX, startY))
-  // def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.get(startCoords))
   def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startX)(startY))
   def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.x)(startCoords.y))
+  // def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startY)(startX))
+  // def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.y)(startCoords.x))
   def distances(grid: Grid, startX: Int, startY: Int): Grid = {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => 
@@ -96,14 +96,15 @@ trait Distance {
       case None => getPathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> kv._2.toString()).toMap
       case Some(c) => getPathTo(grid, startX, startY, goalX, goalY).map(kv => kv._1 -> c.toString()).toMap
     }
+    val distances: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDistances: Seq[Cell] = grid.cells.flatten.map(c => 
       c.copy(
         value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3),
         onSolutionPath = shortestPath.get(c.coords).isDefined, 
         distance = try {
-          shortestPath.get(c.coords).getOrElse("0").toInt
+          distances.get(c.coords).getOrElse(grid.columns * grid.rows)
         } catch {
-          case _: java.lang.NumberFormatException => 0
+          case _: java.lang.NumberFormatException => grid.columns * grid.rows
         }
       )).toSeq
     grid.unflatten(withDistances)

@@ -25,7 +25,8 @@ class GeneratorSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 14x20 maze using Sidewinder algorithm from a request" in {
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(14, 20, Algorithm.Sidewinder, Coordinates(0, 13), Coordinates(19, 0))
+    // val request = MazeRequest(14, 20, Algorithm.Sidewinder, Coordinates(0, 13), Coordinates(19, 0))
+    val request = MazeRequest(14, 20, Algorithm.Sidewinder, Coordinates(0, 19), Coordinates(13, 0))
     When("generating the grid")
     val grid: Grid = Generator.generate(request)
     Then("grid should be generated as 14x20")
@@ -37,7 +38,8 @@ class GeneratorSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 5x10 maze using Sidewinder algorithm from a request" in {
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(5, 10, Algorithm.Sidewinder, Coordinates(0, 4), Coordinates(9, 0))
+    // val request = MazeRequest(5, 10, Algorithm.Sidewinder, Coordinates(0, 4), Coordinates(9, 0))
+    val request = MazeRequest(5, 10, Algorithm.Sidewinder, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
     val grid: Grid = Generator.generate(request)
     Then("grid should be generated as 5x10")

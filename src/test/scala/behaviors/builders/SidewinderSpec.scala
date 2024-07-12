@@ -135,6 +135,8 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "generate a 5x10 maze using Sidewinder and print it to screen" in {
+    // BUG // TODO: Generator.generate(Grid) preserves correct x,y coords in Cells
+    // BUG // TODO: however Generator.generate(MazeRequest) incorrectly mixes up x,y coords in Cells
     Given("5x10 grid")
     val grid = Grid(10, 5, Coordinates(0, 9), Coordinates(4, 0))
     When("generating maze using Sidewinder")
