@@ -41,24 +41,44 @@ object Generator {
       case Algorithm.Sidewinder => sidewinder
       case a => throw new IllegalArgumentException(s"Unexpected algorithm [$a]")
     }
+    // request.mazeType match {
+    //   case MazeType.Unsolved => generator.generate(request.width, request.height, request.start, request.goal)
+    //   case MazeType.DistanceMap => {
+    //     generator.distance.distances(
+    //       generator.generate(request.width, request.height, request.start, request.goal)
+    //       , request.start.x
+    //       , request.start.y)
+    //   }
+    //   case MazeType.Solved => {
+    //     generator.distance.pathTo( 
+    //       generator.distance.distances(
+    //         generator.generate(request.width, request.height, request.start, request.goal)
+    //         , request.start.x
+    //         , request.start.y)
+    //       , request.start.x
+    //       , request.start.y 
+    //       , request.goal.x
+    //       , request.goal.y)
+    //   }
+    // } 
     request.mazeType match {
       case MazeType.Unsolved => generator.generate(request.width, request.height, request.start, request.goal)
       case MazeType.DistanceMap => {
         generator.distance.distances(
           generator.generate(request.width, request.height, request.start, request.goal)
-          , 0
-          , 0)
+          , request.start.y
+          , request.start.x)
       }
       case MazeType.Solved => {
         generator.distance.pathTo( 
           generator.distance.distances(
             generator.generate(request.width, request.height, request.start, request.goal)
-            , 0
-            , request.width - 1)
-          , 0
-          , request.width - 1 
-          , request.height - 1
-          , 0)
+            , request.start.y
+            , request.start.x)
+          , request.start.y
+          , request.start.x 
+          , request.goal.y
+          , request.goal.x)
       }
     } 
   }
