@@ -26,6 +26,8 @@ case class Grid(
   // retrieve column
   def column(x: Int): List[Cell] = (for (i <- 0 until rows) yield cells(i)(x)).toList
 
+  def size(): Int = rows * columns
+
   // given a cell (which tracks its own x,y coordinates) updates grid's cell at those coordinates
   def set(cell: Cell): Grid = {
     this.copy(cells = (for (row <- this.cells) yield {

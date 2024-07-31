@@ -11,7 +11,9 @@ case class Neighbors(
   southeast: Option[Coordinates] = None,
   southwest: Option[Coordinates] = None,
   northwest: Option[Coordinates] = None
-)
+) {
+  def toSeq(): Seq[Coordinates] = Seq(north, east, south, west).filter(_.isDefined).map(_.get)
+}
 
 object Neighbors {
   implicit val format: Format[Neighbors] = Json.format[Neighbors]
