@@ -6,78 +6,107 @@ import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 import maze.classes.Neighbors
 
+import java.util.Random // TODO: remove
+
 trait Wilsons extends Generator {
   type LINKAGE <: Linkage
   val linker: LINKAGE
 
-  // def getRandomPath(startCell: Cell, unvisited: Seq[Cell], random: RNG): (Seq[Cell], RNG) = {
-  //   var path = Seq(startCell)
-  //   var seed = random 
-  //   while (unvisited.contains(startCell)) {
-  //     val neighbors: Seq[Coordinates] = startCell.neighbors.toSeq
-  //     val (randomIndex, seed1): (Int, RNG) = random.boundedPositiveInt(neighbors.length)
-  //     seed = seed1
-  //     val cell: Cell = unvisited.filter(c => c.coords == neighbors(randomIndex)).head
-  //     if (!unvisited.contains(cell)) {
-  //       // found rest of the maze
-  //       path = path ++ Seq(cell)
-  //       return (path, seed)
-  //     } else if (path.contains(cell)) {
-  //       // interset with self, remove loop from the path
-  //       path = for (i <- 0 to path.indexOf(cell)) yield path(i)
-  //     } else {
-  //       path = path ++ Seq(cell)
-  //     }
-  //   }
-  //   (path, seed)
-  // }
-  override def generate(grid: Grid): Grid = {
-
-    ???
+  private def getUnvisitedNeighbors(cell: Cell, visited: Array[Array[Boolean]], grid: Grid): List[Cell] = {
+    // def reverseCoords(coords: Coordinates): Coordinates = Coordinates(coords.y, coords.x) // TODO: remove after the coords reverse bug is fixed
+    val neighbors = List(
+      (cell.coords.x, cell.coords.y - 1, cell.neighbors.north.isDefined, (c: Cell) => cell.linked.contains(c.neighbors.south.getOrElse(Coordinates(-1, -1)))), // North
+      (cell.coords.x, cell.coords.y + 1, cell.neighbors.south.isDefined, (c: Cell) => cell.linked.contains(c.neighbors.north.getOrElse(Coordinates(-1, -1)))), // South
+      (cell.coords.x - 1, cell.coords.y, cell.neighbors.west.isDefined, (c: Cell) => cell.linked.contains(c.neighbors.east.getOrElse(Coordinates(-1, -1)))),   // West
+      (cell.coords.x + 1, cell.coords.y, cell.neighbors.east.isDefined, (c: Cell) => cell.linked.contains(c.neighbors.west.getOrElse(Coordinates(-1, -1))))   // East
+      // (cell.coords.x, cell.coords.y - 1, cell.neighbors.north.isDefined, (c: Cell) => cell.linked.contains(reverseCoords(c.neighbors.south.getOrElse(Coordinates(-1, -1))))), // North
+      // (cell.coords.x, cell.coords.y + 1, cell.neighbors.south.isDefined, (c: Cell) => cell.linked.contains(reverseCoords(c.neighbors.north.getOrElse(Coordinates(-1, -1))))), // South
+      // (cell.coords.x - 1, cell.coords.y, cell.neighbors.west.isDefined, (c: Cell) => cell.linked.contains(reverseCoords(c.neighbors.east.getOrElse(Coordinates(-1, -1))))),   // West
+      // (cell.coords.x + 1, cell.coords.y, cell.neighbors.east.isDefined, (c: Cell) => cell.linked.contains(reverseCoords(c.neighbors.west.getOrElse(Coordinates(-1, -1)))))   // East
+    ).collect {
+      case (nx, ny, wallOpen, connect) if nx >= 0 && ny >= 0 && nx < grid.columns && ny < grid.rows && !visited(nx)(ny) =>
+        if (wallOpen) {
+          connect(grid.cells(nx)(ny))
+          // connect(grid.cells(ny)(nx))
+        }
+        grid.cells(nx)(ny)
+        // grid.cells(ny)(nx)
+    }
+    println("UNVISITED NEIGHBORS: " + neighbors.mkString(","))
+    neighbors
   }
-  // override def generate(grid: Grid): Grid = {
-  //   var flattenedResults: Seq[Cell] = Nil
-  //   var nextGrid: Grid = grid
-  //   var unvisited: Seq[Cell] = nextGrid.flatten()
-  //   val (randomFirstIndex, seed1): (Int, RNG)  = nextGrid.randomInt(unvisited.length)
-  //   var first: Cell = unvisited(randomFirstIndex)
-  //   nextGrid = nextGrid.copy(seed = seed1)
-  //   unvisited = unvisited.filter(c => c.coords != first.coords)
-  //   while (!unvisited.isEmpty) {
-  //     val (randomCellIndex1, seed2): (Int, RNG)  = nextGrid.randomInt(unvisited.length)
-  //     var cell: Cell = unvisited(randomCellIndex1)
-  //     nextGrid = nextGrid.copy(seed = seed2) 
-  //     var path: Seq[Cell] = Seq(cell)
-  //     while (unvisited.contains(cell)) {
-  //       val (randomCellIndex2, seed3): (Int, RNG)  = nextGrid.randomInt(unvisited.length)
-  //       cell = unvisited(randomCellIndex2)
-  //       if (path.map(_.coords).contains(cell.coords)) {
-  //         // loop erase
-  //         path = for (i <- 0 to path.map(c => c.coords).indexOf(cell.coords)) yield path(i) // TODO: until (exclusive) or to (inclusive) ???
-  //       } else {
-  //         path = path ++ Seq(cell)
-  //       }
-  //     }
-  //     // TODO: should this be to (inclusive) or until (exclusive) ???
-  //     val linkedForwards = for (i <- 0 to path.length - 2) yield {
-  //       val cell = path(i)
-  //       val neighbor = path(i + 1)
-  //       unvisited = unvisited.filter(c => c.coords != cell.coords) 
-  //       linker.link(cell, neighbor, bidi=true).head
-  //     }
-  //     val linkedBiDirectional = for (i <- 0 to linkedForwards.length - 2) yield {
-  //       val reversed = linkedForwards.reverse
-  //       val cell = reversed(i)
-  //       val neighbor = reversed(i + 1)
-  //       unvisited = unvisited.filter(c => c.coords != cell.coords) 
-  //       linker.link(cell, neighbor, bidi=true).head
-  //     }
-  //     flattenedResults = flattenedResults ++ linkedBiDirectional
-  //   }
-  //   nextGrid.unflatten(flattenedResults)
-  // }
 
+  private def connectCells(path: Seq[Cell], grid: Grid): Grid = {
+    var nextGrid: Grid = grid
+    for (i <- 0 until path.length - 1) {
+      var current = path(i)
+      var next = path(i + 1)
+
+      val linked = linker.link(Seq(current, next))
+
+      current = linked.head
+      next = linked.tail.head
+      nextGrid = nextGrid.set(current).set(next)
+      println("LINKED")
+    }
+    nextGrid
+  }
+
+
+  override def generate(grid: Grid): Grid = {
+    var nextGrid: Grid = grid
+    val cells: Array[Array[Cell]] = nextGrid.cells
+    val random = new Random()
+    val (width, height): (Int, Int) = (nextGrid.columns, nextGrid.rows)
+
+    val visited = Array.fill(width, height)(false)
+    val stack = scala.collection.mutable.Stack[Cell]()
+
+    // Start from a random cell
+    val startX = random.nextInt(width)
+    val startY = random.nextInt(height)
+    var currentCell = cells(startX)(startY)
+    stack.push(currentCell)
+    visited(startX)(startY) = true
+
+    while (stack.nonEmpty) {
+      // Perform random walks until we find a cell that has already been visited
+      currentCell = stack.pop()
+      val path = scala.collection.mutable.ListBuffer[Cell]()
+      path += currentCell
+
+      var break = false
+      while (!break) {
+        // Get the neighbors
+        val neighbors = getUnvisitedNeighbors(currentCell, visited, nextGrid)
+
+        if (neighbors.isEmpty) {
+          // No unvisited neighbors; break the loop
+          if (path.length > 1) {
+            nextGrid = connectCells(path.toSeq, nextGrid)
+          }
+          if (stack.isEmpty) {
+            break = true
+          }
+          if (!break) {
+            currentCell = stack.pop()
+            path.clear()
+            path += currentCell
+          }
+        } else {
+          if (!break) {
+            // Randomly select a neighbor
+            val nextCell = neighbors(random.nextInt(neighbors.length))
+            path += nextCell
+            stack.push(currentCell)
+            currentCell = nextCell
+            visited(currentCell.coords.x)(currentCell.coords.y) = true
+            // TODO: outstanding bug in which cells' coords are reversed
+            // visited(currentCell.coords.y)(currentCell.coords.x) = true
+          } 
+        }
+      }
+    }
+    nextGrid
+  }
 }
-
-
-

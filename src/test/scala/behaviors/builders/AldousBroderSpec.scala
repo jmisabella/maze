@@ -19,7 +19,7 @@ class AldousBroderSpec extends AnyFlatSpec with GivenWhenThen {
     override val distance = _distance
   }
   
-  "AldousBroder" should "generate a 5x5 maze using Binary Tree and print it to screen" in {
+  "AldousBroder" should "generate a 5x5 maze using AldousBroder and print it to screen" in {
     Given("5x5 grid")
     val grid = Grid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     When("generating maze using AldousBroder")

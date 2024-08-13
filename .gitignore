@@ -28,3 +28,5 @@ server.pid
 .metals/.backup_logs/
 
 .metals/.reports/metals-full/
+
+.metals/.tmp/classpath_A11453CDEAAA3F09244A60798BD08C2D.jar
