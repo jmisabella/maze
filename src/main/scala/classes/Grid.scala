@@ -67,7 +67,7 @@ case class Grid(
     val merged: Seq[Option[Cell]] = grouped.foldLeft(Nil: Seq[Option[Cell]]) {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
-        println("COORDS: " + coords)
+        // println("COORDS: " + coords)
         val visited: Boolean = k._2
         val neighbors: Neighbors = k._3
         val value: String = k._4

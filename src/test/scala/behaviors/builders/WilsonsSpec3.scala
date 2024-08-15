@@ -32,7 +32,8 @@ class Maze2(val width: Int, val height: Int) {
     // Start from a random cell
     val startX = random.nextInt(width)
     val startY = random.nextInt(height)
-    var currentCell = cells(startX)(startY)
+    // var currentCell = cells(startX)(startY)
+    var currentCell = cells(startY)(startX)
     stack.push(currentCell)
     visited(startX)(startY) = true
 
@@ -134,9 +135,11 @@ class Maze2(val width: Int, val height: Int) {
     ).collect {
       case (nx, ny, wallOpen, connect) if nx >= 0 && ny >= 0 && nx < width && ny < height && !visited(nx)(ny) =>
         if (wallOpen) {
-          connect(cells(nx)(ny))
+          // connect(cells(nx)(ny))
+          connect(cells(ny)(nx))
         }
-        cells(nx)(ny)
+        // cells(nx)(ny)
+        cells(ny)(nx)
     }
     println("UNVISITED NEIGHBORS: " + neighbors.mkString(","))
     neighbors
@@ -166,15 +169,18 @@ class Maze2(val width: Int, val height: Int) {
 
       // Remove walls between current and next cell
       val linked = linker.link(Seq(current, next))
+      println("LINKED: " + linked)
       current = linked.head.copy(linked = current.linked ++ Set(next.coords)) 
       next = linked.tail.head.copy(linked = next.linked ++ Set(current.coords))
       // current = linked.head.copy(linked = current.linked ++ Set(Coordinates(next.coords.y, next.coords.x))) 
       // next = linked.tail.head.copy(linked = next.linked ++ Set(Coordinates(current.coords.y, next.coords.x)))
       println("LINKED")
-      // println(Set(next.coords))
-      // println(Set(current.coords))
-      // println(current.copy(linked = Set(next.coords)).linked)
-      // println(next.copy(linked = Set(current.coords)).linked)
+      println(Set(next.coords))
+      println(Set(current.coords))
+      println(current.copy(linked = Set(next.coords)).linked)
+      println(next.copy(linked = Set(current.coords)).linked)
+      println(cells(current.coords.y)(current.coords.x))
+      println(cells(next.coords.y)(next.coords.x))
       // println(cells(current.coords.x)(current.coords.y))
       // println(cells(next.coords.x)(next.coords.y))
       // if (current.coords.x == next.coords.x) {

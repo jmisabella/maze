@@ -1,8 +1,8 @@
 package maze.behaviors
 
 import maze.behaviors.{ Linkage, Distance }
-import maze.behaviors.builders.BinaryTree
-import maze.classes.{ Cell, Grid, Coordinates }
+import maze.behaviors.builders.{ BinaryTree, Generator }
+import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm }
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
@@ -125,5 +125,40 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
   //     dist.keySet should contain (cell.coords) 
   //   }
   // }
+  
+  it should "honor start and goal coordinates specified in MazeRequest when generating a large non-square grid" in {
+    case object module extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
+    Given("JSON for a 52x29 BinaryTree request")
+    val json = """{"width":"52","height":"29","algorithm":"BinaryTree","startX":"14","startY":"0","goalX":"14","goalY":"28","mazeType":"Solved"}""" 
+    When("generating the grid")
+    val request: MazeRequest = MazeRequest(json)
+    var grid: Grid = Generator.generate(request)
+    Then("grid's start should be southwest")
+    grid.startCoords should equal (Coordinates(0, request.height - 1))
+    info("START COORDS: " + grid.startCoords.toString())
+    Then("grid's goal should be northeast")
+    grid.goalCoords should equal (Coordinates(request.width - 1, 0))
+    Then("exactly one cell should be the goal cell (isGoal == true)")
+    grid.count(c => c.isGoal) should equal (1)
+    Then("exactly one cell should be the starting cell (isStart == true)")
+    grid.count(c => c.isStart) should equal (1)
+    Then("grid's start cell at 9,0 should have isStart set to true")
+    grid.get(0, 9).isStart should be (true)
+    Then("grid's 0,0 cell should have isStart set to false")
+    grid.get(0, 0).isStart should be (false)
+    Then("grid's goal cell at 0,4 should have isGoal set to true")
+    grid.get(4, 0).isGoal should be (true)
+    Then("grid's start cell at 9,0 should have isGoal set to false")
+    grid.get(0, 9).isGoal should be (false)
+    info("\n" + grid.asci())
+    info(grid.toString())
+  }
 
 }
