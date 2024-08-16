@@ -14,7 +14,7 @@ trait Wilsons extends Generator {
 
   def generate(grid: Grid): Grid = {
     var nextGrid = grid 
-    val unvisited = scala.collection.mutable.Set[Cell]()
+    var unvisited = scala.collection.mutable.Set[Cell]()
     val startCell = nextGrid.get(nextGrid.startCoords.x, nextGrid.startCoords.y)
     
     // Mark all cells as unvisited except for the starting cell
@@ -27,7 +27,6 @@ trait Wilsons extends Generator {
       println("MAKING RANDOM WALK ON UNVISITED CELLS")
       val currentCell = unvisited.head
       val path = randomWalk(currentCell, unvisited, nextGrid, random)
-
       if (path.nonEmpty) {
         var previousCell = path.head
         println("PATH IS NOT EMPTY: " + path.mkString(","))
@@ -39,19 +38,31 @@ trait Wilsons extends Generator {
               // throw new Exception("LINKING!")
               println("LINKING")
               previousCell = previousCell.copy(linked = previousCell.linked ++  Set(nextCell.coords))
-              println("PREV CELL: " + previousCell)
-              println("PREV CELL LINKED: " + previousCell.linked.mkString(","))
               nextCell = nextCell.copy(linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
-              println("NEXT CELL: " + nextCell)
-              println("NEXT CELL LINKED: " + nextCell.linked.mkString(","))
               nextGrid = nextGrid.set(previousCell)
               nextGrid = nextGrid.set(nextCell)
               println(nextGrid.asci())
               previousCell = nextCell
+              if (path.length == 1) {
+                var lastCell: Cell = path.head
+                nextCell = nextCell.copy(linked = nextCell.linked ++ Set(lastCell.coords))
+                lastCell = lastCell.copy(linked = lastCell.linked ++ Set(nextCell.coords))
+                nextGrid = nextGrid.set(nextCell)
+                nextGrid = nextGrid.set(lastCell)
+              }
             }
           }
           // Mark the cell as visited
+          val countBeforeRemoval = unvisited.toSeq.length
+          println(s"UNVISITED COUNT BEFORE REMOVAL: ${unvisited.toSeq.length}") 
+          // unvisited.remove(cell.copy(linked = Set()))
           unvisited.remove(cell)
+          // unvisited = unvisited.filter(c => c.coords == cell.coords)
+          val countAfterRemoval = unvisited.toSeq.length
+          println(s"UNVISITED COUNT AFTER REMOVAL: ${unvisited.toSeq.length}") 
+          if (countBeforeRemoval > 0 && countBeforeRemoval == countAfterRemoval) {
+            println("COORDS WERE NOT MARKED AS VISITED: " + cell.coords)
+          }
         }
       } else {
         println("PATH IS EMPTY, REMOVE ANOTHER CELL FROM UNVISITED")
@@ -94,7 +105,6 @@ trait Wilsons extends Generator {
         visitedDuringWalk.add(currentCell)
       }
     }
-    throw new Exception("RETURNING NON-EMPTY PATH")
     println("RANDOM WALK: Returning path: " + path.mkString(", "))
     path.toList
   }
