@@ -60,7 +60,6 @@ trait Wilsons extends Generator {
               previousCell = previousCell.copy(linked = previousCell.linked ++  Set(nextCell.coords))
               nextCell = nextCell.copy(linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
               nextGrid = nextGrid.set(previousCell).set(nextCell)
-              nextGrid = nextGrid.set(nextCell)
               previousCell = nextCell
               if (path.length == 1) {
                 var lastCell: Cell = path.head
@@ -78,7 +77,8 @@ trait Wilsons extends Generator {
         }
       } else {
         // If no path was found, simply remove the current cell from unvisited
-        unvisited.remove(currentCell)
+        // unvisited.remove(currentCell)
+        // // throw new Exception("**************************** NO PATH WAS FOUND FOR CELL " + currentCell.coords)
       }
     }
     println("RETURNING GRID") 
