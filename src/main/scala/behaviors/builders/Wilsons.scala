@@ -16,9 +16,10 @@ trait Wilsons extends Generator {
     var nextGrid = grid 
     var unvisited = scala.collection.mutable.Set[Cell]()
     val startCell = nextGrid.get(nextGrid.startCoords.x, nextGrid.startCoords.y)
-    
+   
     // Mark all cells as unvisited except for the starting cell
     nextGrid.flatten().foreach(cell => unvisited.add(cell))
+    println("REMOVING START CELL: " + startCell.coords)
     unvisited.remove(startCell)
 
     val random = new Random()
@@ -35,7 +36,6 @@ trait Wilsons extends Generator {
             var nextCell = nextGrid.get(cell.coords.x, cell.coords.y)
             println("CHECKING WHETHER CELL IS LINKED")
             if (!previousCell.isLinked(nextCell)) {
-              // throw new Exception("LINKING!")
               println("LINKING")
               previousCell = previousCell.copy(linked = previousCell.linked ++  Set(nextCell.coords))
               nextCell = nextCell.copy(linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
@@ -53,16 +53,32 @@ trait Wilsons extends Generator {
             }
           }
           // Mark the cell as visited
-          val countBeforeRemoval = unvisited.toSeq.length
-          println(s"UNVISITED COUNT BEFORE REMOVAL: ${unvisited.toSeq.length}") 
-          // unvisited.remove(cell.copy(linked = Set()))
+          // //// before cell's removed, ensure it is linked
+          // if (grid.get(cell).linked.isEmpty) {
+          //   println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+          //   println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+          //   val unvisitedNeighbors = nextGrid.unlinkedNeighbors(cell)
+          //   var neighbor: Cell = unvisitedNeighbors(random.nextInt(unvisitedNeighbors.length)) 
+          //   var linked: Cell = cell.copy(linked = cell.linked ++ Set(neighbor.coords))
+          //   neighbor = neighbor.copy(linked = neighbor.linked ++ Set(linked.coords))
+          //   // nextGrid = nextGrid.set(linked)
+          //   // nextGrid = nextGrid.set(neighbor)
+          //   // unvisited.remove(linked) // ???
+          //   // unvisited.remove(neighbor) // ???
+          // // } else {
+          // //   unvisited.remove(cell)
+          // }
           unvisited.remove(cell)
-          // unvisited = unvisited.filter(c => c.coords == cell.coords)
-          val countAfterRemoval = unvisited.toSeq.length
-          println(s"UNVISITED COUNT AFTER REMOVAL: ${unvisited.toSeq.length}") 
-          if (countBeforeRemoval > 0 && countBeforeRemoval == countAfterRemoval) {
-            println("COORDS WERE NOT MARKED AS VISITED: " + cell.coords)
-          }
+          // val countBeforeRemoval = unvisited.toSeq.length
+          // println(s"UNVISITED COUNT BEFORE REMOVAL: ${unvisited.toSeq.length}") 
+          // println("************************************** REMOVING VISITED CELL: " + cell)
+          // println("************************************** CELL STATE IN THE GRID: " + nextGrid.get(cell.coords.x, cell.coords.y))
+          // unvisited.remove(cell)
+          // val countAfterRemoval = unvisited.toSeq.length
+          // println(s"UNVISITED COUNT AFTER REMOVAL: ${unvisited.toSeq.length}") 
+          // if (countBeforeRemoval > 0 && countBeforeRemoval == countAfterRemoval) {
+          //   throw new Exception("COORDS WERE NOT MARKED AS VISITED: " + cell.coords)
+          // }
         }
       } else {
         println("PATH IS EMPTY, REMOVE ANOTHER CELL FROM UNVISITED")
@@ -71,36 +87,56 @@ trait Wilsons extends Generator {
       }
     }
     println("RETURNING GRID") 
+    println("REMAINING UNVISITED: " + grid.flatten().filter(c => c.linked.isEmpty)) 
     nextGrid // Return the modified grid
   }
+  
+  // private def randomWalk(startCell: Cell, unvisited: scala.collection.mutable.Set[Cell], grid: Grid, random: Random): List[Cell] = {
+  //   println("BEGIN RANDOM WALK")
+  //   var currentCell = startCell
+  //   val path = scala.collection.mutable.ListBuffer[Cell](currentCell)
+  //   val visitedDuringWalk = scala.collection.mutable.Set[Cell](currentCell)
+  //   while (path.forall(cell => cell.linked.isEmpty)) {
+  //     val unvisitedNeighbors: Seq[Cell] = grid.unlinkedNeighbors(currentCell)
+  //     println(s"RANDOM WALK: Current cell: $currentCell, determining unvisited neighbors...")
+  //     if (unvisitedNeighbors.isEmpty) {
+  //       println("RANDOM WALK: No more unvisited neighbors, ending walk.")
+  //       return path.toList
+  //     } else {
+  //       println("RANDOM WALK: Selecting a random unvisited neighbor...")
+  //       currentCell = unvisitedNeighbors(random.nextInt(unvisitedNeighbors.size))
+  //       path += currentCell
+  //       visitedDuringWalk.add(currentCell)
+  //     }
+  //   }
+  //   println("RANDOM WALK: Returning path: " + path.mkString(", "))
+  //   path.toList
+  // }
 
   private def randomWalk(startCell: Cell, unvisited: scala.collection.mutable.Set[Cell], grid: Grid, random: Random): List[Cell] = {
     println("BEGIN RANDOM WALK")
     var currentCell = startCell
     val path = scala.collection.mutable.ListBuffer[Cell](currentCell)
     val visitedDuringWalk = scala.collection.mutable.Set[Cell](currentCell)
-
     while (path.forall(cell => cell.linked.isEmpty)) {
       val neighbors = currentCell.availableNeighbors()
       println(s"RANDOM WALK: Current cell: $currentCell, determining unvisited neighbors...")
-
       val unvisitedNeighbors = neighbors.flatMap { coords =>
         val neighborCell = grid.get(coords.x, coords.y)
         if (unvisited.contains(neighborCell) && !visitedDuringWalk.contains(neighborCell)) {
           println(s"RANDOM WALK: Adding unvisited neighbor $neighborCell")
           Some(neighborCell)
         } else {
-          println(s"RANDOM WALK: Neighbor $neighborCell is either visited or not unvisited.")
           None
+         
         }
       }
-
       if (unvisitedNeighbors.isEmpty) {
         println("RANDOM WALK: No more unvisited neighbors, ending walk.")
         return path.toList
       } else {
         println("RANDOM WALK: Selecting a random unvisited neighbor...")
-        currentCell = unvisitedNeighbors(random.nextInt(unvisitedNeighbors.size))
+        currentCell = unvisitedNeighbors(random.nextInt(unvisitedNeighbors.length))
         path += currentCell
         visitedDuringWalk.add(currentCell)
       }

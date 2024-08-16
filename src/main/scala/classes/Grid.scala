@@ -21,6 +21,7 @@ case class Grid(
   // def get(x: Int, y: Int): Cell = cells(x)(y)
   def get(x: Int, y: Int): Cell = cells(y)(x)
   def get(coords: Coordinates): Cell = get(coords.x, coords.y)
+  def get(cell: Cell): Cell = get(cell.coords)
   // retrieve row
   def row(y: Int): List[Cell] = cells(y).toList
   // retrieve column
@@ -45,6 +46,13 @@ case class Grid(
   def links(cell: Cell): Seq[Cell] = (for (c <- cell.linked) yield cells(c.y)(c.x)).toSeq
 
   def linked(cell1: Cell, cell2: Cell): Boolean = cell1.isLinked(cell2)
+
+  // given a cell, returns its neighbor cells
+  def neighbors(cell: Cell): Seq[Cell] = cell.neighbors.toSeq().map(c => get(c.x, c.y))
+  def neighbors(coords: Coordinates): Seq[Cell] = get(coords).neighbors.toSeq().map(c => get(c.x, c.y))
+  // given a cell, returns its unlinked neighbor cells
+  def unlinkedNeighbors(cell: Cell): Seq[Cell] = cell.unlinkedNeighbors().map(c => get(c.x, c.y))
+  def unlinkedNeighbors(coords: Coordinates): Seq[Cell] = get(coords).unlinkedNeighbors().map(c => get(c.x, c.y))
 
   def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
   def padLeft(s: String, c: Char, n: Int): String = n match {

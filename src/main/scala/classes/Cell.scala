@@ -38,6 +38,8 @@ case class Cell(
     // 0 
     case (None, None, None, None) => Nil
   }
+  def unlinkedNeighbors(): Seq[Coordinates] = availableNeighbors().filter(c => !isLinked(c))
+
   def isLinked(cell: Cell, bidi: Boolean = true): Boolean = bidi match {
     case false => linked.contains(cell.coords)
     case true => linked.contains(cell.coords) && cell.linked(this.coords)
