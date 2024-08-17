@@ -53,9 +53,9 @@ trait Wilsons extends Generator {
       if (path.nonEmpty) {
         var previousCell = path.head
         path.foreach { cell =>
-          // if (cell.coords != previousCell.coords) {
+          if (cell.coords != previousCell.coords) {
             var nextCell = nextGrid.get(cell.coords.x, cell.coords.y)
-            // if (!previousCell.isLinked(nextCell)) {
+            if (!previousCell.isLinked(nextCell)) {
               println("LINKING")
               previousCell = previousCell.copy(linked = previousCell.linked ++  Set(nextCell.coords))
               nextCell = nextCell.copy(linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
@@ -67,8 +67,8 @@ trait Wilsons extends Generator {
                 lastCell = lastCell.copy(linked = lastCell.linked ++ Set(nextCell.coords))
                 nextGrid = nextGrid.set(nextCell).set(lastCell)
               }
-            // }
-          // }
+            }
+          }
           // Mark the cell as visited
           if (grid.get(cell).linked.isEmpty) {
             println("CELL " + cell.coords + " IS NOT LINKED, YET IS CONSIDERED VISITED")
@@ -84,6 +84,17 @@ trait Wilsons extends Generator {
     println("RETURNING GRID") 
     println("REMAINING UNVISITED: " + grid.flatten().filter(c => c.linked.isEmpty))
     nextGrid // Return the modified grid
+    for (cell <- nextGrid.flatten()) {
+      if (cell.linked.filter(c => c != cell.coords).isEmpty ) {
+      // if (cell.linked.toSeq.length <= 1) {
+        val neighbors = nextGrid.unlinkedNeighbors(cell)
+        var neighbor = neighbors(random.nextInt(neighbors.length))
+        val linked = cell.copy(linked = cell.linked ++ Set(neighbor.coords))
+        neighbor = neighbor.copy(linked = neighbor.linked ++ Set(linked.coords))
+        nextGrid = nextGrid.set(linked).set(neighbor)
+      }
+    }
+    nextGrid
   }
 
 

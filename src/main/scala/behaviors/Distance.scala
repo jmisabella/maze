@@ -12,7 +12,7 @@ trait Distance {
   // evenly pad left and right; left has 1 extra padding in case of an odd length 
   def pad(s:String, c: Char, n:Int): String = {
     val left = (n - s.length) / 2
-    val right = n - left - s.length 
+    val right = n - left - s.length
     c.toString * left + s + c.toString * right
   }
   def distances(grid: Grid, startCell: Cell): Map[Coordinates, Int] = {

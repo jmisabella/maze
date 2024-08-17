@@ -67,6 +67,11 @@ case class Grid(
     c.toString * left + s + c.toString * right
   }
 
+  def isolatedRegions(): Seq[Seq[Cell]] = {
+
+    ???
+  }
+
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
   // TODO: this method has a bug wherein it transposes the x and y axis 
@@ -118,6 +123,10 @@ case class Grid(
   def filter(p: Cell => Boolean): Grid = withFilter(p)
   def contains[A <: Cell](c: A): Boolean = flatten().contains(c.asInstanceOf[Cell])
   def contains[A <: Cell](cs: Seq[A]): Boolean = flatten().foldLeft(false)((acc, c) => contains(c)) 
+
+  // def unreachableRegions(): Seq[Seq[Cell]] = {
+  //   ???
+  // }
 
   override def toString(): String = {
     var output: String = "{\"rows\":["
@@ -178,87 +187,42 @@ object Grid {
         (for (col <- 0 until grid.columns) yield {
           val coordinates: Coordinates = Coordinates(col, row)
           val cell = grid.cells(row)(col)
-          // val cell = grid.cells(col)(row)
           val north = cell.coords.y match {
             case 0 => None // nothing exists north
-            // case _ => Some((grid.cells(cell.coords.x)(cell.coords.y - 1)).coords)
             case _ => Some((grid.cells(cell.coords.y - 1)(cell.coords.x)).coords)
           }
           val east = cell.coords.x match {
             case x if (x >= grid.columns - 1) => None // nothing exists east
-            // case _ => Some((grid.cells(cell.coords.x + 1)(cell.coords.y)).coords)
             case _ => Some((grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
           }
           val south = cell.coords.y match {
             case y if (y >= grid.rows - 1) => None // nothing exists south
-            // case _ => Some((grid.cells(cell.coords.x)(cell.coords.y + 1)).coords)
             case _ => Some((grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
           }
           val west = cell.coords.x match {
             case 0 => None // nothing exists west
-            // case _ => Some((grid.cells(cell.coords.x - 1)(cell.coords.y)).coords)
             case _ => Some((grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
           }
           val northeast = (cell.coords.x, cell.coords.y) match {
             case (_, 0) => None // nothing exists north
             case (x, _) if (x >= grid.columns - 1) => None // nothing exists east
-            // case (x, y) => Some((grid.cells(cell.coords.x + 1)(cell.coords.y - 1)).coords)
             case (x, y) => Some((grid.cells(cell.coords.y - 1)(cell.coords.x + 1)).coords)
           }
           val southeast = (cell.coords.x, cell.coords.y) match {
              case (_, y) if (y >= grid.rows - 1) => None // nothing exists south
              case (x, _) if (x >= grid.columns - 1) => None // nothing exists east
-             //  case (x, y) => Some((grid.cells(cell.coords.x + 1)(cell.coords.y + 1)).coords)
              case (x, y) => Some((grid.cells(cell.coords.y + 1)(cell.coords.x + 1)).coords)
           }
           val southwest = (cell.coords.x, cell.coords.y) match {
             case (_, y) if (y >= grid.rows - 1) => None // nothing exists south
             case (0, _) => None // nothing exists west
-            // case (x, y) => Some((grid.cells(cell.coords.x - 1)(cell.coords.y + 1)).coords)
             case (x, y) => Some((grid.cells(cell.coords.y + 1)(cell.coords.x - 1)).coords)
           }
           val northwest = (cell.coords.x, cell.coords.y) match {
             case (_, 0) => None // nothing exists north
             case (0, _) => None // nothing exists west
-            // case (x, y) => Some((grid.cells(cell.coords.x - 1)(cell.coords.y - 1)).coords)
             case (x, y) => Some((grid.cells(cell.coords.y - 1)(cell.coords.x - 1)).coords)
           }
-          // val north = cell.coords.x match {
-          //   case 0 => None // nothing exists north
-          //   case _ => Some((grid.cells(cell.coords.x - 1)(cell.coords.y)).coords)
-          // }
-          // val east = cell.coords.y match {
-          //   case y if (y >= grid.columns - 1) => None // nothing exists east
-          //   case _ => Some((grid.cells(cell.coords.x)(cell.coords.y + 1)).coords)
-          // }
-          // val south = cell.coords.x match {
-          //   case x if (x >= grid.rows - 1) => None // nothing exists south
-          //   case _ => Some((grid.cells(cell.coords.x + 1)(cell.coords.y)).coords)
-          // }
-          // val west = cell.coords.y match {
-          //   case 0 => None // nothing exists west
-          //   case _ => Some((grid.cells(cell.coords.x)(cell.coords.y - 1)).coords)
-          // }
-          // val northeast = (cell.coords.x, cell.coords.y) match {
-          //   case (0, _) => None // nothing exists north
-          //   case (_, y) if (y >= grid.columns - 1) => None // nothing exists east
-          //   case (x, y) => Some((grid.cells(cell.coords.x - 1)(cell.coords.y + 1)).coords)
-          // }
-          // val southeast = (cell.coords.x, cell.coords.y) match {
-          //    case (x, _) if (x >= grid.rows - 1) => None // nothing exists south
-          //    case (_, y) if (y >= grid.columns - 1) => None // nothing exists east
-          //    case (x, y) => Some((grid.cells(cell.coords.x + 1)(cell.coords.y + 1)).coords)
-          // }
-          // val southwest = (cell.coords.x, cell.coords.y) match {
-          //   case (x, _) if (x >= grid.rows - 1) => None // nothing exists south
-          //   case (_, 0) => None // nothing exists west
-          //   case (x, y) => Some((grid.cells(cell.coords.x + 1)(cell.coords.y - 1)).coords)
-          // }
-          // val northwest = (cell.coords.x, cell.coords.y) match {
-          //   case (0, _) => None // nothing exists north
-          //   case (_, 0) => None // nothing exists west
-          //   case (x, y) => Some((grid.cells(cell.coords.x - 1)(cell.coords.y - 1)).coords)
-          // }
           cell.copy(
             neighbors = Neighbors(north, east, south, west, northeast, southeast, southwest, northwest),
             isStart = cell.coords == start,
