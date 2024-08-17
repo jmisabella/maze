@@ -40,11 +40,6 @@ class AldousBroderSpec extends AnyFlatSpec with GivenWhenThen {
     // println("START: " + start)
     // println("LINKED: " + linked.mkString("\n"))
 
-    println(generated.isFullyConnected())
-    println("UNREACHABLE: " + generated.unreachable().mkString("\n"))
-
-    val resolved = generated.linkUnreachables()
-    println(resolved.asci())
   }
 
 }

@@ -78,24 +78,23 @@ trait Wilsons extends Generator {
       } else {
         // If no path was found, simply remove the current cell from unvisited
         // unvisited.remove(currentCell)
-        // // throw new Exception("**************************** NO PATH WAS FOUND FOR CELL " + currentCell.coords)
       }
     }
     println("RETURNING GRID") 
     println("REMAINING UNVISITED: " + grid.flatten().filter(c => c.linked.isEmpty))
-    // nextGrid.linkUnreachables() // return modified grid
-    nextGrid // Return the modified grid
-    for (cell <- nextGrid.flatten()) {
-      if (cell.linked.filter(c => c != cell.coords).isEmpty ) {
-      // if (cell.linked.toSeq.length <= 1) {
-        val neighbors = nextGrid.unlinkedNeighbors(cell)
-        var neighbor = neighbors(random.nextInt(neighbors.length))
-        val linked = cell.copy(linked = cell.linked ++ Set(neighbor.coords))
-        neighbor = neighbor.copy(linked = neighbor.linked ++ Set(linked.coords))
-        nextGrid = nextGrid.set(linked).set(neighbor)
-      }
-    }
-    nextGrid
+    nextGrid.linkUnreachables() // return modified grid
+    // nextGrid // Return the modified grid
+    // for (cell <- nextGrid.flatten()) {
+    //   if (cell.linked.filter(c => c != cell.coords).isEmpty ) {
+    //   // if (cell.linked.toSeq.length <= 1) {
+    //     val neighbors = nextGrid.unlinkedNeighbors(cell)
+    //     var neighbor = neighbors(random.nextInt(neighbors.length))
+    //     val linked = cell.copy(linked = cell.linked ++ Set(neighbor.coords))
+    //     neighbor = neighbor.copy(linked = neighbor.linked ++ Set(linked.coords))
+    //     nextGrid = nextGrid.set(linked).set(neighbor)
+    //   }
+    // }
+    // nextGrid
   }
 
 
