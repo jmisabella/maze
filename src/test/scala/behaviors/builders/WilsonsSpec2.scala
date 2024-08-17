@@ -14,11 +14,13 @@ case class Cell(x: Int, y: Int) {
 }
 
 class Maze(val width: Int, val height: Int) {
-  private val cells: Array[Array[Cell]] = Array.tabulate(width, height) { (x, y) => Cell(x, y) }
+  // private val cells: Array[Array[Cell]] = Array.tabulate(width, height) { (x, y) => Cell(x, y) }
+  private val cells: Array[Array[Cell]] = Array.tabulate(height, width) { (y, x) => Cell(x, y) }
   private val random = new Random()
 
   def generateMaze(): Unit = {
-    val visited = Array.fill(width, height)(false)
+    // val visited = Array.fill(width, height)(false)
+    val visited = Array.fill(height, width)(false)
     val stack = scala.collection.mutable.Stack[Cell]()
 
     // Start from a random cell
@@ -26,7 +28,8 @@ class Maze(val width: Int, val height: Int) {
     val startY = random.nextInt(height)
     var currentCell = cells(startX)(startY)
     stack.push(currentCell)
-    visited(startX)(startY) = true
+    // visited(startX)(startY) = true
+    visited(startY)(startX) = true
 
     while (stack.nonEmpty) {
       // Perform random walks until we find a cell that has already been visited
@@ -59,7 +62,8 @@ class Maze(val width: Int, val height: Int) {
             path += nextCell
             stack.push(currentCell)
             currentCell = nextCell
-            visited(currentCell.x)(currentCell.y) = true
+            // visited(currentCell.x)(currentCell.y) = true
+            visited(currentCell.y)(currentCell.x) = true
           } 
         }
       }
@@ -73,11 +77,16 @@ class Maze(val width: Int, val height: Int) {
       (cell.x - 1, cell.y, cell.west, (c: Cell) => c.east),   // West
       (cell.x + 1, cell.y, cell.east, (c: Cell) => c.west)    // East
     ).collect {
-      case (nx, ny, wallOpen, connect) if nx >= 0 && ny >= 0 && nx < width && ny < height && !visited(nx)(ny) =>
+      case (nx, ny, wallOpen, connect) if nx >= 0 && ny >= 0 && nx < width && ny < height && !visited(ny)(nx) =>
         if (wallOpen) {
-          connect(cells(nx)(ny))
+          connect(cells(ny)(nx))
         }
-        cells(nx)(ny)
+        cells(ny)(nx)
+      // case (nx, ny, wallOpen, connect) if nx >= 0 && ny >= 0 && nx < width && ny < height && !visited(nx)(ny) =>
+      //   if (wallOpen) {
+      //     connect(cells(nx)(ny))
+      //   }
+      //   cells(nx)(ny)
     }
     println("UNVISITED NEIGHBORS: " + neighbors.mkString(","))
     neighbors
@@ -113,12 +122,14 @@ class Maze(val width: Int, val height: Int) {
     for (y <- 0 until height) {
       for (x <- 0 until width) {
         // Print the north wall
-        if (cells(x)(y).north) print("+---") else print("+   ")
+        // if (cells(x)(y).north) print("+---") else print("+   ")
+        if (cells(y)(x).north) print("+---") else print("+   ")
       }
       println("+")
       for (x <- 0 until width) {
         // Print the west wall and the cell itself
-        if (cells(x)(y).west) print("|") else print(" ")
+        // if (cells(x)(y).west) print("|") else print(" ")
+        if (cells(y)(x).west) print("|") else print(" ")
         print(" ")
       }
       println("|")

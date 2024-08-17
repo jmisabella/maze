@@ -53,6 +53,9 @@ case class Grid(
   // given a cell, returns its unlinked neighbor cells
   def unlinkedNeighbors(cell: Cell): Seq[Cell] = cell.unlinkedNeighbors().map(c => get(c.x, c.y))
   def unlinkedNeighbors(coords: Coordinates): Seq[Cell] = get(coords).unlinkedNeighbors().map(c => get(c.x, c.y))
+  // given a cell, returns its linked neighbor cells
+  def linkedNeighbors(cell: Cell): Seq[Cell] = cell.linkedNeighbors().map(c => get(c.x, c.y))
+  def linkedNeighbors(coords: Coordinates): Seq[Cell] = get(coords).linkedNeighbors().map(c => get(c.x, c.y))
 
   def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
   def padLeft(s: String, c: Char, n: Int): String = n match {
@@ -67,20 +70,25 @@ case class Grid(
     c.toString * left + s + c.toString * right
   }
 
-  def isolatedRegions(): Seq[Seq[Cell]] = {
+  // def isolatedRegions(): Seq[Seq[Cell]] = {
+  //   ???
+  // }
 
-    ???
-  }
-
+  // def isFullyConnected(grid: Grid): Boolean = {
+  //   val startCell = grid.get(grid.startCoords)
+  //   val visited = scala.collection.mutable.Set[Coordinates]()
+  //   def search(cell: Cell): Unit = {
+  //     cell.linked.map(c => visited += c)
+  //   }
+  // }
+  
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
-  // TODO: this method has a bug wherein it transposes the x and y axis 
   def unflatten(flattened: Seq[Cell]): Grid = {
     val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value, c.distance, c.onSolutionPath))
     val merged: Seq[Option[Cell]] = grouped.foldLeft(Nil: Seq[Option[Cell]]) {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
-        // println("COORDS: " + coords)
         val visited: Boolean = k._2
         val neighbors: Neighbors = k._3
         val value: String = k._4
@@ -124,8 +132,80 @@ case class Grid(
   def contains[A <: Cell](c: A): Boolean = flatten().contains(c.asInstanceOf[Cell])
   def contains[A <: Cell](cs: Seq[A]): Boolean = flatten().foldLeft(false)((acc, c) => contains(c)) 
 
+  // def distances(startCell: Cell): Map[Coordinates, Int] = {
+  //   var distances: Map[Coordinates, Int] = Map(startCell.coords -> 0)
+  //   var frontier: Seq[Cell] = Seq(startCell)
+  //   while (!frontier.isEmpty) {
+  //     var newFrontier: Seq[Cell] = Nil
+  //     for (c <- frontier) {
+  //       for (linked <- c.linked) {
+  //         if (!distances.keySet.contains(linked)) {
+  //           distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
+  //           newFrontier = newFrontier ++ Seq(cells(linked.y)(linked.x))
+  //         }
+  //       }
+  //     }
+  //     frontier = newFrontier
+  //   }
+  //   distances
+  // }
+  
+  def allConnectedCells(startCell: Cell): Seq[Cell] = {
+    var connected: Seq[Cell] = Seq(startCell)
+    var frontier: Seq[Cell] = Seq(startCell)
+    while (!frontier.isEmpty) {
+      var newFrontier: Seq[Cell] = Nil
+      for (c <- frontier) {
+        for (linked <- c.linked) {
+          if (!connected.contains(get(linked))) {
+            connected = connected ++ Seq(get(linked))
+            newFrontier = newFrontier ++ Seq(cells(linked.y)(linked.x))
+          }
+        }
+      }
+      frontier = newFrontier
+    }
+    connected
+  }
+  def reachable(): Seq[Cell] = allConnectedCells(get(startCoords))
+  def unreachable(): Seq[Cell] = flatten().diff(reachable())
+
+  def isFullyConnected(): Boolean = {
+    allConnectedCells(get(startCoords)).size == size()
+  }
+  def isFullyConnected(cell: Cell): Boolean = {
+    allConnectedCells(cell).size == size()
+  }
+
   // def unreachableRegions(): Seq[Seq[Cell]] = {
   //   ???
+  // }
+
+  // def isFullyConnected(grid: Grid): Boolean = {
+  //   val startCell = grid.get(grid.startCoords)
+  //   val visited = scala.collection.mutable.Set[Cell](startCell)
+
+  //   val visited2: Set[Cell] = visited.flatMap(c => grid.linkedNeighbors(c) ).toSet
+
+  //   val visited = scala.collection.mutable.Set[Coordinates](startCell.coords)
+
+  //   val linkedCells = grid.linkedNeighbors()
+
+  //   def dfs(cell: Cell): Unit = {
+  //     if (!visited.contains(cell.coords)) {
+  //       visited.add(cell.coords)
+  //       // grid.unlinkedNeighbors(cell).foreach { neighbor =>
+  //       grid.linkedNeighbors(cell).foreach { neighbor =>
+  //         dfs(neighbor)
+  //       }
+  //     }
+  //   }
+
+  //   dfs(startCell)
+  //   println("START CELL: " + startCell)
+  //   println("VISITED SIZE: " + visited.size) 
+  //   println("GRID SIZE: " + grid.size()) 
+  //   visited.size == (grid.rows * grid.columns)
   // }
 
   override def toString(): String = {

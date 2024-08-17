@@ -26,6 +26,9 @@ class WilsonsSpec extends AnyFlatSpec with GivenWhenThen {
     val generated: Grid = module.generate(grid)
     println(generated.toString())
     println(generated.asci())
+    println(generated.isFullyConnected())
+    
+    println("UNREACHABLE: " + generated.unreachable().mkString("\n"))
   }
 
 }
