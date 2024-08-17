@@ -120,16 +120,16 @@ class Maze(val width: Int, val height: Int) {
     for (y <- 0 until height) {
       for (x <- 0 until width) {
         // Print the north wall
-        // if (cells(x)(y).north) print("+---") else print("+   ")
         if (cells(y)(x).north) print("+---") else print("+   ")
+        // if (cells(x)(y).north) print("+---") else print("+   ")
       }
       println("+")
       for (x <- 0 until width) {
         // Print the west wall and the cell itself
         // if (cells(x)(y).west) print("|") else print("   ")
         // print("   ")
-        // if (cells(x)(y).west) print("|") else print("   ")
         if (cells(y)(x).west) print("|") else print("   ")
+        // if (cells(x)(y).west) print("|") else print("   ")
         print("  ")
       }
       println("|")
@@ -143,7 +143,7 @@ class Maze(val width: Int, val height: Int) {
 }
 
 object WilsonsMaze {
-  def run(width: Int = 4, height: Int = 4): Unit = {
+  def run(width: Int = 4, height: Int = 8): Unit = {
     val maze = new Maze(width, height)
     maze.generateMaze()
     maze.printMaze()
