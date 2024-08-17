@@ -29,6 +29,10 @@ class WilsonsSpec extends AnyFlatSpec with GivenWhenThen {
     println(generated.isFullyConnected())
     
     println("UNREACHABLE: " + generated.unreachable().mkString("\n"))
+
+    val resolved = generated.linkUnreachables()
+    println(resolved.asci())
+
   }
 
 }

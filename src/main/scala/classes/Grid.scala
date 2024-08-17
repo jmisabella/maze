@@ -169,45 +169,37 @@ case class Grid(
   }
   def reachable(): Seq[Cell] = allConnectedCells(get(startCoords))
   def unreachable(): Seq[Cell] = flatten().diff(reachable())
+  def isFullyConnected(): Boolean = allConnectedCells(get(startCoords)).size == size()
 
-  def isFullyConnected(): Boolean = {
-    allConnectedCells(get(startCoords)).size == size()
+  def linkOneUnreachable(): Grid = {
+    var nextGrid = this
+    if (!nextGrid.isFullyConnected()) {
+      var reachableCells: Seq[Cell] = nextGrid.reachable()
+      var unreachableCells: Seq[Cell] = nextGrid.unreachable()
+      for (unreached <- unreachableCells) {
+        for (neighborCoords <- unreached.unlinkedNeighbors()) {
+          var cell: Cell = unreached 
+          var neighbor: Cell = get(neighborCoords)
+          if (reachable.contains(neighbor)) {
+            cell = cell.copy(linked = cell.linked ++ Set(neighbor.coords))
+            neighbor = neighbor.copy(linked = neighbor.linked ++ Set(cell.coords))
+            nextGrid = nextGrid.set(cell).set(neighbor)
+            return nextGrid
+          }
+        } 
+      }
+    }
+    nextGrid
   }
-  def isFullyConnected(cell: Cell): Boolean = {
-    allConnectedCells(cell).size == size()
+  
+  def linkUnreachables(): Grid = {
+    var nextGrid = this
+    while (!nextGrid.isFullyConnected()) {
+      nextGrid = nextGrid.linkOneUnreachable()
+    }
+    nextGrid
   }
-
-  // def unreachableRegions(): Seq[Seq[Cell]] = {
-  //   ???
-  // }
-
-  // def isFullyConnected(grid: Grid): Boolean = {
-  //   val startCell = grid.get(grid.startCoords)
-  //   val visited = scala.collection.mutable.Set[Cell](startCell)
-
-  //   val visited2: Set[Cell] = visited.flatMap(c => grid.linkedNeighbors(c) ).toSet
-
-  //   val visited = scala.collection.mutable.Set[Coordinates](startCell.coords)
-
-  //   val linkedCells = grid.linkedNeighbors()
-
-  //   def dfs(cell: Cell): Unit = {
-  //     if (!visited.contains(cell.coords)) {
-  //       visited.add(cell.coords)
-  //       // grid.unlinkedNeighbors(cell).foreach { neighbor =>
-  //       grid.linkedNeighbors(cell).foreach { neighbor =>
-  //         dfs(neighbor)
-  //       }
-  //     }
-  //   }
-
-  //   dfs(startCell)
-  //   println("START CELL: " + startCell)
-  //   println("VISITED SIZE: " + visited.size) 
-  //   println("GRID SIZE: " + grid.size()) 
-  //   visited.size == (grid.rows * grid.columns)
-  // }
-
+  
   override def toString(): String = {
     var output: String = "{\"rows\":["
     var currRow: String = ""
@@ -222,7 +214,6 @@ case class Grid(
     output
   }
 
-  // override def toString(): String = {
   def asci(): String = {
     var output: String = "+" + "---+" * columns + "\n"
     for (row <- cells) {

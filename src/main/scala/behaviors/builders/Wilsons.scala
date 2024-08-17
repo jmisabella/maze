@@ -83,6 +83,7 @@ trait Wilsons extends Generator {
     }
     println("RETURNING GRID") 
     println("REMAINING UNVISITED: " + grid.flatten().filter(c => c.linked.isEmpty))
+    // nextGrid.linkUnreachables() // return modified grid
     nextGrid // Return the modified grid
     for (cell <- nextGrid.flatten()) {
       if (cell.linked.filter(c => c != cell.coords).isEmpty ) {
