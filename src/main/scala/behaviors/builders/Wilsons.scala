@@ -1,18 +1,14 @@
 package maze.behaviors.builders
 
 import maze.classes.{ Grid, Cell, Coordinates }
-import maze.behaviors.Linkage
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 import maze.classes.Neighbors
 
-import java.util.Random // TODO: remove
-
 trait Wilsons extends Generator {
-  type LINKAGE <: Linkage
-  val linker: LINKAGE
 
-  private def randomWalk(startCell: Cell, unvisited: scala.collection.mutable.Set[Cell], grid: Grid, random: Random): List[Cell] = {
+  private def randomWalk(startCell: Cell, unvisited: scala.collection.mutable.Set[Cell], grid: Grid): (List[Cell], Grid) = {
+    var nextGrid = grid
     var currentCell = startCell
     val path = scala.collection.mutable.ListBuffer[Cell](currentCell)
     val visitedDuringWalk = scala.collection.mutable.Set[Cell](currentCell)
@@ -27,16 +23,17 @@ trait Wilsons extends Generator {
         }
       }
       if (unvisitedNeighbors.isEmpty) {
-        return path.toList
+        return (path.toList, nextGrid)
       } else {
-        currentCell = unvisitedNeighbors(random.nextInt(unvisitedNeighbors.length))
+        val (randomIndex, seed): (Int, RNG) = nextGrid.randomInt(unvisitedNeighbors.length)
+        nextGrid = nextGrid.copy(seed = seed)
+        currentCell = unvisitedNeighbors(randomIndex)
         path += currentCell
         visitedDuringWalk.add(currentCell)
       }
     }
-    path.toList
+    (path.toList, nextGrid)
   }
-
 
   def generate(grid: Grid): Grid = {
     var nextGrid = grid 
@@ -45,18 +42,16 @@ trait Wilsons extends Generator {
     // Mark all cells as unvisited except for the starting cell
     nextGrid.flatten().foreach(cell => unvisited.add(cell))
     unvisited.remove(startCell)
-
-    val random = new Random()
     while (unvisited.nonEmpty) {
       val currentCell = unvisited.head
-      val path = randomWalk(currentCell, unvisited, nextGrid, random)
+      val (path, updatedGrid) = randomWalk(currentCell, unvisited, nextGrid)
+      nextGrid = updatedGrid
       if (path.nonEmpty) {
         var previousCell = path.head
         path.foreach { cell =>
           if (cell.coords != previousCell.coords) {
             var nextCell = nextGrid.get(cell.coords.x, cell.coords.y)
             if (!previousCell.isLinked(nextCell)) {
-              println("LINKING")
               previousCell = previousCell.copy(linked = previousCell.linked ++  Set(nextCell.coords))
               nextCell = nextCell.copy(linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
               nextGrid = nextGrid.set(previousCell).set(nextCell)
@@ -70,31 +65,11 @@ trait Wilsons extends Generator {
             }
           }
           // Mark the cell as visited
-          if (grid.get(cell).linked.isEmpty) {
-            println("CELL " + cell.coords + " IS NOT LINKED, YET IS CONSIDERED VISITED")
-          }
           unvisited.remove(cell)
         }
-      } else {
-        // If no path was found, simply remove the current cell from unvisited
-        // unvisited.remove(currentCell)
       }
     }
-    println("RETURNING GRID") 
-    println("REMAINING UNVISITED: " + grid.flatten().filter(c => c.linked.isEmpty))
     nextGrid.linkUnreachables() // return modified grid
-    // nextGrid // Return the modified grid
-    // for (cell <- nextGrid.flatten()) {
-    //   if (cell.linked.filter(c => c != cell.coords).isEmpty ) {
-    //   // if (cell.linked.toSeq.length <= 1) {
-    //     val neighbors = nextGrid.unlinkedNeighbors(cell)
-    //     var neighbor = neighbors(random.nextInt(neighbors.length))
-    //     val linked = cell.copy(linked = cell.linked ++ Set(neighbor.coords))
-    //     neighbor = neighbor.copy(linked = neighbor.linked ++ Set(linked.coords))
-    //     nextGrid = nextGrid.set(linked).set(neighbor)
-    //   }
-    // }
-    // nextGrid
   }
 
 

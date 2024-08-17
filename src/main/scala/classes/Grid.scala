@@ -132,24 +132,6 @@ case class Grid(
   def contains[A <: Cell](c: A): Boolean = flatten().contains(c.asInstanceOf[Cell])
   def contains[A <: Cell](cs: Seq[A]): Boolean = flatten().foldLeft(false)((acc, c) => contains(c)) 
 
-  // def distances(startCell: Cell): Map[Coordinates, Int] = {
-  //   var distances: Map[Coordinates, Int] = Map(startCell.coords -> 0)
-  //   var frontier: Seq[Cell] = Seq(startCell)
-  //   while (!frontier.isEmpty) {
-  //     var newFrontier: Seq[Cell] = Nil
-  //     for (c <- frontier) {
-  //       for (linked <- c.linked) {
-  //         if (!distances.keySet.contains(linked)) {
-  //           distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
-  //           newFrontier = newFrontier ++ Seq(cells(linked.y)(linked.x))
-  //         }
-  //       }
-  //     }
-  //     frontier = newFrontier
-  //   }
-  //   distances
-  // }
-  
   def allConnectedCells(startCell: Cell): Seq[Cell] = {
     var connected: Seq[Cell] = Seq(startCell)
     var frontier: Seq[Cell] = Seq(startCell)

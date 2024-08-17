@@ -2,7 +2,7 @@ package maze.behaviors.builders
 
 import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm, MazeType }
 import maze.behaviors.{ Linkage, Distance }
-import maze.behaviors.builders.{ BinaryTree, Sidewinder, AldousBroder }
+import maze.behaviors.builders.{ BinaryTree, Sidewinder, AldousBroder, Wilsons }
 
 trait Generator {
   
@@ -44,10 +44,19 @@ object Generator {
       override type DISTANCE = Distance
       override val distance = _distance
     }
+    case object wilsons extends Wilsons {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
     val generator = request.algorithm match {
       case Algorithm.BinaryTree => binaryTree
       case Algorithm.Sidewinder => sidewinder
       case Algorithm.AldousBroder => aldousBroder 
+      case Algorithm.Wilsons => wilsons
       case a => throw new IllegalArgumentException(s"Unexpected algorithm [$a]")
     }
     // request.mazeType match {

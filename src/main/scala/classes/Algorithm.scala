@@ -6,7 +6,8 @@ object Algorithm extends Enumeration {
   type Algorithm = Value
   val BinaryTree,
     Sidewinder,
-    AldousBroder = Value
+    AldousBroder,
+    Wilsons = Value
   
   implicit val format: Format[Algorithm] = Json.formatEnum(this)
 

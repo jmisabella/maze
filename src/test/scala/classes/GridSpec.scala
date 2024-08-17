@@ -256,17 +256,9 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     info(grid.toString())
   }
   
-  it should "honor start and goal coordinates specified in MazeRequest when generating a large non-square grid" in {
-    case object module extends BinaryTree {
-      case object _linkage extends Linkage
-      override type LINKAGE = Linkage
-      override val linker = _linkage
-      case object _distance extends Distance
-      override type DISTANCE = Distance
-      override val distance = _distance
-    }
-    Given("50x100 BinaryTree request")
-    val request = MazeRequest(50, 100, Algorithm.BinaryTree, Coordinates(0, 9), Coordinates(4, 0))
+  it should "honor start and goal coordinates specified in MazeRequest when generating a non-square Wilson's maze grid" in {
+    Given("5x10 Wilsons request")
+    val request = MazeRequest(5, 10, Algorithm.Wilsons, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
     var grid: Grid = Generator.generate(request)
     Then("grid's start should be southwest")

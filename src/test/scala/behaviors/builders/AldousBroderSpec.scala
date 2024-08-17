@@ -34,11 +34,8 @@ class AldousBroderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println(generated.toString())
     println(generated.asci())
-
-    // val start: Cell = generated.get(generated.startCoords)
-    // val linked: Seq[Cell] = Seq(start).flatMap(c => generated.linkedNeighbors(c))//.toSet
-    // println("START: " + start)
-    // println("LINKED: " + linked.mkString("\n"))
+    
+    generated.isFullyConnected() shouldBe (true)
 
   }
 
