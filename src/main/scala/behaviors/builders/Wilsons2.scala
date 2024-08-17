@@ -27,6 +27,7 @@ class Maze(val width: Int, val height: Int) {
     var currentCell = cells(startX)(startY)
     stack.push(currentCell)
     visited(startX)(startY) = true
+    // visited(startY)(startX) = true
 
     while (stack.nonEmpty) {
       // Perform random walks until we find a cell that has already been visited
@@ -60,6 +61,7 @@ class Maze(val width: Int, val height: Int) {
             stack.push(currentCell)
             currentCell = nextCell
             visited(currentCell.x)(currentCell.y) = true
+            // visited(currentCell.y)(currentCell.x) = true
           } 
         }
       }
@@ -78,6 +80,11 @@ class Maze(val width: Int, val height: Int) {
           connect(cells(nx)(ny))
         }
         cells(nx)(ny)
+      // case (nx, ny, wallOpen, connect) if nx >= 0 && ny >= 0 && nx < width && ny < height && !visited(ny)(nx) =>
+      //   if (wallOpen) {
+      //     connect(cells(ny)(nx))
+      //   }
+      //   cells(ny)(nx)
     }
     neighbors
   }
@@ -113,6 +120,7 @@ class Maze(val width: Int, val height: Int) {
       for (x <- 0 until width) {
         // Print the north wall
         if (cells(x)(y).north) print("+---") else print("+   ")
+        // if (cells(y)(x).north) print("+---") else print("+   ")
       }
       println("+")
       for (x <- 0 until width) {
@@ -120,6 +128,7 @@ class Maze(val width: Int, val height: Int) {
         // if (cells(x)(y).west) print("|") else print("   ")
         // print("   ")
         if (cells(x)(y).west) print("|") else print("   ")
+        // if (cells(y)(x).west) print("|") else print("   ")
         print("  ")
       }
       println("|")
@@ -133,7 +142,7 @@ class Maze(val width: Int, val height: Int) {
 }
 
 object WilsonsMaze {
-  def run(width: Int = 4, height: Int = 4): Unit = {
+  def run(width: Int = 4, height: Int = 8): Unit = {
     val maze = new Maze(width, height)
     maze.generateMaze()
     maze.printMaze()
