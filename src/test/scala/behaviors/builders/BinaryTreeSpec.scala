@@ -1,8 +1,8 @@
 package maze.behaviors
 
 import maze.behaviors.{ Linkage, Distance }
-import maze.behaviors.builders.BinaryTree
-import maze.classes.{ Cell, Grid, Coordinates }
+import maze.behaviors.builders.{ BinaryTree, Generator }
+import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm }
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
@@ -125,5 +125,28 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
   //     dist.keySet should contain (cell.coords) 
   //   }
   // }
+  
+  it should "honor start and goal coordinates specified in MazeRequest when generating a large non-square grid" in {
+    case object module extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
+    Given("JSON for a 52x29 BinaryTree request")
+    val json = """{"width":"52","height":"29","algorithm":"BinaryTree","startX":"14","startY":"0","goalX":"14","goalY":"28","mazeType":"Solved"}""" 
+    When("generating the grid")
+    val request: MazeRequest = MazeRequest(json)
+    var grid: Grid = Generator.generate(request)
+    Then("grid's start should be 14,0")
+    grid.startCoords should equal (Coordinates(14, 0))
+    info("START COORDS: " + grid.startCoords.toString())
+    Then("grid's goal should be 14,28")
+    grid.goalCoords should equal (Coordinates(14, 28))
+    info("\n" + grid.asci())
+    info(grid.toString())
+  }
 
 }

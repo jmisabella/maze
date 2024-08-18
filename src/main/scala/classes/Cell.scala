@@ -38,6 +38,9 @@ case class Cell(
     // 0 
     case (None, None, None, None) => Nil
   }
+  def unlinkedNeighbors(): Seq[Coordinates] = availableNeighbors().filter(c => !isLinked(c))
+  def linkedNeighbors(): Seq[Coordinates] = availableNeighbors().filter(c => !linked(c))
+
   def isLinked(cell: Cell, bidi: Boolean = true): Boolean = bidi match {
     case false => linked.contains(cell.coords)
     case true => linked.contains(cell.coords) && cell.linked(this.coords)
@@ -100,7 +103,9 @@ case class Cell(
 }
 
 object Cell {
-  def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(column, row))
- 
-  implicit def ordering [A <: Cell]: Ordering[A] = Ordering.by(_.coords)
+  // def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(column, row)) // TODO: jmi: this switching has everything else working
+  def apply(x: Int, y: Int): Cell = Cell(coords = Coordinates(x, y)) // TODO: jmi: this appears to be root of bug where Cell mixes up coords
+
+  // not sure why calling inverse on coords when sorting a list needs to use the inverse to prevent transposing x/y grid
+  implicit def ordering [A <: Cell]: Ordering[A] = Ordering.by(_.coords.inverse())
 }

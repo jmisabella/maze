@@ -12,7 +12,7 @@ trait Distance {
   // evenly pad left and right; left has 1 extra padding in case of an odd length 
   def pad(s:String, c: Char, n:Int): String = {
     val left = (n - s.length) / 2
-    val right = n - left - s.length 
+    val right = n - left - s.length
     c.toString * left + s + c.toString * right
   }
   def distances(grid: Grid, startCell: Cell): Map[Coordinates, Int] = {
@@ -24,8 +24,8 @@ trait Distance {
         for (linked <- c.linked) {
           if (!distances.keySet.contains(linked)) {
             distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
-            // newFrontier = newFrontier ++ Seq(grid.get(linked))
-            newFrontier = newFrontier ++ Seq(grid.cells(linked.x)(linked.y))
+            // newFrontier = newFrontier ++ Seq(grid.cells(linked.x)(linked.y))
+            newFrontier = newFrontier ++ Seq(grid.cells(linked.y)(linked.x))
           }
         }
       }
@@ -33,10 +33,10 @@ trait Distance {
     }
     distances
   }
-  def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startX)(startY))
-  def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.x)(startCoords.y))
-  // def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startY)(startX))
-  // def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.y)(startCoords.x))
+  // def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startX)(startY))
+  // def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.x)(startCoords.y))
+  def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startY)(startX))
+  def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.y)(startCoords.x))
   def distances(grid: Grid, startX: Int, startY: Int): Grid = {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDinstances: Seq[Cell] = grid.cells.flatten.map(c => 
@@ -81,8 +81,8 @@ trait Distance {
     var current: Coordinates = Coordinates(goalX, goalY)
     var breadcrumbs: Map[Coordinates, Int] = Map(current -> dist(current))
     while (current != Coordinates(startX, startY)) {
-      // for (neighbor <- grid.get(current).linked) {
-      for (neighbor <- grid.cells(current.x)(current.y).linked) {
+      // for (neighbor <- grid.cells(current.x)(current.y).linked) {
+      for (neighbor <- grid.cells(current.y)(current.x).linked) {
         if (dist(neighbor) < dist(current)) {
           breadcrumbs = breadcrumbs ++ Map(neighbor -> dist(neighbor))
           current = neighbor

@@ -21,10 +21,14 @@ case class Grid(
   // def get(x: Int, y: Int): Cell = cells(x)(y)
   def get(x: Int, y: Int): Cell = cells(y)(x)
   def get(coords: Coordinates): Cell = get(coords.x, coords.y)
+  def get(cell: Cell): Cell = get(cell.coords)
   // retrieve row
   def row(y: Int): List[Cell] = cells(y).toList
   // retrieve column
-  def column(x: Int): List[Cell] = (for (i <- 0 until rows) yield cells(i)(x)).toList
+  def column(x: Int): List[Cell] = (for (y <- 0 until rows) yield cells(y)(x)).toList
+  // def column(x: Int): List[Cell] = (for (i <- 0 until rows) yield cells(x)(i)).toList
+
+  def size(): Int = rows * columns
 
   // given a cell (which tracks its own x,y coordinates) updates grid's cell at those coordinates
   def set(cell: Cell): Grid = {
@@ -38,9 +42,20 @@ case class Grid(
     }).toArray)
   }
 
-  def links(cell: Cell): Seq[Cell] = (for (c <- cell.linked) yield cells(c.x)(c.y)).toSeq
+  // def links(cell: Cell): Seq[Cell] = (for (c <- cell.linked) yield cells(c.x)(c.y)).toSeq
+  def links(cell: Cell): Seq[Cell] = (for (c <- cell.linked) yield cells(c.y)(c.x)).toSeq
 
   def linked(cell1: Cell, cell2: Cell): Boolean = cell1.isLinked(cell2)
+
+  // given a cell, returns its neighbor cells
+  def neighbors(cell: Cell): Seq[Cell] = cell.neighbors.toSeq().map(c => get(c.x, c.y))
+  def neighbors(coords: Coordinates): Seq[Cell] = get(coords).neighbors.toSeq().map(c => get(c.x, c.y))
+  // given a cell, returns its unlinked neighbor cells
+  def unlinkedNeighbors(cell: Cell): Seq[Cell] = cell.unlinkedNeighbors().map(c => get(c.x, c.y))
+  def unlinkedNeighbors(coords: Coordinates): Seq[Cell] = get(coords).unlinkedNeighbors().map(c => get(c.x, c.y))
+  // given a cell, returns its linked neighbor cells
+  def linkedNeighbors(cell: Cell): Seq[Cell] = cell.linkedNeighbors().map(c => get(c.x, c.y))
+  def linkedNeighbors(coords: Coordinates): Seq[Cell] = get(coords).linkedNeighbors().map(c => get(c.x, c.y))
 
   def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
   def padLeft(s: String, c: Char, n: Int): String = n match {
@@ -55,6 +70,18 @@ case class Grid(
     c.toString * left + s + c.toString * right
   }
 
+  // def isolatedRegions(): Seq[Seq[Cell]] = {
+  //   ???
+  // }
+
+  // def isFullyConnected(grid: Grid): Boolean = {
+  //   val startCell = grid.get(grid.startCoords)
+  //   val visited = scala.collection.mutable.Set[Coordinates]()
+  //   def search(cell: Cell): Unit = {
+  //     cell.linked.map(c => visited += c)
+  //   }
+  // }
+  
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
   def unflatten(flattened: Seq[Cell]): Grid = {
@@ -80,6 +107,7 @@ case class Grid(
           var cell = remaining.head
           remaining = remaining.tail
           val coordinates: Coordinates = Coordinates(col, row)
+          // val coordinates: Coordinates = Coordinates(row, col)
           // // TODO ???: not sure why, but in this line only I needed to switch predicates' start/goal coords here
           // cell.copy(isStart = coordinates == goalCoords, isGoal = coordinates == startCoords)
           cell.copy(isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
@@ -104,6 +132,56 @@ case class Grid(
   def contains[A <: Cell](c: A): Boolean = flatten().contains(c.asInstanceOf[Cell])
   def contains[A <: Cell](cs: Seq[A]): Boolean = flatten().foldLeft(false)((acc, c) => contains(c)) 
 
+  def allConnectedCells(startCell: Cell): Seq[Cell] = {
+    var connected: Seq[Cell] = Seq(startCell)
+    var frontier: Seq[Cell] = Seq(startCell)
+    while (!frontier.isEmpty) {
+      var newFrontier: Seq[Cell] = Nil
+      for (c <- frontier) {
+        for (linked <- c.linked) {
+          if (!connected.contains(get(linked))) {
+            connected = connected ++ Seq(get(linked))
+            newFrontier = newFrontier ++ Seq(cells(linked.y)(linked.x))
+          }
+        }
+      }
+      frontier = newFrontier
+    }
+    connected
+  }
+  def reachable(): Seq[Cell] = allConnectedCells(get(startCoords))
+  def unreachable(): Seq[Cell] = flatten().diff(reachable())
+  def isFullyConnected(): Boolean = allConnectedCells(get(startCoords)).size == size()
+
+  def linkOneUnreachable(): Grid = {
+    var nextGrid = this
+    if (!nextGrid.isFullyConnected()) {
+      var reachableCells: Seq[Cell] = nextGrid.reachable()
+      var unreachableCells: Seq[Cell] = nextGrid.unreachable()
+      for (unreached <- unreachableCells) {
+        for (neighborCoords <- unreached.unlinkedNeighbors()) {
+          var cell: Cell = unreached 
+          var neighbor: Cell = get(neighborCoords)
+          if (reachable.contains(neighbor)) {
+            cell = cell.copy(linked = cell.linked ++ Set(neighbor.coords))
+            neighbor = neighbor.copy(linked = neighbor.linked ++ Set(cell.coords))
+            nextGrid = nextGrid.set(cell).set(neighbor)
+            return nextGrid
+          }
+        } 
+      }
+    }
+    nextGrid
+  }
+  
+  def linkUnreachables(): Grid = {
+    var nextGrid = this
+    while (!nextGrid.isFullyConnected()) {
+      nextGrid = nextGrid.linkOneUnreachable()
+    }
+    nextGrid
+  }
+  
   override def toString(): String = {
     var output: String = "{\"rows\":["
     var currRow: String = ""
@@ -118,7 +196,6 @@ case class Grid(
     output
   }
 
-  // override def toString(): String = {
   def asci(): String = {
     var output: String = "+" + "---+" * columns + "\n"
     for (row <- cells) {
@@ -163,49 +240,42 @@ object Grid {
         (for (col <- 0 until grid.columns) yield {
           val coordinates: Coordinates = Coordinates(col, row)
           val cell = grid.cells(row)(col)
-          val north = cell.coords.x match {
+          val north = cell.coords.y match {
             case 0 => None // nothing exists north
-            case _ => Some((grid.cells(cell.coords.x - 1)(cell.coords.y)).coords)
+            case _ => Some((grid.cells(cell.coords.y - 1)(cell.coords.x)).coords)
           }
-          val east = cell.coords.y match {
-            case y if (y >= grid.columns - 1) => None // nothing exists east
-            case _ => Some((grid.cells(cell.coords.x)(cell.coords.y + 1)).coords)
+          val east = cell.coords.x match {
+            case x if (x >= grid.columns - 1) => None // nothing exists east
+            case _ => Some((grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
           }
-          val south = cell.coords.x match {
-            case x if (x >= grid.rows - 1) => None // nothing exists south
-            case _ => Some((grid.cells(cell.coords.x + 1)(cell.coords.y)).coords)
+          val south = cell.coords.y match {
+            case y if (y >= grid.rows - 1) => None // nothing exists south
+            case _ => Some((grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
           }
-          val west = cell.coords.y match {
+          val west = cell.coords.x match {
             case 0 => None // nothing exists west
-            case _ => Some((grid.cells(cell.coords.x)(cell.coords.y - 1)).coords)
+            case _ => Some((grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
           }
           val northeast = (cell.coords.x, cell.coords.y) match {
-            case (0, _) => None // nothing exists north
-            case (_, y) if (y >= grid.columns - 1) => None // nothing exists east
-            case (x, y) => Some((grid.cells(cell.coords.x - 1)(cell.coords.y + 1)).coords)
+            case (_, 0) => None // nothing exists north
+            case (x, _) if (x >= grid.columns - 1) => None // nothing exists east
+            case (x, y) => Some((grid.cells(cell.coords.y - 1)(cell.coords.x + 1)).coords)
           }
           val southeast = (cell.coords.x, cell.coords.y) match {
-             case (x, _) if (x >= grid.rows - 1) => None // nothing exists south
-             case (_, y) if (y >= grid.columns - 1) => None // nothing exists east
-             case (x, y) => Some((grid.cells(cell.coords.x + 1)(cell.coords.y + 1)).coords)
+             case (_, y) if (y >= grid.rows - 1) => None // nothing exists south
+             case (x, _) if (x >= grid.columns - 1) => None // nothing exists east
+             case (x, y) => Some((grid.cells(cell.coords.y + 1)(cell.coords.x + 1)).coords)
           }
           val southwest = (cell.coords.x, cell.coords.y) match {
-            case (x, _) if (x >= grid.rows - 1) => None // nothing exists south
-            case (_, 0) => None // nothing exists west
-            case (x, y) => Some((grid.cells(cell.coords.x + 1)(cell.coords.y - 1)).coords)
+            case (_, y) if (y >= grid.rows - 1) => None // nothing exists south
+            case (0, _) => None // nothing exists west
+            case (x, y) => Some((grid.cells(cell.coords.y + 1)(cell.coords.x - 1)).coords)
           }
           val northwest = (cell.coords.x, cell.coords.y) match {
-            case (0, _) => None // nothing exists north
-            case (_, 0) => None // nothing exists west
-            case (x, y) => Some((grid.cells(cell.coords.x - 1)(cell.coords.y - 1)).coords)
+            case (_, 0) => None // nothing exists north
+            case (0, _) => None // nothing exists west
+            case (x, y) => Some((grid.cells(cell.coords.y - 1)(cell.coords.x - 1)).coords)
           }
-          // val result = cell.copy(
-          //   neighbors = Neighbors(north, east, south, west, northeast, southeast, southwest, northwest),
-          //   isStart = cell.coords == start,
-          //   isGoal = cell.coords == goal)
-          // assert(result.isStart == (result.coords == start))
-          // assert(result.isGoal == (result.coords == goal))
-          // result
           cell.copy(
             neighbors = Neighbors(north, east, south, west, northeast, southeast, southwest, northwest),
             isStart = cell.coords == start,

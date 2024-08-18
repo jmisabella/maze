@@ -159,17 +159,32 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
     for (cell <- zigZagCells(updated)) {
       val originalLinked: Set[Coordinates] = cell.linked
       if (cell.neighbors.west.isDefined) {
-        val linked: Seq[Cell] = module.link(Seq(cell, updated.cells(cell.neighbors.west.get.x)(cell.neighbors.west.get.y)))
+        val linked: Seq[Cell] = module.link(Seq(cell, updated.cells(cell.neighbors.west.get.y)(cell.neighbors.west.get.x)))
         for (linkedCell <- linked) {
           updated = updated.set(linkedCell)
         }
-        updated.cells(cell.coords.x)(cell.coords.y).linked.toList.containsSlice(originalLinked.toList) shouldBe (true)
-        updated.cells(cell.coords.x)(cell.coords.y).linked.contains(cell.neighbors.west.get) shouldBe (true)
+        updated.cells(cell.coords.y)(cell.coords.x).linked.toList.containsSlice(originalLinked.toList) shouldBe (true)
+        updated.cells(cell.coords.y)(cell.coords.x).linked.contains(cell.neighbors.west.get) shouldBe (true)
       }
     }
     println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
     println(updated.asci())
-    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+    println("XXXXXXXX XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+  }
+
+  it should "link 2 cells" in {
+    Given("5x5 grid") 
+    val grid: Grid = Grid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    When("selecting 2 unlinked cells from the grid")
+    val twoCells: Seq[Cell] = Seq(grid.flatten().head, grid.flatten().tail.head)
+    Then("neither cell should be linked yet") 
+    twoCells.head.linked shouldBe empty
+    twoCells.tail.head.linked shouldBe empty
+    When("linking both cells")
+    val linked: Seq[Cell] = module.link(twoCells)
+    Then("both cells should be linked to each other")
+    linked.head.linked should contain (linked.tail.head.coords)
+    linked.tail.head.linked should contain (linked.head.coords)
   }
 
   // it should "bi-directionaly link a zig-zag pattern upper-left to bottom-right of a 5x5 grid" in {
