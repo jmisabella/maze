@@ -15,7 +15,7 @@ case class Cell(
   visited: Boolean = false,
   value: String = "   "
 ) {
-  def availableNeighbors(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
+  def neighborCoords(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
     // 4 
     case (Some(n), Some(e), Some(s), Some(w)) => Seq(n, e, s, w)
     // 3 
@@ -38,8 +38,8 @@ case class Cell(
     // 0 
     case (None, None, None, None) => Nil
   }
-  def unlinkedNeighbors(): Seq[Coordinates] = availableNeighbors().filter(c => !isLinked(c))
-  def linkedNeighbors(): Seq[Coordinates] = availableNeighbors().filter(c => !linked(c))
+  def unlinkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => !isLinked(c))
+  def linkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => !linked(c))
 
   def isLinked(cell: Cell, bidi: Boolean = true): Boolean = bidi match {
     case false => linked.contains(cell.coords)

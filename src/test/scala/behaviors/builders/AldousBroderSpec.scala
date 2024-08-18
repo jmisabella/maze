@@ -30,12 +30,14 @@ class AldousBroderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("generated maze should have width of 5 cells")
     generated.columns should be (5)
     generated.cells.count(c => c.length == 5) should be (5)
+    Then("resulting maze is a perfect maze")
+    generated.isFullyConnected() shouldBe (true)
+    generated.isPerfectMaze() shouldBe (true) 
     When("printing the maze")
     Then("the maze should be printed to screen")
     println(generated.toString())
     println(generated.asci())
     
-    generated.isFullyConnected() shouldBe (true)
 
   }
 

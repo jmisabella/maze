@@ -112,6 +112,10 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     // println(generated.asci())
     println(module.distance.pathTo(generated, 0, 39, 39, 0))
     println(module.distance.pathTo(generated, 0, 39, 39, 0).asci())
+    Then("resulting maze should contain no stranded unreachable cells") 
+    generated.isFullyConnected() shouldBe (true)
+    Then("resulting maze is a perfect maze")
+    generated.isPerfectMaze() shouldBe (true) 
   }
   
   it should "generate a maze in which each cell is accessible from the upper-left corner cell" in {
@@ -145,6 +149,10 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     generated.rows should be (10)
     Then("generated maze should have width of 5 cells")
     generated.columns should be (5)
+    Then("resulting maze should contain no stranded unreachable cells") 
+    generated.isFullyConnected() shouldBe (true)
+    Then("resulting maze is a perfect maze")
+    generated.isPerfectMaze() shouldBe (true) 
     When("printing the maze")
     Then("the maze should be printed to screen")
     info(generated.asci())

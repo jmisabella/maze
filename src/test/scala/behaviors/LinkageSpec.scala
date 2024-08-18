@@ -361,4 +361,31 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
     // module.reachable(grid, 0, 0, 4, 4) shouldBe (true)
   }
 
+  it should "link 2 neighboring cells and return the updated grid" in {
+    Given("6x6 grid with no linked cells")
+    val initialGrid: Grid = Grid(6, 6, Coordinates(0, 0), Coordinates(5, 5))
+    When("linking cells 0.0 and 0,1 and yielding an updated grid") 
+    val result1: Grid = module.link(initialGrid.get(0, 0), initialGrid.get(0, 1), initialGrid)
+    Then("0,0 and 0,1 should be linked")
+    result1.get(0, 0).linked should equal (Set(Coordinates(0, 1)))
+    result1.get(0, 1).linked should equal (Set(Coordinates(0, 0)))
+    When("linking cells 0.0 and 1,0 and yielding an updated grid") 
+    val result2: Grid = module.link(result1.get(0, 0), result1.get(1, 0), result1)
+    Then("0,0 and 1,0 should be linked, and 0,0 should still be linked to 0,1")
+    result2.get(0, 0).linked should contain (Coordinates(1, 0))
+    result2.get(0, 0).linked should contain (Coordinates(0, 1))
+    result2.get(0, 1).linked should equal (Set(Coordinates(0, 0)))
+    result2.get(1, 0).linked should equal (Set(Coordinates(0, 0)))
+    When("manually linking the same cells from the initial grid, without using the Linkage behavior")
+    var linkedCell1: Cell = initialGrid.get(0,0).copy(linked = initialGrid.get(0,0).linked ++ Set(initialGrid.get(0,1).coords))
+    val linkedCell2: Cell = initialGrid.get(0,1).copy(linked = initialGrid.get(0,1).linked ++ Set(initialGrid.get(0,0).coords))
+    linkedCell1 should equal (result1.get(0,0))
+    linkedCell2 should equal (result1.get(0,1))
+    linkedCell1 = linkedCell1.copy(linked = linkedCell1.linked ++ Set(initialGrid.get(1,0).coords))
+    val linkedCell3: Cell = initialGrid.get(1,0).copy(linked = initialGrid.get(1,0).linked ++ Set(linkedCell1.coords))
+    linkedCell1 should equal (result2.get(0,0))
+    linkedCell3 should equal (result2.get(1,0))
+    info(result2.asci())
+  }
+
 }
