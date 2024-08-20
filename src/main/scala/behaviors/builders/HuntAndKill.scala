@@ -11,35 +11,46 @@ trait HuntAndKill extends Generator {
   
   override def generate(grid: Grid): Grid = {
     var nextGrid: Grid = grid
+    var visited: Seq[Coordinates] = Nil
     val (randomIndex1, seed1): (Int, RNG) = nextGrid.randomInt(nextGrid.size())
     nextGrid = nextGrid.copy(seed = seed1)
     var current: Cell = nextGrid.flatten()(randomIndex1)
     while (current != null) {
-      val unvisitedNeighbors1: Seq[Cell] = nextGrid.unlinkedNeighbors(current)
-      if (unvisitedNeighbors1.nonEmpty) {
-        val (randomIndex2, seed2): (Int, RNG) = nextGrid.randomInt(unvisitedNeighbors1.length)
+      val unvisitedNeighbors: Seq[Cell] = nextGrid.unlinkedNeighbors(current).filter(c => !visited.contains(c.coords))
+      if (unvisitedNeighbors.nonEmpty) { // HUNT
+        val (randomIndex2, seed2): (Int, RNG) = nextGrid.randomInt(unvisitedNeighbors.length)
         nextGrid = nextGrid.copy(seed = seed2)
-        var neighbor: Cell = unvisitedNeighbors1(randomIndex2)
+        var neighbor: Cell = unvisitedNeighbors(randomIndex2)
+        println(s"LINKING $current TO $neighbor")
         current = current.copy(linked = current.linked ++ Set(neighbor.coords))
         neighbor = neighbor.copy(linked = neighbor.linked ++ Set(current.coords))
         nextGrid = nextGrid.set(current).set(neighbor)
+        visited = visited ++ Seq(current.coords)
         current = neighbor
-      } else {
-        current = null
-        nextGrid.flatten().find { cell =>
-          val visitedNeighbors: Seq[Cell] = nextGrid.linkedNeighbors(cell)
-          cell.linked.isEmpty && visitedNeighbors.nonEmpty
-        } match {
-          case Some(cell) => 
-            current = cell
-            val visitedNeighbors: Seq[Cell] = nextGrid.linkedNeighbors(current)
-            val (randomIndex3, seed3): (Int, RNG) = nextGrid.randomInt(visitedNeighbors.length)
-            var neighbor: Cell = visitedNeighbors(randomIndex3)
-            current = current.copy(linked = current.linked ++ Set(neighbor.coords))
-            neighbor = neighbor.copy(linked = neighbor.linked ++ Set(current.coords))
-            nextGrid = nextGrid.set(current).set(neighbor)
-          case None =>
+      } else { // KILL
+        // current = nextGrid.find(c => c.linked.isEmpty && c.neighborCoords().count(c => !grid.get(c).linked.isEmpty) > 0).getOrElse(null)
+        // current = nextGrid.find(c =>  c.linked.isEmpty && nextGrid.unlinkedNeighbors(c).length > 0).getOrElse(null)
+        // current = nextGrid.find(c => c.linked.isEmpty && nextGrid.unlinkedNeighbors(c).count(c2 => !nextGrid.get(c2).linked.isEmpty) > 0).getOrElse(null)
+        current = nextGrid.find(c => !visited.contains(c.coords) && nextGrid.unlinkedNeighbors(c).count(c2 => !nextGrid.get(c2).linked.isEmpty && visited.contains(c2.coords)) > 0).getOrElse(null)
+        if (current == null) { 
+          return nextGrid
         }
+        val neighborsAlreadyVisited: Seq[Cell] = nextGrid.unlinkedNeighbors(current).filter(c => !nextGrid.get(c).linked.isEmpty && visited.contains(c.coords))
+        // val neighborsAlreadyVisited: Seq[Cell] = nextGrid.unlinkedNeighbors(current).filter(c => nextGrid.get(c).linked.isEmpty)
+        if (neighborsAlreadyVisited.length > 0) {
+          val (randomIndex2, seed2): (Int, RNG) = nextGrid.randomInt(neighborsAlreadyVisited.length)
+          nextGrid = nextGrid.copy(seed = seed2)
+          var neighbor: Cell = neighborsAlreadyVisited(randomIndex2)
+          current = current.copy(linked = current.linked ++ Set(neighbor.coords))
+          neighbor = neighbor.copy(linked = neighbor.linked ++ Set(current.coords))
+          nextGrid = nextGrid.set(current).set(neighbor)
+          // visited = visited ++ Seq(neighbor.coords)
+          visited = visited ++ Seq(current.coords)
+          // current = neighbor
+        } else {
+          current = null
+        }
+
       }
     }
     nextGrid

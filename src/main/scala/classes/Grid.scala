@@ -119,6 +119,7 @@ case class Grid(
   def filter(p: Cell => Boolean): Grid = withFilter(p)
   def contains[A <: Cell](c: A): Boolean = flatten().contains(c.asInstanceOf[Cell])
   def contains[A <: Cell](cs: Seq[A]): Boolean = flatten().foldLeft(false)((acc, c) => contains(c)) 
+  def find[A <: Cell](p: Cell => Boolean): Option[Cell] = flatten().find(p)
 
   private def allConnectedCells(startCell: Cell): Seq[Cell] = {
     var connected: Seq[Cell] = Seq(startCell)
