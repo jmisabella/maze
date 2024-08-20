@@ -16,9 +16,9 @@ trait HuntAndKill extends Generator {
     nextGrid = nextGrid.copy(seed = seed1)
     var current: Cell = nextGrid.flatten()(randomIndex1)
     while (current != null) {
-      // ****** KILL ****** 
       val unvisitedNeighbors: Seq[Cell] = nextGrid.unlinkedNeighbors(current).filter(c => !visited.contains(c.coords))
       if (unvisitedNeighbors.nonEmpty) {
+        // ****** KILL ****** 
         val (randomIndex2, seed2): (Int, RNG) = nextGrid.randomInt(unvisitedNeighbors.length)
         nextGrid = nextGrid.copy(seed = seed2)
         var neighbor: Cell = unvisitedNeighbors(randomIndex2)
