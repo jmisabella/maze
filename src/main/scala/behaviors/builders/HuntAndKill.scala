@@ -35,7 +35,7 @@ trait HuntAndKill extends Generator {
         if (current == null) { 
           return nextGrid
         }
-        val neighborsAlreadyVisited: Seq[Cell] = nextGrid.unlinkedNeighbors(current).filter(c => !nextGrid.get(c).linked.isEmpty && visited.contains(c.coords))
+        val neighborsAlreadyVisited: Seq[Cell] = nextGrid.unlinkedNeighbors(current).filter(c => /*!nextGrid.get(c).linked.isEmpty &&*/ visited.contains(c.coords))
         // val neighborsAlreadyVisited: Seq[Cell] = nextGrid.unlinkedNeighbors(current).filter(c => nextGrid.get(c).linked.isEmpty)
         if (neighborsAlreadyVisited.length > 0) {
           val (randomIndex2, seed2): (Int, RNG) = nextGrid.randomInt(neighborsAlreadyVisited.length)
