@@ -27,26 +27,26 @@ class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
     When("generating maze using HuntAndKill algorithm")
     val generated: Grid = module.generate(grid)
     Then("resulting maze should contain no stranded unreachable cells") 
-    // generated.isFullyConnected() shouldBe (true)
+    generated.isFullyConnected() shouldBe (true)
     Then("resulting maze is a perfect maze")
-    // generated.isPerfectMaze() shouldBe (true) 
+    generated.isPerfectMaze() shouldBe (true) 
     Then("resulting maze should be printed to screen using asci")
     info("\n" + generated.asci())
   }
   
-  // it should "generate a 30x30 maze using HuntAndKill and print it to screen" in {
-  //   Given("30x30 grid")
-  //   val dim: Int = 30
-  //   val grid = Grid(dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
-  //   When("generating maze using HuntAndKill algorithm")
-  //   val generated: Grid = module.generate(grid)
-  //   Then("resulting maze should contain no stranded unreachable cells") 
-  //   generated.isFullyConnected() shouldBe (true)
-  //   Then("resulting maze is a perfect maze")
-  //   // generated.isPerfectMaze() shouldBe (true) 
-  //   Then("resulting maze should be printed to screen using asci")
-  //   info("\n" + generated.asci())
-  // }
+  it should "generate a 30x30 maze using HuntAndKill and print it to screen" in {
+    Given("30x30 grid")
+    val dim: Int = 30
+    val grid = Grid(dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
+    When("generating maze using HuntAndKill algorithm")
+    val generated: Grid = module.generate(grid)
+    Then("resulting maze should contain no stranded unreachable cells") 
+    generated.isFullyConnected() shouldBe (true)
+    Then("resulting maze is a perfect maze")
+    generated.isPerfectMaze() shouldBe (true) 
+    Then("resulting maze should be printed to screen using asci")
+    info("\n" + generated.asci())
+  }
 
   it should "honor start and goal coordinates specified in MazeRequest when generating a non-square HuntAndKill maze grid" in {
     Given("5x10 HuntAndKill request")
@@ -71,9 +71,9 @@ class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
     Then("grid's start cell at 9,0 should have isGoal set to false")
     grid.get(0, 9).isGoal should be (false)
     Then("resulting maze should contain no stranded unreachable cells") 
-    // grid.isFullyConnected() shouldBe (true)
+    grid.isFullyConnected() shouldBe (true)
     Then("resulting maze is a perfect maze")
-    // grid.isPerfectMaze() shouldBe (true) 
+    grid.isPerfectMaze() shouldBe (true) 
     Then("resulting maze should be printed to screen using asci")
     info("\n" + grid.asci())
   }
