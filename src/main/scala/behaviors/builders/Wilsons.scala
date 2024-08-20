@@ -13,7 +13,7 @@ trait Wilsons extends Generator {
     val path = scala.collection.mutable.ListBuffer[Cell](currentCell)
     val visitedDuringWalk = scala.collection.mutable.Set[Cell](currentCell)
     while (true) {
-      val neighbors: Seq[Coordinates] = currentCell.availableNeighbors()
+      val neighbors: Seq[Coordinates] = currentCell.neighborCoords()
       val unvisitedNeighbors: Seq[Cell] = neighbors.flatMap { coords =>
         val neighborCell = grid.get(coords.x, coords.y)
         if (unvisited.contains(neighborCell) && !visitedDuringWalk.contains(neighborCell)) {
@@ -55,12 +55,16 @@ trait Wilsons extends Generator {
               previousCell = previousCell.copy(linked = previousCell.linked ++  Set(nextCell.coords))
               nextCell = nextCell.copy(linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
               nextGrid = nextGrid.set(previousCell).set(nextCell)
+              //// why does the below line yield different results than when linking without linker??
+              // nextGrid = linker.link(previousCell, nextCell, nextGrid)
               previousCell = nextCell
               if (path.length == 1) {
                 var lastCell: Cell = path.head
                 nextCell = nextCell.copy(linked = nextCell.linked ++ Set(lastCell.coords))
                 lastCell = lastCell.copy(linked = lastCell.linked ++ Set(nextCell.coords))
                 nextGrid = nextGrid.set(nextCell).set(lastCell)
+                //// why does the below line yield different results than when linking without linker??
+                // nextGrid = linker.link(nextCell, lastCell, nextGrid)
               }
             }
           }

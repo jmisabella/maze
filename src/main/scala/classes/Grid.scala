@@ -70,18 +70,6 @@ case class Grid(
     c.toString * left + s + c.toString * right
   }
 
-  // def isolatedRegions(): Seq[Seq[Cell]] = {
-  //   ???
-  // }
-
-  // def isFullyConnected(grid: Grid): Boolean = {
-  //   val startCell = grid.get(grid.startCoords)
-  //   val visited = scala.collection.mutable.Set[Coordinates]()
-  //   def search(cell: Cell): Unit = {
-  //     cell.linked.map(c => visited += c)
-  //   }
-  // }
-  
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
   def unflatten(flattened: Seq[Cell]): Grid = {
@@ -131,8 +119,9 @@ case class Grid(
   def filter(p: Cell => Boolean): Grid = withFilter(p)
   def contains[A <: Cell](c: A): Boolean = flatten().contains(c.asInstanceOf[Cell])
   def contains[A <: Cell](cs: Seq[A]): Boolean = flatten().foldLeft(false)((acc, c) => contains(c)) 
+  def find[A <: Cell](p: Cell => Boolean): Option[Cell] = flatten().find(p)
 
-  def allConnectedCells(startCell: Cell): Seq[Cell] = {
+  private def allConnectedCells(startCell: Cell): Seq[Cell] = {
     var connected: Seq[Cell] = Seq(startCell)
     var frontier: Seq[Cell] = Seq(startCell)
     while (!frontier.isEmpty) {
@@ -152,9 +141,16 @@ case class Grid(
   def reachable(): Seq[Cell] = allConnectedCells(get(startCoords))
   def unreachable(): Seq[Cell] = flatten().diff(reachable())
   def isFullyConnected(): Boolean = allConnectedCells(get(startCoords)).size == size()
-
+  def isPerfectMaze(): Boolean = {
+    // each edge is counted twice, so divide by 2
+    def countEdges(grid: Grid): Int = flatten().map(_.linked.toSeq.length).sum / 2
+    // a maze is perfect if it's fully connected and is a tree (no cycles and exactly v-1 edges)
+    println("EDGE COUNT: " + countEdges(this))
+    println("SIZE: " + size())
+    isFullyConnected() && countEdges(this) == size() - 1
+  }
   def linkOneUnreachable(): Grid = {
-    var nextGrid = this
+    var nextGrid = this 
     if (!nextGrid.isFullyConnected()) {
       var reachableCells: Seq[Cell] = nextGrid.reachable()
       var unreachableCells: Seq[Cell] = nextGrid.unreachable()
