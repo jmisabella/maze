@@ -1,9 +1,8 @@
 
-ThisBuild / name := "maze"
 ThisBuild / organization := "io.github.jmisabella"
 ThisBuild / organizationName := "jmisabella"
 ThisBuild / organizationHomepage := Some(url("https://github.com/jmisabella"))
-ThisBuild / version := "0.0.21"
+ThisBuild / version := "0.0.22"
 ThisBuild / scalaVersion := "2.13.10"
 
 ThisBuild / scmInfo := Some(

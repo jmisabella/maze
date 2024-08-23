@@ -60,12 +60,21 @@ object Generator {
       override type DISTANCE = Distance
       override val distance = _distance
     }
+    case object recursiveBacktracker extends RecursiveBacktracker {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
+      override val linker = _linkage
+      case object _distance extends Distance
+      override type DISTANCE = Distance
+      override val distance = _distance
+    }
     val generator = request.algorithm match {
       case Algorithm.BinaryTree => binaryTree
       case Algorithm.Sidewinder => sidewinder
       case Algorithm.AldousBroder => aldousBroder 
       case Algorithm.Wilsons => wilsons
-      case Algorithm.HuntAndKill =>huntAndKill 
+      case Algorithm.HuntAndKill => huntAndKill 
+      case Algorithm.RecursiveBacktracker => recursiveBacktracker
       case a => throw new IllegalArgumentException(s"Unexpected algorithm [$a]")
     }
     // request.mazeType match {
