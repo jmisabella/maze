@@ -1,7 +1,7 @@
 package maze.behaviors.builders
 
 import maze.behaviors.{ Linkage, Distance }
-import maze.behaviors.builders.HuntAndKill
+import maze.behaviors.builders.RecursiveBacktracker
 import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm }
 import maze.classes.Algorithm._
 
@@ -9,8 +9,8 @@ import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
-class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
-  case object module extends HuntAndKill {
+class RecursiveBacktrackerSpec extends AnyFlatSpec with GivenWhenThen {
+  case object module extends RecursiveBacktracker {
     case object _linkage extends Linkage
     override type LINKAGE = Linkage
     override val linker = _linkage
@@ -20,11 +20,11 @@ class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
     override val distance = _distance
   }
   
-  "HuntAndKill" should "generate a 6x6 maze using HuntAndKill and print it to screen" in {
+  "RecursiveBacktracker" should "generate a 6x6 maze using RecursiveBacktracker and print it to screen" in {
     Given("6x6 grid")
     val dim: Int = 6
     val grid = Grid(dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
-    When("generating maze using HuntAndKill algorithm")
+    When("generating maze using RecursiveBacktracker algorithm")
     val generated: Grid = module.generate(grid)
     Then("resulting maze should contain no stranded unreachable cells") 
     generated.isFullyConnected() shouldBe (true)
@@ -34,11 +34,11 @@ class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
     info("\n" + generated.asci())
   }
   
-  it should "generate a 30x30 maze using HuntAndKill and print it to screen" in {
+  it should "generate a 30x30 maze using RecursiveBacktracker and print it to screen" in {
     Given("30x30 grid")
     val dim: Int = 30
     val grid = Grid(dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
-    When("generating maze using HuntAndKill algorithm")
+    When("generating maze using RecursiveBacktracker algorithm")
     val generated: Grid = module.generate(grid)
     Then("resulting maze should contain no stranded unreachable cells") 
     generated.isFullyConnected() shouldBe (true)
@@ -48,9 +48,9 @@ class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
     info("\n" + generated.asci())
   }
 
-  it should "honor start and goal coordinates specified in MazeRequest when generating a non-square HuntAndKill maze grid" in {
-    Given("5x10 HuntAndKill request")
-    val request = MazeRequest(5, 10, Algorithm.HuntAndKill, Coordinates(0, 9), Coordinates(4, 0))
+  it should "honor start and goal coordinates specified in MazeRequest when generating a non-square RecursiveBacktracker maze grid" in {
+    Given("5x10 RecursiveBacktracker request")
+    val request = MazeRequest(5, 10, Algorithm.RecursiveBacktracker, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
     var grid: Grid = Generator.generate(request)
     Then("grid's start should be southwest")

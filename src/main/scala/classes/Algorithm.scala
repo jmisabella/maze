@@ -8,7 +8,8 @@ object Algorithm extends Enumeration {
     Sidewinder,
     AldousBroder,
     Wilsons,
-    HuntAndKill = Value
+    HuntAndKill,
+    RecursiveBacktracker = Value
   
   implicit val format: Format[Algorithm] = Json.formatEnum(this)
 
