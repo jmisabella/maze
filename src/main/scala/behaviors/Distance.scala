@@ -24,7 +24,6 @@ trait Distance {
         for (linked <- c.linked) {
           if (!distances.keySet.contains(linked)) {
             distances = distances + (linked -> (distances.get(c.coords).getOrElse(0) + 1))
-            // newFrontier = newFrontier ++ Seq(grid.cells(linked.x)(linked.y))
             newFrontier = newFrontier ++ Seq(grid.cells(linked.y)(linked.x))
           }
         }
@@ -33,8 +32,6 @@ trait Distance {
     }
     distances
   }
-  // def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startX)(startY))
-  // def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.x)(startCoords.y))
   def getDistances(grid: Grid, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startY)(startX))
   def getDistances(grid: Grid, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.y)(startCoords.x))
   def distances(grid: Grid, startX: Int, startY: Int): Grid = {
@@ -49,7 +46,6 @@ trait Distance {
   }
   def distances(grid: Grid, startCoords: Coordinates): Grid = distances(grid, startCoords.x, startCoords.y)
 
-  // TODO: test 
   def getLongestPath(grid: Grid): Map[Coordinates, Int] = {
     val distances: Map[Coordinates, Int] = getDistances(grid, 0, 0)
     val (newStart, _): (Coordinates, Int) = distances.maxBy(_._2) 
@@ -75,13 +71,10 @@ trait Distance {
     grid.unflatten(withDistances)
   }
   def getPathTo(grid: Grid, startX: Int, startY: Int, goalX: Int, goalY: Int): Map[Coordinates, Int] = {
-  // def getPathTo(grid: Grid, goalX: Int, goalY: Int, startX: Int, startY: Int): Map[Coordinates, Int] = {
-  // def getPathTo(grid: Grid, goalY: Int, goalX: Int, startY: Int, startX: Int): Map[Coordinates, Int] = {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     var current: Coordinates = Coordinates(goalX, goalY)
     var breadcrumbs: Map[Coordinates, Int] = Map(current -> dist(current))
     while (current != Coordinates(startX, startY)) {
-      // for (neighbor <- grid.cells(current.x)(current.y).linked) {
       for (neighbor <- grid.cells(current.y)(current.x).linked) {
         if (dist(neighbor) < dist(current)) {
           breadcrumbs = breadcrumbs ++ Map(neighbor -> dist(neighbor))

@@ -22,7 +22,6 @@ class WilsonsSpec extends AnyFlatSpec with GivenWhenThen {
   
   "Wilsons" should "generate a 6x6 maze using Wilsons and print it to screen" in {
     Given("6x6 grid")
-    // val dim: Int = 30
     val dim: Int = 6
     val grid = Grid(dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
     When("generating maze using Wilson's algorithm")

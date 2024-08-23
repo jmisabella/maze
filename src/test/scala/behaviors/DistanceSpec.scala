@@ -84,7 +84,6 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
     cellCountOnShortestPath shouldBe >= (4 + 4)
   }
 
-  //// this seems to result in infinite loop 
   it should "generate a 5x5 maze using Binary Tree and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
     Given("5x5 grid generated using BinaryTree")
     val unlinked = Grid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
