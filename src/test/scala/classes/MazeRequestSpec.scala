@@ -2,7 +2,6 @@ package maze.classes
 
 import maze.classes.{ MazeRequest, Coordinates }
 import maze.classes.Algorithm._
-import maze.classes.MazeType._
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
@@ -35,7 +34,7 @@ class MazeRequestSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "deserialize a JSON 8x8 Sidewinder maze request which is valid JSON but each argument's type is a String" in {
     Given("string representation of 8x8 sidewinder maze request whose arguments are all of type String")
-    val json = """{"width":"8","height":"8","algorithm":"sidewinder","startX":"0","startY":"7","goalX":"7","goalY":"0","mazeType":"Solved"}"""
+    val json = """{"width":"8","height":"8","algorithm":"sidewinder","startX":"0","startY":"7","goalX":"7","goalY":"0"}"""
     When(s"deserializing the string $json")
     val request: MazeRequest = MazeRequest(json)
     Then("a MazeRequest object should be created")

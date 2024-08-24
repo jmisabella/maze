@@ -15,10 +15,6 @@ case class Grid(
   goalCoords: Coordinates) {
 
   // retrieve cell residing at provided row and column coordinates
-  // def get(row: Int, column: Int): Cell = cells(row)(column)
-  // def get(column: Int, row: Int): Cell = cells(column)(row)
-  // def get(coords: Coordinates): Cell = cells(coords.x)(coords.y)
-  // def get(x: Int, y: Int): Cell = cells(x)(y)
   def get(x: Int, y: Int): Cell = cells(y)(x)
   def get(coords: Coordinates): Cell = get(coords.x, coords.y)
   def get(cell: Cell): Cell = get(cell.coords)
@@ -26,7 +22,6 @@ case class Grid(
   def row(y: Int): List[Cell] = cells(y).toList
   // retrieve column
   def column(x: Int): List[Cell] = (for (y <- 0 until rows) yield cells(y)(x)).toList
-  // def column(x: Int): List[Cell] = (for (i <- 0 until rows) yield cells(x)(i)).toList
 
   def size(): Int = rows * columns
 
@@ -42,7 +37,6 @@ case class Grid(
     }).toArray)
   }
 
-  // def links(cell: Cell): Seq[Cell] = (for (c <- cell.linked) yield cells(c.x)(c.y)).toSeq
   def links(cell: Cell): Seq[Cell] = (for (c <- cell.linked) yield cells(c.y)(c.x)).toSeq
 
   def linked(cell1: Cell, cell2: Cell): Boolean = cell1.isLinked(cell2)
@@ -95,9 +89,6 @@ case class Grid(
           var cell = remaining.head
           remaining = remaining.tail
           val coordinates: Coordinates = Coordinates(col, row)
-          // val coordinates: Coordinates = Coordinates(row, col)
-          // // TODO ???: not sure why, but in this line only I needed to switch predicates' start/goal coords here
-          // cell.copy(isStart = coordinates == goalCoords, isGoal = coordinates == startCoords)
           cell.copy(isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
         }).toArray
       }).toArray
@@ -145,8 +136,6 @@ case class Grid(
     // each edge is counted twice, so divide by 2
     def countEdges(grid: Grid): Int = flatten().map(_.linked.toSeq.length).sum / 2
     // a maze is perfect if it's fully connected and is a tree (no cycles and exactly v-1 edges)
-    println("EDGE COUNT: " + countEdges(this))
-    println("SIZE: " + size())
     isFullyConnected() && countEdges(this) == size() - 1
   }
   def linkOneUnreachable(): Grid = {
@@ -198,7 +187,6 @@ case class Grid(
       var top: String = "|"
       var bottom: String = "+"
       for (cell <- row) {
-        // val body = " X "
         val body = cell.value
         val eastBoundary: String = cell.neighbors.east match {
           case Some(east) if (cell.isLinked(east)) => " "

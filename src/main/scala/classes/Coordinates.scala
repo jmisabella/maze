@@ -5,15 +5,12 @@ import com.fasterxml.jackson.core.JsonParseException
 
 case class SerializedCoordinates(x: String, y: String) {
   override def toString(): String = (Json.obj("x" -> x, "y" -> y)).toString()
-  // override def toString(): String = (Json.obj("x" -> y, "y" -> x)).toString()
 }
 object SerializedCoordinates {
   implicit val format: Format[SerializedCoordinates] = Json.format[SerializedCoordinates]
 }
-///// SNAFU BUG: non-serialized coordinates seem to be mixing up x and y 
 case class Coordinates(x: Int, y: Int) {
   override def toString(): String = (Json.obj("x" -> x, "y" -> y)).toString()
-  // override def toString(): String = (Json.obj("x" -> y, "y" -> x)).toString()
   def inverse(): Coordinates = Coordinates(y, x)
 }
 object Coordinates {

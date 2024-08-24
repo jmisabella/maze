@@ -51,7 +51,6 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     When("printing the maze")
     Then("the maze should be printed to screen")
     println("12x12 Sidewinder")
-    // println(generated.toString())
     info(generated.asci())
   }
 
@@ -69,8 +68,6 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     generated.cells.count(c => c.length == 25) should be (25)
     When("printing the maze")
     Then("the maze should be printed to screen")
-    // println("25x25 Sidewinder")
-    // println(generated.toString())
     info(generated.asci())
   }
 
@@ -87,9 +84,6 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     generated.cells.count(c => c.length == 35) should be (35)
     When("printing the maze")
     Then("the maze should be printed to screen")
-    // println("35x35 Sidewinder")
-    // println(generated.toString())
-    // println(generated.asci())
     println(module.distance.pathTo(generated, 0, 34, 34, 0))
     println(module.distance.pathTo(generated, 0, 34, 34, 0).asci())
   }
@@ -107,9 +101,6 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     generated.cells.count(c => c.length == 40) should be (40)
     When("printing the maze")
     Then("the maze should be printed to screen")
-    // println("40x40 Sidewinder")
-    // println(generated.toString())
-    // println(generated.asci())
     println(module.distance.pathTo(generated, 0, 39, 39, 0))
     println(module.distance.pathTo(generated, 0, 39, 39, 0).asci())
     Then("resulting maze should contain no stranded unreachable cells") 
@@ -139,8 +130,6 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "generate a 5x10 maze using Sidewinder and print it to screen" in {
-    // BUG // TODO: Generator.generate(Grid) preserves correct x,y coords in Cells
-    // BUG // TODO: however Generator.generate(MazeRequest) incorrectly mixes up x,y coords in Cells
     Given("5x10 grid")
     val grid = Grid(10, 5, Coordinates(0, 9), Coordinates(4, 0))
     When("generating maze using Sidewinder")

@@ -25,7 +25,6 @@ trait BinaryTree extends Generator {
           val (index, nextSeed): (Int, RNG) = nextGrid.randomInt(neighbors.length)
           nextGrid = nextGrid.copy(seed = nextSeed) // we made a random move, update grid's seed to the next seed
           val neighbor: Coordinates = neighbors(index)
-          // linker.link(Seq(cell, nextGrid.cells(neighbor.x)(neighbor.y)))
           linker.link(Seq(cell, nextGrid.cells(neighbor.y)(neighbor.x)))
         }
       }
