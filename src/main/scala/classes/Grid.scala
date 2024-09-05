@@ -240,28 +240,8 @@ object Grid {
             case 0 => None // nothing exists west
             case _ => Some((grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
           }
-          val northeast = (cell.coords.x, cell.coords.y) match {
-            case (_, 0) => None // nothing exists north
-            case (x, _) if (x >= grid.columns - 1) => None // nothing exists east
-            case (x, y) => Some((grid.cells(cell.coords.y - 1)(cell.coords.x + 1)).coords)
-          }
-          val southeast = (cell.coords.x, cell.coords.y) match {
-             case (_, y) if (y >= grid.rows - 1) => None // nothing exists south
-             case (x, _) if (x >= grid.columns - 1) => None // nothing exists east
-             case (x, y) => Some((grid.cells(cell.coords.y + 1)(cell.coords.x + 1)).coords)
-          }
-          val southwest = (cell.coords.x, cell.coords.y) match {
-            case (_, y) if (y >= grid.rows - 1) => None // nothing exists south
-            case (0, _) => None // nothing exists west
-            case (x, y) => Some((grid.cells(cell.coords.y + 1)(cell.coords.x - 1)).coords)
-          }
-          val northwest = (cell.coords.x, cell.coords.y) match {
-            case (_, 0) => None // nothing exists north
-            case (0, _) => None // nothing exists west
-            case (x, y) => Some((grid.cells(cell.coords.y - 1)(cell.coords.x - 1)).coords)
-          }
           cell.copy(
-            neighbors = Neighbors(north, east, south, west, northeast, southeast, southwest, northwest),
+            neighbors = Neighbors(north, east, south, west),
             isStart = cell.coords == start,
             isGoal = cell.coords == goal)
         }).toArray
