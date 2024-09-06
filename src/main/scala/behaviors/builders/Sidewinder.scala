@@ -1,21 +1,22 @@
 package maze.behaviors.builders
 
-import maze.classes.{ Grid, Cell, Coordinates }
+import maze.classes.{ Coordinates }
+import maze.classes.{ SquareNeighbors, SquareGrid, SquareCell, Coordinates }
 import maze.behaviors.Linkage
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 
-trait Sidewinder extends Generator {
+trait Sidewinder extends Generator[SquareNeighbors, SquareCell, SquareGrid] {
 
-  type LINKAGE <: Linkage
+  type LINKAGE <: Linkage[SquareNeighbors, SquareCell, SquareGrid]
   val linker: LINKAGE
 
-  override def generate(grid: Grid): Grid = {
-    var nextGrid: Grid = grid // to keep track of next random seeds
-    var run: Seq[Cell] = Nil
+  override def generate(grid: SquareGrid): SquareGrid = {
+    var nextGrid: SquareGrid = grid // to keep track of next random seeds
+    var run: Seq[SquareCell] = Nil
     for (row <- grid.cells) {
       for (originalCell <- row) {
-        val cell: Cell = nextGrid.cells(originalCell.coords.y)(originalCell.coords.x)
+        val cell: SquareCell = nextGrid.cells(originalCell.coords.y)(originalCell.coords.x)
         run = run ++ Seq(cell)
         val (randomOutcome, seed): (Boolean, RNG) = nextGrid.randomBoolean()
         nextGrid = nextGrid.copy(seed = seed) 

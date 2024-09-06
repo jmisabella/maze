@@ -1,20 +1,24 @@
 package maze.behaviors.builders
 
-import maze.classes.{ Grid, Cell, Coordinates }
+import maze.classes.{ Coordinates }
+import maze.classes.MazeType._
+import maze.behaviors.{ Linkage, ICell, IGrid, INeighbors }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 import maze.classes.Neighbors
 
-trait Wilsons extends Generator {
+import scala.reflect.ClassTag
 
-  private def randomWalk(startCell: Cell, unvisited: scala.collection.mutable.Set[Cell], grid: Grid): (List[Cell], Grid) = {
+trait Wilsons[N <: INeighbors, C <: ICell, G <: IGrid[C]] extends Generator[N, C, G] {
+
+  private def randomWalk(startCell: C, unvisited: scala.collection.mutable.Set[C], grid: G)(implicit ct: ClassTag[C]): (List[C], G) = {
     var nextGrid = grid
     var currentCell = startCell
-    val path = scala.collection.mutable.ListBuffer[Cell](currentCell)
-    val visitedDuringWalk = scala.collection.mutable.Set[Cell](currentCell)
+    val path = scala.collection.mutable.ListBuffer[C](currentCell)
+    val visitedDuringWalk = scala.collection.mutable.Set[C](currentCell)
     while (true) {
       val neighbors: Seq[Coordinates] = currentCell.neighborCoords()
-      val unvisitedNeighbors: Seq[Cell] = neighbors.flatMap { coords =>
+      val unvisitedNeighbors: Seq[C] = neighbors.flatMap { coords =>
         val neighborCell = grid.get(coords.x, coords.y)
         if (unvisited.contains(neighborCell) && !visitedDuringWalk.contains(neighborCell)) {
           Some(neighborCell)
@@ -26,7 +30,7 @@ trait Wilsons extends Generator {
         return (path.toList, nextGrid)
       } else {
         val (randomIndex, seed): (Int, RNG) = nextGrid.randomInt(unvisitedNeighbors.length)
-        nextGrid = nextGrid.copy(seed = seed)
+        nextGrid = IGrid.setSeed[N, C, G](grid = nextGrid, seed = seed)
         currentCell = unvisitedNeighbors(randomIndex)
         path += currentCell
         visitedDuringWalk.add(currentCell)
@@ -35,9 +39,9 @@ trait Wilsons extends Generator {
     (path.toList, nextGrid)
   }
 
-  def generate(grid: Grid): Grid = {
+  def generate(grid: G)(implicit ct: ClassTag[C]): G = {
     var nextGrid = grid 
-    var unvisited = scala.collection.mutable.Set[Cell]()
+    var unvisited = scala.collection.mutable.Set[C]()
     val startCell = nextGrid.get(nextGrid.startCoords.x, nextGrid.startCoords.y)
     // Mark all cells as unvisited except for the starting cell
     nextGrid.flatten().foreach(cell => unvisited.add(cell))
@@ -52,17 +56,17 @@ trait Wilsons extends Generator {
           if (cell.coords != previousCell.coords) {
             var nextCell = nextGrid.get(cell.coords.x, cell.coords.y)
             if (!previousCell.isLinked(nextCell)) {
-              previousCell = previousCell.copy(linked = previousCell.linked ++  Set(nextCell.coords))
-              nextCell = nextCell.copy(linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
-              nextGrid = nextGrid.set(previousCell).set(nextCell)
+              previousCell = ICell.setLinked(cell = previousCell, linked = previousCell.linked ++  Set(nextCell.coords))
+              nextCell = ICell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
+              nextGrid = nextGrid.set[G](previousCell).set(nextCell)
               //// why does the below line yield different results than when linking without linker??
               // nextGrid = linker.link(previousCell, nextCell, nextGrid)
               previousCell = nextCell
               if (path.length == 1) {
-                var lastCell: Cell = path.head
-                nextCell = nextCell.copy(linked = nextCell.linked ++ Set(lastCell.coords))
-                lastCell = lastCell.copy(linked = lastCell.linked ++ Set(nextCell.coords))
-                nextGrid = nextGrid.set(nextCell).set(lastCell)
+                var lastCell: C = path.head
+                nextCell = ICell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(lastCell.coords))
+                lastCell = ICell.setLinked(cell = lastCell, linked = lastCell.linked ++ Set(nextCell.coords))
+                nextGrid = nextGrid.set[G](nextCell).set(lastCell)
                 //// why does the below line yield different results than when linking without linker??
                 // nextGrid = linker.link(nextCell, lastCell, nextGrid)
               }

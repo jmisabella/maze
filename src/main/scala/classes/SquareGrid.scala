@@ -3,7 +3,7 @@ package maze.classes
 import maze.behaviors.{ ICell, IGrid }
 import maze.classes.{ SquareCell, Coordinates, MazeType }
 import maze.classes.MazeType._
-import maze.classes.Direction._
+import maze.classes.SquareDirection._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
 import scala.annotation.tailrec
@@ -14,8 +14,12 @@ case class SquareGrid(
   cells: Array[Array[SquareCell]],
   seed: RNG,
   startCoords: Coordinates,
-  goalCoords: Coordinates) extends IGrid[SquareNeighbors, SquareCell] {
-  
+  goalCoords: Coordinates) extends IGrid[SquareCell] {
+
+  override type NEIGHBORS = SquareNeighbors
+
+  // override type CELL = SquareCell
+
   // retrieve row
   def row(y: Int): List[SquareCell] = cells(y).toList
   // retrieve column

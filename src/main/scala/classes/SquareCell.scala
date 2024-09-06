@@ -3,7 +3,7 @@ package maze.classes
 import maze.behaviors.ICell
 import maze.classes.{ Coordinates, Neighbors, MazeType }
 import maze.classes.MazeType._
-import maze.classes.Direction._
+import maze.classes.SquareDirection._
 import play.api.libs.json.Json
 import maze.behaviors.IDirection
 
@@ -19,8 +19,11 @@ case class SquareCell (
   onSolutionPath: Boolean = false, 
   visited: Boolean = false,
   value: String = "   "
-) extends ICell[SquareNeighbors]() {
+) extends ICell() {
 
+  override type NEIGHBORS = SquareNeighbors
+
+  // override type MAZE_TYPE = Square
   override def mazeType: MazeType = Square 
   
   override def neighborCoords(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
@@ -47,11 +50,11 @@ case class SquareCell (
     case (None, None, None, None) => Nil
   }
 
-  override def isLinked[D <: IDirection](direction: D): Boolean = direction match {
-    case North => neighbors.north.isDefined && isLinked(neighbors.north.get)
-    case East => neighbors.east.isDefined && isLinked(neighbors.east.get)
-    case South => neighbors.south.isDefined && isLinked(neighbors.south.get)
-    case West => neighbors.west.isDefined && isLinked(neighbors.west.get)
+  override def isLinked[SquareDirection](direction: SquareDirection): Boolean = direction match {
+    case North => neighbors.north.isDefined && isLinkedCoords(neighbors.north.get)
+    case East => neighbors.east.isDefined && isLinkedCoords(neighbors.east.get)
+    case South => neighbors.south.isDefined && isLinkedCoords(neighbors.south.get)
+    case West => neighbors.west.isDefined && isLinkedCoords(neighbors.west.get)
   }
 
   override def toString(): String = {

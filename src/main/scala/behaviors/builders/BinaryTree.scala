@@ -1,18 +1,19 @@
 package maze.behaviors.builders
 
-import maze.classes.{ Grid, Cell, Coordinates }
+import maze.classes.{ SquareNeighbors, SquareGrid, SquareCell, Coordinates }
 import maze.behaviors.Linkage
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 
-trait BinaryTree extends Generator {
+// BinaryTree algorithm only works with Square maze type
+trait BinaryTree extends Generator[SquareNeighbors, SquareCell, SquareGrid] {
 
-  type LINKAGE <: Linkage
+  type LINKAGE <: Linkage[SquareNeighbors, SquareCell, SquareGrid]
   val linker: LINKAGE
 
-  override def generate(grid: Grid): Grid = {
-    var nextGrid: Grid = grid // to keep track of next random seeds
-    val unflattened: Seq[Seq[Cell]] = for (cell <- grid.flatten()) yield {
+  override def generate(grid: SquareGrid): SquareGrid = {
+    var nextGrid: SquareGrid = grid // to keep track of next random seeds
+    val unflattened: Seq[Seq[SquareCell]] = for (cell <- grid.flatten()) yield {
       val neighbors: Seq[Coordinates] = (cell.neighbors.north, cell.neighbors.east) match {
         case (None, None) => Nil
         case (Some(north), None) => Seq(north)

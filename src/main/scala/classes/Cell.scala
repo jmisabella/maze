@@ -2,7 +2,7 @@ package maze.classes
 
 import maze.behaviors.ICell
 import maze.classes.{ Coordinates, Neighbors }
-import maze.classes.Direction._
+// import maze.classes.Direction._
 import play.api.libs.json.Json
 
 // case class Cell(

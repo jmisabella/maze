@@ -7,8 +7,15 @@ import maze.utilities.RNG // can control initial seed to ensure repeatability fo
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
 import scala.reflect.ClassTag
 
-trait IGrid[N <: INeighbors, C <: ICell[N]] {
+trait IGrid[C <: ICell] {
+  
+  type NEIGHBORS <: INeighbors
+
+  // type CELL <: ICell
+
   def mazeType: MazeType
+
+
   def width: Int
   def height: Int  
   def cells: Array[Array[C]]
@@ -16,24 +23,11 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
   def startCoords: Coordinates
   def goalCoords: Coordinates
 
-  // given a cell (which tracks its own x,y coordinates) updates grid's cell at those coordinates
-  // def set[G <: IGrid[N, C]](cell: C): G
-  
-  // given a cell, returns its neighbor cells
-  // def neighbors(cell: C): Seq[C]
-  // def neighbors(coords: Coordinates): Seq[C]
-
-  // def reachable(): Seq[C]
-  // def unreachable(): Seq[C]
-  // def isFullyConnected(): Boolean
-  // def isPerfectMaze(): Boolean
-  // def linkUnreachables[G <: IGrid[N, C]](): G  
-
   def neighbors(cell: C): Seq[C] = cell.neighbors.toSeq().map(c => get(c.x, c.y))
   
   def neighbors(coords: Coordinates): Seq[C] = get(coords).neighbors.toSeq().map(c => get(c.x, c.y))
   
-  def linkOneUnreachable[G <: IGrid[N, C]]()(implicit ct: ClassTag[C]): G = {
+  def linkOneUnreachable[G <: IGrid[C]]()(implicit ct: ClassTag[C]): G = {
     var nextGrid: G = this.asInstanceOf[G]
     if (!nextGrid.isFullyConnected()) {
       var reachableCells: Seq[C] = nextGrid.reachable()
@@ -43,8 +37,8 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
           var cell: C = unreached 
           var neighbor: C = get(neighborCoords)
           if (reachable.contains(neighbor)) {
-            cell = ICell.instantiate[N, C](cell, linked = cell.linked ++ Set(neighbor.coords))
-            neighbor = ICell.instantiate[N, C](neighbor, linked = neighbor.linked ++ Set(cell.coords))
+            cell = ICell.setLinked[NEIGHBORS, C](cell, linked = cell.linked ++ Set(neighbor.coords))
+            neighbor = ICell.setLinked[NEIGHBORS, C](neighbor, linked = neighbor.linked ++ Set(cell.coords))
             nextGrid = nextGrid.set[G](cell).set[G](neighbor)
             return nextGrid
           }
@@ -53,7 +47,7 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
     }
     nextGrid
   }
-  def linkUnreachables[G <: IGrid[N, C]]()(implicit ct: ClassTag[C]): G = {
+  def linkUnreachables[G <: IGrid[C]]()(implicit ct: ClassTag[C]): G = {
     var nextGrid = this
     while (!nextGrid.isFullyConnected()) {
       nextGrid = nextGrid.linkOneUnreachable()
@@ -85,7 +79,7 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
   
   def isPerfectMaze(): Boolean = {
     // each edge is counted twice, so divide by 2
-    def countEdges[G <: IGrid[N, C]](grid: G): Int = flatten().map(_.linked.toSeq.length).sum / 2
+    def countEdges[G <: IGrid[C]](grid: G): Int = flatten().map(_.linked.toSeq.length).sum / 2
     // a maze is perfect if it's fully connected and is a tree (no cycles and exactly v-1 edges)
     isFullyConnected() && countEdges(this) == size() - 1
   }
@@ -94,13 +88,13 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
 
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
-  def unflatten[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]](flattened: Seq[C])(implicit ct: ClassTag[C]): G = {
+  def unflatten[C <: ICell, G <: IGrid[C]](flattened: Seq[C])(implicit ct: ClassTag[C]): G = {
     val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value, c.distance, c.onSolutionPath))
     val merged: Seq[Option[C]] = grouped.foldLeft(Nil: Seq[Option[C]]) {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
-        val neighbors: N = k._3
+        val neighbors: NEIGHBORS = k._3.asInstanceOf[NEIGHBORS]
         val value: String = k._4
         val distance: Int = k._5
         val onSolutionPath: Boolean = k._6
@@ -114,7 +108,7 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
     // var remaining: List[C] = flattened.head.sortList[N, C](mergedCells.toList).toList
     var remaining: List[C] = flattened.toList.sortBy(_.coords.inverse())
 
-    IGrid.instantiate[N, C, G](mazeType, height, width, startCoords, goalCoords, remaining)
+    IGrid.instantiate[NEIGHBORS, C, G](mazeType, height, width, startCoords, goalCoords, remaining)
   }
 
   def get(x: Int, y: Int): C = cells(y)(x).asInstanceOf[C]
@@ -122,7 +116,7 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
   def get(cell: C): C = get(cell.coords)
   
   // given a cell (which tracks its own x,y coordinates) updates grid's cell at those coordinates
-  def set[G <: IGrid[N, C]](cell: C)(implicit ct: ClassTag[C]): G = {
+  def set[G <: IGrid[C]](cell: C)(implicit ct: ClassTag[C]): G = {
     val cells: Array[Array[C]] = (for (row <- this.cells) yield {
       (for (c <- row) yield { 
         c.coords match {
@@ -131,24 +125,8 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
         }
       }).toArray
     }).toArray
-    IGrid.instantiate[N, C, G](this.asInstanceOf[G], cells)
+    IGrid.setCells[NEIGHBORS, C, G](this.asInstanceOf[G], cells)
   }
-
-  //// TODO: define set here in the parent trait instead of in subclasses
-  // def set[G <: IGrid[N, C]](cell: C): G = cell match {
-  //   case cll: SquareCell => {
-  //     this.copy(cells = (for (row <- this.cells) yield {
-  //       (for (c <- row) yield { 
-  //         c.coords match {
-  //           case cll.coords => cell.asInstanceOf[SquareCell]
-  //           case _ => c.asInstanceOf[SquareCell]
-  //         }
-  //       }).toArray
-  //     }).toArray)
-  //   }.asInstanceOf[G]
-  // }
-
-
 
   def size(): Int = cells.length * cells.headOption.getOrElse(Array(0)).length
 
@@ -168,19 +146,19 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
 
   def foreach(block: C => Unit): Unit = cells.foreach(row => row.foreach(block))
   def count(p: C => Boolean): Int = flatten().count(p)
-  def map[G <: IGrid[N, C]](f: C => C)(implicit ct: ClassTag[C]): G = unflatten[N, C, G](flatten().map(f))
+  def map[G <: IGrid[C]](f: C => C)(implicit ct: ClassTag[C]): G = unflatten[C, G](flatten().map(f))
   // TODO: I think we need to re-work filtering in order to preserve original grid size! 
   // TODO: If cells are filtered out then grid should use null to represent missing cells.
-  def withFilter[G <: IGrid[N, C]](p: C => Boolean)(implicit ct: ClassTag[C]): G = unflatten[N, C, G](flatten().filter(p))
-  def filter[G <: IGrid[N, C]](p: C => Boolean)(implicit ct: ClassTag[C]): G = withFilter(p)
+  def withFilter[G <: IGrid[C]](p: C => Boolean)(implicit ct: ClassTag[C]): G = unflatten[C, G](flatten().filter(p))
+  def filter[G <: IGrid[C]](p: C => Boolean)(implicit ct: ClassTag[C]): G = withFilter(p)
   def contains(c: C): Boolean = flatten().contains(c)
   def contains(cs: Seq[C]): Boolean = flatten().foldLeft(false)((acc, c) => flatten().contains(c))
   def find(p: C => Boolean): Option[C] = flatten().find(p)
 }
 
 object IGrid {
-  def instantiate[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
-    goalCoords: Coordinates, flattened: List[C] = Nil)(implicit ct1: ClassTag[C]): G = {
+  def instantiate[N <: INeighbors, C <: ICell, G <: IGrid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
+    goalCoords: Coordinates, seed: RNG, flattened: List[C])(implicit ct1: ClassTag[C]): G = {
     var remaining: List[C] = flattened
     val cells = (for (row <- 0 until height) yield {
       (for (col <- 0 until width) yield {
@@ -191,11 +169,21 @@ object IGrid {
       }).toArray
     }).toArray
     mazeType match {
-      case Square => SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], RNG.RandomSeed(Random.nextInt(height * width + 1)), startCoords, goalCoords).asInstanceOf[G]
+      case Square => SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
     }
   }
-  def instantiate[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]](grid: G, cells: Array[Array[C]])(implicit ct: ClassTag[C]): G = {
+  def instantiate[N <: INeighbors, C <: ICell, G <: IGrid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
+    goalCoords: Coordinates, flattened: List[C] = Nil)(implicit ct1: ClassTag[C]): G = {
+
+      // seed not provide, so randomly generate the initial seed
+      val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
+      instantiate[N, C, G](mazeType, height, width, startCoords, goalCoords, seed, flattened)
+  }
+  def setCells[N <: INeighbors, C <: ICell, G <: IGrid[C]](grid: G, cells: Array[Array[C]])(implicit ct: ClassTag[C]): G = {
     instantiate[N, C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, cells.toList.flatten)
+  } 
+  def setSeed[N <: INeighbors, C <: ICell, G <: IGrid[C]](grid: G, seed: RNG)(implicit ct: ClassTag[C]): G = {
+    instantiate[N, C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, seed, grid.flatten)
   } 
 }

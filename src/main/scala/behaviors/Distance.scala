@@ -6,7 +6,7 @@ import maze.classes.{ Coordinates }
 
 import scala.reflect.ClassTag
 
-trait Distance[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]] {
+trait Distance[N <: INeighbors, C <: ICell, G <: IGrid[C]] {
   def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
   def padLeft(s: String, c: Char, n: Int): String = n match {
     case 0 => s
@@ -48,7 +48,7 @@ trait Distance[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]] {
       //   distance = dist.get(c.coords).getOrElse(0)
       // )
       ).toSeq
-    grid.unflatten[N, C, G](withDistances)
+    grid.unflatten[C, G](withDistances)
   }
   def distances(grid: G, startCoords: Coordinates)(implicit ct: ClassTag[C]): G = distances(grid, startCoords.x, startCoords.y)
 
@@ -79,7 +79,7 @@ trait Distance[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]] {
       //     case _: java.lang.NumberFormatException => 0
       //   })
     ).toSeq
-    grid.unflatten[N, C, G](withDistances)
+    grid.unflatten[C, G](withDistances)
   }
   def getPathTo(grid: G, startX: Int, startY: Int, goalX: Int, goalY: Int): Map[Coordinates, Int] = {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
@@ -117,7 +117,7 @@ trait Distance[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]] {
       //     case _: java.lang.NumberFormatException => grid.columns * grid.rows
       //   })
       ).toSeq
-    grid.unflatten[N, C, G](withDistances)
+    grid.unflatten[C, G](withDistances)
   }
   def pathTo(grid: G, startCoords: Coordinates, goalCoords: Coordinates)(implicit ct: ClassTag[C]): G = pathTo(grid, startCoords.x, startCoords.y, goalCoords.x, goalCoords.y)
 

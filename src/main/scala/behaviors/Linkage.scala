@@ -6,7 +6,7 @@ import maze.classes.MazeType._
 
 import scala.reflect.ClassTag
 
-trait Linkage[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]] {
+trait Linkage[N <: INeighbors, C <: ICell, G <: IGrid[C]] {
 
   def visit(cell: C): C = cell.visit(visited = true)
   
@@ -21,7 +21,7 @@ trait Linkage[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]] {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
-        val neighbors: N = k._3
+        val neighbors: N = k._3.asInstanceOf[N]
         val mazeType: MazeType = k._4
         val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
         // acc ++ Seq(Some(Cell(coords = coords, visited = visited, neighbors = neighbors, linked = linked)))
@@ -34,8 +34,8 @@ trait Linkage[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]] {
   def link(cell1: C, cell2: C, bidi: Boolean)(implicit ct: ClassTag[C]): Seq[C] = bidi match {
     // case false => Seq(cell1.copy(linked = cell1.linked + cell2.coords))
     // case true => Seq(cell1.copy(linked = cell1.linked + cell2.coords), cell2.copy(linked = cell2.linked + cell1.coords))
-    case false => Seq(ICell.instantiate[N, C](cell1, cell1.linked + cell2.coords))
-    case true => Seq(ICell.instantiate[N, C](cell1, cell1.linked + cell2.coords), ICell.instantiate[N, C](cell2, cell2.linked + cell1.coords))
+    case false => Seq(ICell.setLinked[N, C](cell1, cell1.linked + cell2.coords))
+    case true => Seq(ICell.setLinked[N, C](cell1, cell1.linked + cell2.coords), ICell.setLinked[N, C](cell2, cell2.linked + cell1.coords))
   }
   def link(cells: Seq[C], bidi: Boolean = true)(implicit ct: ClassTag[C]): Seq[C] = linkAll(cells, bidi, link)
 
@@ -43,8 +43,8 @@ trait Linkage[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]] {
     if (cell1.neighbors.toSeq.contains(cell2.coords) && cell2.neighbors.toSeq.contains(cell1.coords)) {
       // val updated1: Cell = cell1.copy(linked = cell1.linked ++ Set(cell2.coords))
       // val updated2: Cell = cell2.copy(linked = cell2.linked ++ Set(cell1.coords))
-      val updated1: C = ICell.instantiate[N, C](cell1, cell1.linked ++ Set(cell2.coords))
-      val updated2: C = ICell.instantiate[N, C](cell2, cell2.linked ++ Set(cell1.coords))
+      val updated1: C = ICell.setLinked[N, C](cell1, cell1.linked ++ Set(cell2.coords))
+      val updated2: C = ICell.setLinked[N, C](cell2, cell2.linked ++ Set(cell1.coords))
       grid.set[G](updated1).set[G](updated2) 
     } else {
       grid

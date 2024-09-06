@@ -2,29 +2,34 @@ package maze.behaviors.builders
 
 // import maze.classes.{ Grid, Cell, Coordinates }
 import maze.classes.{ Coordinates }
+import maze.classes.MazeType._
 import maze.behaviors.{ Linkage, ICell, IGrid, INeighbors }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
+import scala.reflect.ClassTag
 
-trait AldousBroder extends Generator {
-  type LINKAGE <: Linkage
+trait AldousBroder[N <: INeighbors, C <: ICell, G <: IGrid[C]] extends Generator[N, C, G] {
+  // type MAZE_TYPE <: MazeType
+  // val mazeType: MAZE_TYPE
+
+  type LINKAGE <: Linkage[N, C, G]
   val linker: LINKAGE
   
-  override def generate(grid: Grid): Grid = {
-    var nextGrid: Grid = grid
-    var cells: Seq[Cell] = grid.flatten() 
+  override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
+    var nextGrid: G = grid
+    var cells: Seq[C] = grid.flatten() 
     var unvisited: Int = grid.size() - 1
     val (randomCellIndex, seed1): (Int, RNG)  = nextGrid.randomInt(cells.length)
-    var cell: Cell = cells(randomCellIndex)
-    nextGrid = nextGrid.copy(seed = seed1) 
+    var cell: C = cells(randomCellIndex)
+    nextGrid = IGrid.setSeed[N, C, G](grid = nextGrid, seed = seed1) 
     while (unvisited > 0) {
       val neighbors: Seq[Coordinates]= cell.neighbors.toSeq()
       val (randomNeighborIndex, seed2): (Int, RNG) = nextGrid.randomInt(neighbors.length)
-      nextGrid = nextGrid.copy(seed = seed2)
-      var neighbor: Cell = cells.filter(c => c.coords == neighbors(randomNeighborIndex)).head
+      nextGrid = IGrid.setSeed[N, C, G](grid = nextGrid, seed = seed2)
+      var neighbor: C = cells.filter(c => c.coords == neighbors(randomNeighborIndex)).head
       if (neighbor.linked.isEmpty) {
-        val linked: Seq[Cell] = linker.link(cell, neighbor, bidi=true)
-        val (c1, c2): (Cell, Cell) = (linked.head, linked.tail.head)
+        val linked: Seq[C] = linker.link(cell, neighbor, bidi=true)
+        val (c1, c2): (C, C) = (linked.head, linked.tail.head)
         cells = cells.map(c => c.coords match {
           case c1.coords => c1
           case c2.coords => c2
