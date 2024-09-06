@@ -1,7 +1,8 @@
 package maze.behaviors.builders
 
-import maze.classes.{ Grid, Cell, Coordinates }
-import maze.behaviors.Linkage
+// import maze.classes.{ Grid, Cell, Coordinates }
+import maze.classes.{ Coordinates }
+import maze.behaviors.{ Linkage, ICell, IGrid, INeighbors }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 

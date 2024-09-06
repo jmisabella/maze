@@ -180,7 +180,7 @@ trait IGrid[N <: INeighbors, C <: ICell[N]] {
 
 object IGrid {
   def instantiate[N <: INeighbors, C <: ICell[N], G <: IGrid[N, C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
-    goalCoords: Coordinates, flattened: List[C])(implicit ct1: ClassTag[C]): G = {
+    goalCoords: Coordinates, flattened: List[C] = Nil)(implicit ct1: ClassTag[C]): G = {
     var remaining: List[C] = flattened
     val cells = (for (row <- 0 until height) yield {
       (for (col <- 0 until width) yield {

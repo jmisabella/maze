@@ -6,10 +6,10 @@ import maze.classes.{ Coordinates, SerializedCoordinates }
 import play.api.libs.json.{ Json, Format, JsSuccess }
 import com.fasterxml.jackson.core.JsonParseException
 
-private case class SerializedMazeRequest(/*mazeType: String,*/ width: String, height: String, algorithm: String, startX: String, startY: String, goalX: String, goalY: String) {
+private case class SerializedMazeRequest(mazeType: String, width: String, height: String, algorithm: String, startX: String, startY: String, goalX: String, goalY: String) {
   override def toString(): String = {
     (Json.obj(
-      // "mazeType" -> mazeType,
+      "mazeType" -> mazeType,
       "width" -> width, 
       "height" -> height, 
       "algorithm" -> algorithm, 
@@ -20,7 +20,7 @@ private case class SerializedMazeRequest(/*mazeType: String,*/ width: String, he
 private object SerializedMazeRequest {
   implicit val format: Format[SerializedMazeRequest] = Json.format[SerializedMazeRequest]
 }
-case class MazeRequest(/*mazeType: MazeType,*/ width: Int, height: Int, algorithm: Algorithm, start: Coordinates, goal: Coordinates) {
+case class MazeRequest(mazeType: MazeType, width: Int, height: Int, algorithm: Algorithm, start: Coordinates, goal: Coordinates) {
   override def toString(): String = (Json.obj(/*"mazeType" -> mazeType,*/ "width" -> width, "height" -> height, "algorithm" -> algorithm, "start" -> start, "goal" -> goal)).toString()
 }
 object MazeRequest {
@@ -28,8 +28,8 @@ object MazeRequest {
   
   def apply(req: SerializedMazeRequest): MazeRequest = { 
     MazeRequest(
-      // MazeType.fromString(req.mazeType).getOrElse(
-      //   throw new IllegalArgumentException(s"Unexpected mazeType [${req.mazeType}] provided in request")),
+      MazeType.fromString(req.mazeType).getOrElse(
+        throw new IllegalArgumentException(s"Unexpected mazeType [${req.mazeType}] provided in request")),
       req.width.toInt, 
       req.height.toInt, 
       Algorithm.fromString(req.algorithm).getOrElse(
