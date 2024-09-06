@@ -1,13 +1,15 @@
 package maze.classes
 
 import maze.classes.Algorithm._
+import maze.classes.MazeType._
 import maze.classes.{ Coordinates, SerializedCoordinates } 
 import play.api.libs.json.{ Json, Format, JsSuccess }
 import com.fasterxml.jackson.core.JsonParseException
 
-private case class SerializedMazeRequest(width: String, height: String, algorithm: String, startX: String, startY: String, goalX: String, goalY: String) {
+private case class SerializedMazeRequest(/*mazeType: String,*/ width: String, height: String, algorithm: String, startX: String, startY: String, goalX: String, goalY: String) {
   override def toString(): String = {
     (Json.obj(
+      // "mazeType" -> mazeType,
       "width" -> width, 
       "height" -> height, 
       "algorithm" -> algorithm, 
@@ -18,14 +20,16 @@ private case class SerializedMazeRequest(width: String, height: String, algorith
 private object SerializedMazeRequest {
   implicit val format: Format[SerializedMazeRequest] = Json.format[SerializedMazeRequest]
 }
-case class MazeRequest(width: Int, height: Int, algorithm: Algorithm, start: Coordinates, goal: Coordinates) {
-  override def toString(): String = (Json.obj("width" -> width, "height" -> height, "algorithm" -> algorithm, "start" -> start, "goal" -> goal)).toString()
+case class MazeRequest(/*mazeType: MazeType,*/ width: Int, height: Int, algorithm: Algorithm, start: Coordinates, goal: Coordinates) {
+  override def toString(): String = (Json.obj(/*"mazeType" -> mazeType,*/ "width" -> width, "height" -> height, "algorithm" -> algorithm, "start" -> start, "goal" -> goal)).toString()
 }
 object MazeRequest {
   implicit val format: Format[MazeRequest] = Json.format[MazeRequest]
   
   def apply(req: SerializedMazeRequest): MazeRequest = { 
     MazeRequest(
+      // MazeType.fromString(req.mazeType).getOrElse(
+      //   throw new IllegalArgumentException(s"Unexpected mazeType [${req.mazeType}] provided in request")),
       req.width.toInt, 
       req.height.toInt, 
       Algorithm.fromString(req.algorithm).getOrElse(

@@ -24,6 +24,8 @@ trait ICell[N <: INeighbors] {
   def neighborCoords(): Seq[Coordinates]
   def isLinked[D <: IDirection](direction: D): Boolean
 
+  def visit[C <: ICell[N]](visited: Boolean)(implicit ct: ClassTag[C]): C = ICell.instantiate[N, C](this.asInstanceOf[C], visited)
+
   // def sortList[N <: INeighbors, C <: ICell[N]](list: Seq[C]): Seq[C]
 
   def unlinkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => !isLinked(c))
@@ -61,11 +63,20 @@ object ICell {
       case Square => SquareCell(coords = coords, neighbors = neighbors.asInstanceOf[SquareNeighbors], linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
   }
+  def instantiate[N <: INeighbors, C <: ICell[N]](mazeType: MazeType, coords: Coordinates, visited: Boolean, neighbors: N, linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
+    instantiate[N, C](mazeType, coords, neighbors, linked, 0, false, false, false, visited, "   ")
+  }
   def instantiate[N <: INeighbors, C <: ICell[N]](cell: C, isStart: Boolean, isGoal: Boolean)(implicit ct: ClassTag[C]): C = {
     instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors, cell.linked, cell.distance, isStart, isGoal, cell.onSolutionPath, cell.visited, cell.value)
   }
   def instantiate[N <: INeighbors, C <: ICell[N]](cell: C, linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
     instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors, linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, cell.visited, cell.value)
+  }
+  def instantiate[N <: INeighbors, C <: ICell[N]](cell: C, visited: Boolean)(implicit ct: ClassTag[C]): C = {
+    instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors, cell.linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, visited, cell.value)
+  }
+  def instantiate[N <: INeighbors, C <: ICell[N]](cell: C, distance: Int, onSolutionPath: Boolean, value: String)(implicit ct: ClassTag[C]): C = {
+    instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors, cell.linked, distance, cell.isStart, cell.isGoal, onSolutionPath, cell.visited, value)
   }
 
   // // not sure why calling inverse on coords when sorting a list needs to use the inverse to prevent transposing x/y grid

@@ -1,12 +1,15 @@
 package maze.behaviors.builders
 
-import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm }
-import maze.behaviors.{ Linkage, Distance }
+// import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm }
+// import maze.behaviors.{ Linkage, Distance }
+import maze.classes.{ Coordinates, MazeRequest, Algorithm }
+import maze.behaviors.{ Linkage, Distance, ICell, IGrid, INeighbors }
 import maze.behaviors.builders.{ BinaryTree, Sidewinder, AldousBroder, Wilsons, HuntAndKill }
+import maze.classes.SquareNeighbors
 
 trait Generator {
   
-  type LINKAGE <: Linkage
+  type LINKAGE <: Linkage[SquareNeighbors, SquareCell, SquareGrid]
   val linker: LINKAGE
 
   type DISTANCE <: Distance
