@@ -3,13 +3,13 @@ package maze.behaviors.builders
 // import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm }
 // import maze.behaviors.{ Linkage, Distance }
 import maze.classes.{ Coordinates, MazeRequest, Algorithm }
-import maze.behaviors.{ Linkage, Distance, ICell, IGrid, INeighbors }
+import maze.behaviors.{ Linkage, Distance, Cell, Grid, Neighbors }
 import maze.behaviors.builders.{ BinaryTree, Sidewinder, AldousBroder, Wilsons, HuntAndKill }
 import maze.classes.{ SquareNeighbors, SquareCell, SquareGrid }
 import maze.classes.MazeType._
 import scala.reflect.ClassTag
 
-trait Generator[N <: INeighbors, C <: ICell, G <: IGrid[C]] {
+trait Generator[N <: Neighbors, C <: Cell, G <: Grid[C]] {
 
   // type MAZE_TYPE <: MazeType
   // val mazeType: MAZE_TYPE
@@ -23,12 +23,12 @@ trait Generator[N <: INeighbors, C <: ICell, G <: IGrid[C]] {
   def generate(grid: G)(implicit ct: ClassTag[C]): G
 
   def generate(mazeType: MazeType, width: Int, height: Int, start: Coordinates, goal: Coordinates)(implicit ct: ClassTag[C]): G = {
-    generate(IGrid.instantiate[N, C, G](mazeType, height, width, start, goal))
+    generate(Grid.instantiate[N, C, G](mazeType, height, width, start, goal))
   }
 }
 
 object Generator {
-  def generate[A, N <: INeighbors, C <: ICell, G <: IGrid[C]](request: MazeRequest)(implicit generator: A <:< Generator[N, C, G], ct: ClassTag[C]): G = {
+  def generate[A, N <: Neighbors, C <: Cell, G <: Grid[C]](request: MazeRequest)(implicit generator: A <:< Generator[N, C, G], ct: ClassTag[C]): G = {
     // case object binaryTree extends BinaryTree {
     //   case object _linkage extends Linkage[SquareNeighbors, SquareCell, SquareGrid]
     //   override type LINKAGE = Linkage[SquareNeighbors, SquareCell, SquareGrid]

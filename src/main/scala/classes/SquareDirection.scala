@@ -1,6 +1,8 @@
 package maze.classes
 
-object SquareDirection extends Enumeration with maze.behaviors.IDirection {
+import maze.behaviors.Direction
+
+object SquareDirection extends Enumeration with Direction {
   type SquareDirection = Value
   val North, East, South, West = Value
   

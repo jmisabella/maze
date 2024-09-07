@@ -1,6 +1,6 @@
 package maze.classes
 
-import maze.behaviors.INeighbors
+import maze.behaviors.Neighbors
 
 import play.api.libs.json.{ Json, Format }
 
@@ -9,7 +9,7 @@ case class SquareNeighbors(
   east: Option[Coordinates] = None,
   south: Option[Coordinates] = None,
   west: Option[Coordinates] = None
-) extends INeighbors {
+) extends Neighbors {
   override def toSeq(): Seq[Coordinates] = Seq(north, east, south, west).filter(_.isDefined).map(_.get)
 }
 

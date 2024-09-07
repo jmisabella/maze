@@ -1,12 +1,12 @@
 package maze.behaviors
 
 // import maze.classes.{ Coordinates, Neighbors, Cell, Grid }
-import maze.behaviors.{ INeighbors, ICell, IGrid}
+import maze.behaviors.{ Neighbors, Cell, Grid}
 import maze.classes.{ Coordinates }
 
 import scala.reflect.ClassTag
 
-trait Distance[N <: INeighbors, C <: ICell, G <: IGrid[C]] {
+trait Distance[N <: Neighbors, C <: Cell, G <: Grid[C]] {
   def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
   def padLeft(s: String, c: Char, n: Int): String = n match {
     case 0 => s
@@ -41,7 +41,7 @@ trait Distance[N <: INeighbors, C <: ICell, G <: IGrid[C]] {
   def distances(grid: G, startX: Int, startY: Int)(implicit ct2: ClassTag[C]): G = {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDistances: Seq[C] = grid.cells.flatten.map(c => 
-      ICell.instantiate[N, C](cell = c, distance = dist.get(c.coords).getOrElse(0), onSolutionPath = dist.get(c.coords).isDefined, value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3))
+      Cell.instantiate[N, C](cell = c, distance = dist.get(c.coords).getOrElse(0), onSolutionPath = dist.get(c.coords).isDefined, value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3))
       // c.copy(
       //   value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3),
       //   onSolutionPath = dist.get(c.coords).isDefined, 
@@ -65,7 +65,7 @@ trait Distance[N <: INeighbors, C <: ICell, G <: IGrid[C]] {
       case Some(c) => getLongestPath(grid).map(kv => kv._1 -> c.toString()).toMap
     }
     val withDistances: Seq[C] = grid.cells.flatten.map(c => 
-      ICell.instantiate[N, C](
+      Cell.instantiate[N, C](
         cell = c, 
         distance = try { path.get(c.coords).getOrElse("0").toInt } catch { case _: java.lang.NumberFormatException => 0 },
         onSolutionPath = path.get(c.coords).isDefined, 
@@ -102,7 +102,7 @@ trait Distance[N <: INeighbors, C <: ICell, G <: IGrid[C]] {
     }
     val distances: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDistances: Seq[C] = grid.cells.flatten.map(c => 
-      ICell.instantiate[N, C](
+      Cell.instantiate[N, C](
         cell = c, 
         distance = try { distances.get(c.coords).getOrElse(grid.width * grid.height) } catch { case _: java.lang.NumberFormatException => grid.width * grid.height },
         onSolutionPath = shortestPath.get(c.coords).isDefined, 

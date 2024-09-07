@@ -1,5 +1,5 @@
 package maze.behaviors
 
-trait IDirection {
+trait Direction {
 
 }

@@ -2,14 +2,13 @@ package maze.behaviors.builders
 
 import maze.classes.{ Coordinates }
 import maze.classes.MazeType._
-import maze.behaviors.{ Linkage, ICell, IGrid, INeighbors }
+import maze.behaviors.{ Linkage, Cell, Grid, Neighbors }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
-import maze.classes.Neighbors
 
 import scala.reflect.ClassTag
 
-trait Wilsons[N <: INeighbors, C <: ICell, G <: IGrid[C]] extends Generator[N, C, G] {
+trait Wilsons[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G] {
 
   private def randomWalk(startCell: C, unvisited: scala.collection.mutable.Set[C], grid: G)(implicit ct: ClassTag[C]): (List[C], G) = {
     var nextGrid = grid
@@ -30,7 +29,7 @@ trait Wilsons[N <: INeighbors, C <: ICell, G <: IGrid[C]] extends Generator[N, C
         return (path.toList, nextGrid)
       } else {
         val (randomIndex, seed): (Int, RNG) = nextGrid.randomInt(unvisitedNeighbors.length)
-        nextGrid = IGrid.setSeed[N, C, G](grid = nextGrid, seed = seed)
+        nextGrid = Grid.setSeed[N, C, G](grid = nextGrid, seed = seed)
         currentCell = unvisitedNeighbors(randomIndex)
         path += currentCell
         visitedDuringWalk.add(currentCell)
@@ -56,16 +55,16 @@ trait Wilsons[N <: INeighbors, C <: ICell, G <: IGrid[C]] extends Generator[N, C
           if (cell.coords != previousCell.coords) {
             var nextCell = nextGrid.get(cell.coords.x, cell.coords.y)
             if (!previousCell.isLinked(nextCell)) {
-              previousCell = ICell.setLinked(cell = previousCell, linked = previousCell.linked ++  Set(nextCell.coords))
-              nextCell = ICell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
+              previousCell = Cell.setLinked(cell = previousCell, linked = previousCell.linked ++  Set(nextCell.coords))
+              nextCell = Cell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
               nextGrid = nextGrid.set[G](previousCell).set(nextCell)
               //// why does the below line yield different results than when linking without linker??
               // nextGrid = linker.link(previousCell, nextCell, nextGrid)
               previousCell = nextCell
               if (path.length == 1) {
                 var lastCell: C = path.head
-                nextCell = ICell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(lastCell.coords))
-                lastCell = ICell.setLinked(cell = lastCell, linked = lastCell.linked ++ Set(nextCell.coords))
+                nextCell = Cell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(lastCell.coords))
+                lastCell = Cell.setLinked(cell = lastCell, linked = lastCell.linked ++ Set(nextCell.coords))
                 nextGrid = nextGrid.set[G](nextCell).set(lastCell)
                 //// why does the below line yield different results than when linking without linker??
                 // nextGrid = linker.link(nextCell, lastCell, nextGrid)

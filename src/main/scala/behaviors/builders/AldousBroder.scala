@@ -3,12 +3,12 @@ package maze.behaviors.builders
 // import maze.classes.{ Grid, Cell, Coordinates }
 import maze.classes.{ Coordinates }
 import maze.classes.MazeType._
-import maze.behaviors.{ Linkage, ICell, IGrid, INeighbors }
+import maze.behaviors.{ Linkage, Cell, Grid, Neighbors }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 import scala.reflect.ClassTag
 
-trait AldousBroder[N <: INeighbors, C <: ICell, G <: IGrid[C]] extends Generator[N, C, G] {
+trait AldousBroder[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G] {
   // type MAZE_TYPE <: MazeType
   // val mazeType: MAZE_TYPE
 
@@ -21,11 +21,11 @@ trait AldousBroder[N <: INeighbors, C <: ICell, G <: IGrid[C]] extends Generator
     var unvisited: Int = grid.size() - 1
     val (randomCellIndex, seed1): (Int, RNG)  = nextGrid.randomInt(cells.length)
     var cell: C = cells(randomCellIndex)
-    nextGrid = IGrid.setSeed[N, C, G](grid = nextGrid, seed = seed1) 
+    nextGrid = Grid.setSeed[N, C, G](grid = nextGrid, seed = seed1) 
     while (unvisited > 0) {
       val neighbors: Seq[Coordinates]= cell.neighbors.toSeq()
       val (randomNeighborIndex, seed2): (Int, RNG) = nextGrid.randomInt(neighbors.length)
-      nextGrid = IGrid.setSeed[N, C, G](grid = nextGrid, seed = seed2)
+      nextGrid = Grid.setSeed[N, C, G](grid = nextGrid, seed = seed2)
       var neighbor: C = cells.filter(c => c.coords == neighbors(randomNeighborIndex)).head
       if (neighbor.linked.isEmpty) {
         val linked: Seq[C] = linker.link(cell, neighbor, bidi=true)

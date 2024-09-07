@@ -1,11 +1,11 @@
 package maze.classes
 
-import maze.behaviors.ICell
-import maze.classes.{ Coordinates, Neighbors, MazeType }
+import maze.behaviors.Cell
+import maze.classes.{ Coordinates, MazeType, SquareNeighbors }
 import maze.classes.MazeType._
 import maze.classes.SquareDirection._
 import play.api.libs.json.Json
-import maze.behaviors.IDirection
+import maze.behaviors.Direction
 
 import scala.math.Ordering.Implicits._
 
@@ -19,7 +19,7 @@ case class SquareCell (
   onSolutionPath: Boolean = false, 
   visited: Boolean = false,
   value: String = "   "
-) extends ICell() {
+) extends Cell() {
 
   override type NEIGHBORS = SquareNeighbors
 

@@ -1,6 +1,6 @@
 package maze.classes
 
-import maze.behaviors.{ ICell, IGrid }
+import maze.behaviors.{ Cell, Grid }
 import maze.classes.{ SquareCell, Coordinates, MazeType }
 import maze.classes.MazeType._
 import maze.classes.SquareDirection._
@@ -14,7 +14,7 @@ case class SquareGrid(
   cells: Array[Array[SquareCell]],
   seed: RNG,
   startCoords: Coordinates,
-  goalCoords: Coordinates) extends IGrid[SquareCell] {
+  goalCoords: Coordinates) extends Grid[SquareCell] {
 
   override type NEIGHBORS = SquareNeighbors
 
