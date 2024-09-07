@@ -11,9 +11,6 @@ import scala.reflect.ClassTag
 
 trait Generator[N <: Neighbors, C <: Cell, G <: Grid[C]] {
 
-  // type MAZE_TYPE <: MazeType
-  // val mazeType: MAZE_TYPE
-
   type LINKAGE <: Linkage[N, C, G]
   val linker: LINKAGE
 
