@@ -2,19 +2,22 @@ package maze.behaviors.builders
 
 import maze.classes.{ Coordinates }
 import maze.classes.{ SquareNeighbors, SquareGrid, SquareCell, Coordinates }
-import maze.behaviors.Linkage
+import maze.behaviors.{ Linkage, INeighbors, ICell, IGrid }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 
-trait Sidewinder extends Generator[SquareNeighbors, SquareCell, SquareGrid] {
+import scala.reflect.ClassTag
 
-  type LINKAGE <: Linkage[SquareNeighbors, SquareCell, SquareGrid]
+// Sidewinder algorithm only works with Square maze type
+trait Sidewinder[N <: INeighbors, C <: ICell, G <: IGrid[C]] extends Generator[N, C, G] {
+
+  type LINKAGE <: Linkage[N, C, G]
   val linker: LINKAGE
 
-  override def generate(grid: SquareGrid): SquareGrid = {
-    var nextGrid: SquareGrid = grid // to keep track of next random seeds
+  override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
+    var nextGrid: SquareGrid = grid.asInstanceOf[SquareGrid] // to keep track of next random seeds
     var run: Seq[SquareCell] = Nil
-    for (row <- grid.cells) {
+    for (row <- grid.asInstanceOf[SquareGrid].cells) {
       for (originalCell <- row) {
         val cell: SquareCell = nextGrid.cells(originalCell.coords.y)(originalCell.coords.x)
         run = run ++ Seq(cell)
@@ -25,13 +28,13 @@ trait Sidewinder extends Generator[SquareNeighbors, SquareCell, SquareGrid] {
             run = Nil // clear current run, onto the next run
           }
           case (Some(north), Some(east), false) => { // go eastward, do not close the current run 
-            for (c <- linker.link(Seq(cell, nextGrid.cells(east.y)(east.x)))) {
-              nextGrid = nextGrid.set(c)
+            for (c <- linker.link(Seq(cell.asInstanceOf[C], nextGrid.cells(east.y)(east.x).asInstanceOf[C]))) {
+              nextGrid = nextGrid.set(c.asInstanceOf[SquareCell])
             }
           }
           case (None, Some(east), _) => { // cannot go north
-            for (c <- linker.link(Seq(cell, nextGrid.cells(east.y)(east.x)))) { // go east
-              nextGrid = nextGrid.set(c)
+            for (c <- linker.link(Seq(cell.asInstanceOf[C], nextGrid.cells(east.y)(east.x).asInstanceOf[C]))) { // go east
+              nextGrid = nextGrid.set(c.asInstanceOf[SquareCell])
             }
           }
           case (_, None, _) => { // cannot go east, close run and randomly choose cell from current run from which to move north 
@@ -40,8 +43,8 @@ trait Sidewinder extends Generator[SquareNeighbors, SquareCell, SquareGrid] {
             val member = nextGrid.cells(rand.y)(rand.x)
             run = Nil // clear current run, onto the next run
             if (member.neighbors.north.isDefined) {
-              for (c <- linker.link(Seq(member, nextGrid.cells(member.neighbors.north.get.y)(member.neighbors.north.get.x)))) {
-                nextGrid = nextGrid.set(c)
+              for (c <- linker.link(Seq(member.asInstanceOf[C], nextGrid.cells(member.neighbors.north.get.y)(member.neighbors.north.get.x).asInstanceOf[C]))) {
+                nextGrid = nextGrid.set(c.asInstanceOf[SquareCell])
               }
             }
           }
@@ -51,15 +54,15 @@ trait Sidewinder extends Generator[SquareNeighbors, SquareCell, SquareGrid] {
             val member = nextGrid.cells(rand.y)(rand.x)
             run = Nil // clear current run, onto the next run
             if (member.neighbors.north.isDefined) {
-              for (c <- linker.link(Seq(member, nextGrid.cells(member.neighbors.north.get.y)(member.neighbors.north.get.x)))) {
-                nextGrid = nextGrid.set(c)
+              for (c <- linker.link(Seq(member.asInstanceOf[C], nextGrid.cells(member.neighbors.north.get.y)(member.neighbors.north.get.x).asInstanceOf[C]))) {
+                nextGrid = nextGrid.set(c.asInstanceOf[SquareCell])
               }
             }
           }
         }
       }
     }
-    nextGrid
+    nextGrid.asInstanceOf[G]
   }
 
 }
