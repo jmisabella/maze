@@ -41,7 +41,7 @@ case class SquareGrid(
     output
   }
 
-  def asci(): String = {
+  override def asci(): String = {
     var output: String = "+" + "---+" * width + "\n"
     for (row <- cells) {
       var top: String = "|"

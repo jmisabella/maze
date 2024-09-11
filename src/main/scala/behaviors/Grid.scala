@@ -22,6 +22,7 @@ trait Grid[C <: Cell] {
   def seed: RNG
   def startCoords: Coordinates
   def goalCoords: Coordinates
+  def asci(): String
 
   def neighbors(cell: C): Seq[C] = cell.neighbors.toSeq().map(c => get(c.x, c.y))
   
@@ -159,17 +160,42 @@ trait Grid[C <: Cell] {
 object Grid {
   def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
     goalCoords: Coordinates, seed: RNG, flattened: List[C])(implicit ct1: ClassTag[C]): G = {
-    var remaining: List[C] = flattened
-    val cells = (for (row <- 0 until height) yield {
-      (for (col <- 0 until width) yield {
-        var cell = remaining.head
-        remaining = remaining.tail
-        val coordinates: Coordinates = Coordinates(col, row)
-        Cell.instantiate[N, C](cell, isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
+    
+      //  var remaining = Array.ofDim[C](height, width).toList.flatten
+      val cells = (for (row <- 0 until height) yield {
+        (for (col <- 0 until width) yield {
+          val coords: Coordinates = Coordinates(col, row)
+          val neighbors: N = Neighbors(mazeType).asInstanceOf[N]
+          val linked: Set[Coordinates] = Set()
+          val distance: Int = 0
+          val (isStart, isGoal) = (coords == startCoords, coords == goalCoords)
+          val (onSolutionPath, visited) = (false, false)
+          Cell.instantiate[N, C](mazeType, coords, neighbors, linked, distance, isStart, isGoal, onSolutionPath, visited)
+        }).toArray
       }).toArray
-    }).toArray
+
+
+    // var remaining: List[C] = flattened
+    // if (remaining.isEmpty) {
+    //   remaining = Array.ofDim[C](height, width).toList.flatten
+    // }
+    // val cells = (for (row <- 0 until height) yield {
+    //   (for (col <- 0 until width) yield {
+    //     var cell = remaining.head
+    //     remaining = remaining.tail
+    //     val coordinates: Coordinates = Coordinates(col, row)
+    //     println("CELL IS NULL? " + cell == null)
+    //     println("CELL COORDS: " + cell.coords)
+    //     Cell.instantiate[N, C](cell, isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
+    //   }).toArray
+    // }).toArray
     mazeType match {
-      case Square => SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
+      case Square => {
+        val grid = SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
+        println("GRID: \n" + grid.toString()) 
+        println("\nGRID: \n" + grid.asci()) 
+        grid
+      }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
     }
   }

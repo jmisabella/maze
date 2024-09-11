@@ -20,7 +20,7 @@ trait HuntAndKill[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, 
     val (randomIndex1, seed1): (Int, RNG) = nextGrid.randomInt(nextGrid.size())
     nextGrid = Grid.setSeed[N, C, G](grid = nextGrid, seed = seed1)
     var current: Option[C] = Some(nextGrid.flatten()(randomIndex1))
-    while (current != null) {
+    while (current != None) {
       val unvisitedNeighbors: Seq[C] = nextGrid.unlinkedNeighbors(current.get).filter(c => !visited.contains(c.coords))
       if (unvisitedNeighbors.nonEmpty) {
         // ****** KILL ****** 
