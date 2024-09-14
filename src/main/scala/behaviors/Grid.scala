@@ -1,7 +1,7 @@
 package maze.behaviors
 
 import maze.behaviors.Cell
-import maze.classes.{ SquareGrid, SquareCell, Coordinates, MazeType }
+import maze.classes.{ SquareGrid, SquareCell, SquareNeighbors, Coordinates, MazeType }
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
@@ -159,41 +159,75 @@ trait Grid[C <: Cell] {
 
 object Grid {
   def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
+    goalCoords: Coordinates)(implicit ct1: ClassTag[C]): G = {
+    
+    val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
+    
+    mazeType match {
+      case Square => {
+        // val grid = SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
+        // grid
+        val empty: SquareGrid = SquareGrid(height, width, Array[Array[SquareCell]](), seed, startCoords, goalCoords).copy(cells = Array.ofDim[SquareCell](height, width))
+        val grid: SquareGrid = empty.copy(cells =
+          (for (row <- 0 until empty.height) yield {
+            (for (col <- 0 until empty.width) yield {
+              SquareCell(col, row)
+            }).toArray
+          }).toArray
+        )
+        grid.copy(
+          cells = (for (row <- 0 until grid.height) yield {
+            // set cells' neighbors
+            (for (col <- 0 until grid.width) yield {
+              val coordinates: Coordinates = Coordinates(col, row)
+              val cell = grid.cells(row)(col)
+              val north = cell.coords.y match {
+                case 0 => None // nothing exists north
+                case _ => Some((grid.cells(cell.coords.y - 1)(cell.coords.x)).coords)
+              }
+              val east = cell.coords.x match {
+                case x if (x >= grid.width - 1) => None // nothing exists east
+                case _ => Some((grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
+              }
+              val south = cell.coords.y match {
+                case y if (y >= grid.height - 1) => None // nothing exists south
+                case _ => Some((grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
+              }
+              val west = cell.coords.x match {
+                case 0 => None // nothing exists west
+                case _ => Some((grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
+              }
+              cell.copy(
+                neighbors = SquareNeighbors(north, east, south, west),
+                isStart = cell.coords == startCoords,
+                isGoal = cell.coords == goalCoords)
+            }).toArray
+          }).toArray
+        ).asInstanceOf[G]
+      }
+      case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
+    }
+  }
+  def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
     goalCoords: Coordinates, seed: RNG, flattened: List[C])(implicit ct1: ClassTag[C]): G = {
     
-      //  var remaining = Array.ofDim[C](height, width).toList.flatten
-      val cells = (for (row <- 0 until height) yield {
-        (for (col <- 0 until width) yield {
-          val coords: Coordinates = Coordinates(col, row)
-          val neighbors: N = Neighbors(mazeType).asInstanceOf[N]
-          val linked: Set[Coordinates] = Set()
-          val distance: Int = 0
-          val (isStart, isGoal) = (coords == startCoords, coords == goalCoords)
-          val (onSolutionPath, visited) = (false, false)
-          Cell.instantiate[N, C](mazeType, coords, neighbors, linked, distance, isStart, isGoal, onSolutionPath, visited)
-        }).toArray
+    var remaining: List[C] = flattened
+    if (remaining.isEmpty) {
+      remaining = Array.ofDim[C](height, width).toList.flatten
+    }
+    val cells = (for (row <- 0 until height) yield {
+      (for (col <- 0 until width) yield {
+        var cell = remaining.head
+        remaining = remaining.tail
+        val coordinates: Coordinates = Coordinates(col, row)
+        println("CELL IS NULL? " + cell == null)
+        println("CELL COORDS: " + cell.coords)
+        Cell.instantiate[N, C](cell, isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
       }).toArray
-
-
-    // var remaining: List[C] = flattened
-    // if (remaining.isEmpty) {
-    //   remaining = Array.ofDim[C](height, width).toList.flatten
-    // }
-    // val cells = (for (row <- 0 until height) yield {
-    //   (for (col <- 0 until width) yield {
-    //     var cell = remaining.head
-    //     remaining = remaining.tail
-    //     val coordinates: Coordinates = Coordinates(col, row)
-    //     println("CELL IS NULL? " + cell == null)
-    //     println("CELL COORDS: " + cell.coords)
-    //     Cell.instantiate[N, C](cell, isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
-    //   }).toArray
-    // }).toArray
+    }).toArray
     mazeType match {
       case Square => {
         val grid = SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
-        println("GRID: \n" + grid.toString()) 
-        println("\nGRID: \n" + grid.asci()) 
         grid
       }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")

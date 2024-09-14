@@ -100,10 +100,10 @@ object Generator {
       case (_, a) => throw new IllegalArgumentException(s"Unexpected algorithm [$a]")
     }
     // generator.distance.pathTo( 
-      val distances = generator.distance.distances(
+      val distances = //generator.distance.distances(
         generator.generate(request.mazeType, request.width, request.height, request.start, request.goal)
-        , request.start.x
-        , request.start.y)
+        // , request.start.x
+        // , request.start.y)
       println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH\n" + distances.toString()) 
       // , request.start.x
       // , request.start.y 
