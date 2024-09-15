@@ -31,8 +31,6 @@ trait Linkage[N <: Neighbors, C <: Cell, G <: Grid[C]] {
     merged.filter(_.isDefined).map(_.get)
   }
   def link(cell1: C, cell2: C, bidi: Boolean)(implicit ct: ClassTag[C]): Seq[C] = bidi match {
-    // case false => Seq(Cell.setLinked[N, C](cell1, cell1.linked + cell2.coords))
-    // case true => Seq(Cell.setLinked[N, C](cell1, cell1.linked + cell2.coords), Cell.setLinked[N, C](cell2, cell2.linked + cell1.coords))
     case false => Seq(cell1.setLinked[N, C](cell1.linked + cell2.coords))
     case true => Seq(cell1.setLinked[N, C](cell1.linked + cell2.coords), cell2.setLinked[N, C](cell2.linked + cell1.coords))
   }
@@ -40,8 +38,6 @@ trait Linkage[N <: Neighbors, C <: Cell, G <: Grid[C]] {
 
   def link(cell1: C, cell2: C, grid: G)(implicit ct: ClassTag[C]): G = {
     if (cell1.neighbors.toSeq.contains(cell2.coords) && cell2.neighbors.toSeq.contains(cell1.coords)) {
-      // val updated1: C = Cell.setLinked[N, C](cell1, cell1.linked ++ Set(cell2.coords))
-      // val updated2: C = Cell.setLinked[N, C](cell2, cell2.linked ++ Set(cell1.coords))
       val updated1: C = cell1.setLinked[N, C](cell1.linked ++ Set(cell2.coords))
       val updated2: C = cell2.setLinked[N, C](cell2.linked ++ Set(cell1.coords))
       grid.set[G](updated1).set(updated2) 

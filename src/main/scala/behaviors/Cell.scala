@@ -72,9 +72,6 @@ object Cell {
   def instantiate[N <: Neighbors, C <: Cell](cell: C, isStart: Boolean, isGoal: Boolean)(implicit ct: ClassTag[C]): C = {
     instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, cell.distance, isStart, isGoal, cell.onSolutionPath, cell.visited, cell.value)
   }
-  // def setLinked[N <: Neighbors, C <: Cell](cell: C, linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
-  //   instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, cell.visited, cell.value)
-  // }
   def instantiate[N <: Neighbors, C <: Cell](cell: C, visited: Boolean)(implicit ct: ClassTag[C]): C = {
     instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, visited, cell.value)
   }

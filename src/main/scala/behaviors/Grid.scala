@@ -36,8 +36,6 @@ trait Grid[C <: Cell] {
           var cell: C = unreached 
           var neighbor: C = get(neighborCoords)
           if (reachable.contains(neighbor)) {
-            // cell = Cell.setLinked[NEIGHBORS, C](cell, linked = cell.linked ++ Set(neighbor.coords))
-            // neighbor = Cell.setLinked[NEIGHBORS, C](neighbor, linked = neighbor.linked ++ Set(cell.coords))
             cell = cell.setLinked[NEIGHBORS, C](linked = cell.linked ++ Set(neighbor.coords))
             neighbor = neighbor.setLinked[NEIGHBORS, C](linked = neighbor.linked ++ Set(cell.coords))
             nextGrid = nextGrid.set[G](cell).set(neighbor)
@@ -128,7 +126,11 @@ trait Grid[C <: Cell] {
     }).toArray
     Grid.setCells[NEIGHBORS, C, G](this.asInstanceOf[G], cells)
   }
-
+  // set RNG seed 
+  def set[N <: Neighbors, C <: Cell, G <: Grid[C]](seed: RNG)(implicit ct: ClassTag[C]): G = {
+    Grid.setSeed[N, C, G](this.asInstanceOf[G], seed)
+  } 
+  
   def size(): Int = cells.length * cells.headOption.getOrElse(Array(0)).length
 
   def links(cell: C): Seq[C] = (for (c <- cell.linked) yield cells(c.y)(c.x)).toSeq
@@ -200,10 +202,10 @@ object Grid {
       val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
       instantiate[N, C, G](mazeType, height, width, startCoords, goalCoords, seed, flattened)
   }
-  def setCells[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, cells: Array[Array[C]])(implicit ct: ClassTag[C]): G = {
+  private def setCells[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, cells: Array[Array[C]])(implicit ct: ClassTag[C]): G = {
     instantiate[N, C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, cells.toList.flatten)
   } 
-  def setSeed[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, seed: RNG)(implicit ct: ClassTag[C]): G = {
+  private def setSeed[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, seed: RNG)(implicit ct: ClassTag[C]): G = {
     instantiate[N, C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, seed, grid.flatten)
   } 
 }

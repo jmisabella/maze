@@ -18,11 +18,11 @@ trait AldousBroder[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N,
     var unvisited: Int = grid.size() - 1
     val (randomCellIndex, seed1): (Int, RNG)  = nextGrid.randomInt(cells.length)
     var cell: C = cells(randomCellIndex)
-    nextGrid = Grid.setSeed[N, C, G](grid = nextGrid, seed = seed1) 
+    nextGrid = nextGrid.set[N, C, G](seed = seed1) 
     while (unvisited > 0) {
       val neighbors: Seq[Coordinates]= cell.neighbors.toSeq()
       val (randomNeighborIndex, seed2): (Int, RNG) = nextGrid.randomInt(neighbors.length)
-      nextGrid = Grid.setSeed[N, C, G](grid = nextGrid, seed = seed2)
+      nextGrid = nextGrid.set[N, C, G](seed = seed2)
       var neighbor: C = cells.filter(c => c.coords == neighbors(randomNeighborIndex)).head
       if (neighbor.linked.isEmpty) {
         val linked: Seq[C] = linker.link(cell, neighbor, bidi=true)
