@@ -1,7 +1,7 @@
 package maze.behaviors.builders
 
 import maze.classes.{ Coordinates }
-import maze.classes.{ SquareNeighbors, SquareGrid, SquareCell, Coordinates }
+import maze.classes.{ SquareNeighbors, RectangleGrid, SquareCell, Coordinates }
 import maze.behaviors.{ Linkage, Neighbors, Cell, Grid }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
@@ -15,9 +15,9 @@ trait Sidewinder[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C
   val linker: LINKAGE
 
   override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
-    var nextGrid: SquareGrid = grid.asInstanceOf[SquareGrid] // to keep track of next random seeds
+    var nextGrid: RectangleGrid = grid.asInstanceOf[RectangleGrid] // to keep track of next random seeds
     var run: Seq[SquareCell] = Nil
-    for (row <- grid.asInstanceOf[SquareGrid].cells) {
+    for (row <- grid.asInstanceOf[RectangleGrid].cells) {
       for (originalCell <- row) {
         val cell: SquareCell = nextGrid.cells(originalCell.coords.y)(originalCell.coords.x)
         run = run ++ Seq(cell)

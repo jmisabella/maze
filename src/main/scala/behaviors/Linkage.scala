@@ -1,6 +1,6 @@
 package maze.behaviors
 
-import maze.behaviors.{ Neighbors, Cell, Grid, Direction }
+import maze.behaviors.{ Neighbors, Cell, Grid }
 import maze.classes.{ Coordinates }
 import maze.classes.MazeType._
 

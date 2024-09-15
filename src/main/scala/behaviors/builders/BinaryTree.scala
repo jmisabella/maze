@@ -1,6 +1,6 @@
 package maze.behaviors.builders
 
-import maze.classes.{ SquareNeighbors, SquareGrid, SquareCell, Coordinates }
+import maze.classes.{ SquareNeighbors, RectangleGrid, SquareCell, Coordinates }
 import maze.behaviors.{ Linkage, Neighbors, Cell, Grid }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
@@ -14,9 +14,10 @@ trait BinaryTree[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C
   val linker: LINKAGE
 
   override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
-    var nextGrid: SquareGrid = grid.asInstanceOf[SquareGrid] // to keep track of next random seeds
+    var nextGrid: RectangleGrid = grid.asInstanceOf[RectangleGrid] // to keep track of next random seeds
+    println("GGGGGGGGGGGGGGGGGGGGGGGGG\n" + nextGrid)
     //// TODO: since refactoring Grid/Cell, apparently line below which flattens grid doesn't set any of the cells' neighbors
-    val unflattened: Seq[Seq[SquareCell]] = for (cell <- grid.asInstanceOf[SquareGrid].flatten()) yield {
+    val unflattened: Seq[Seq[SquareCell]] = for (cell <- grid.asInstanceOf[RectangleGrid].flatten()) yield {
       val neighbors: Seq[Coordinates] = (cell.neighbors.north, cell.neighbors.east) match {
         case (None, None) => Nil
         case (Some(north), None) => Seq(north)

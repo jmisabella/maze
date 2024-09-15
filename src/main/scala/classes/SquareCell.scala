@@ -5,9 +5,6 @@ import maze.classes.{ Coordinates, MazeType, SquareNeighbors }
 import maze.classes.MazeType._
 import maze.classes.SquareDirection._
 import play.api.libs.json.Json
-import maze.behaviors.Direction
-
-import scala.math.Ordering.Implicits._
 
 case class SquareCell (
   coords: Coordinates, 

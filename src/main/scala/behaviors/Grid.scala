@@ -1,7 +1,7 @@
 package maze.behaviors
 
 import maze.behaviors.Cell
-import maze.classes.{ SquareGrid, SquareCell, SquareNeighbors, Coordinates, MazeType }
+import maze.classes.{ RectangleGrid, SquareCell, SquareNeighbors, Coordinates, MazeType }
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
@@ -10,8 +10,6 @@ import scala.reflect.ClassTag
 trait Grid[C <: Cell] {
   
   type NEIGHBORS <: Neighbors
-
-  // type CELL <: Cell
 
   def mazeType: MazeType
 
@@ -165,12 +163,12 @@ object Grid {
     
     mazeType match {
       case Square => {
-        SquareGrid(height, width, startCoords, goalCoords).asInstanceOf[G]
+        RectangleGrid(height, width, startCoords, goalCoords).asInstanceOf[G]
       }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
     }
   }
-  def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
+  private def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
     goalCoords: Coordinates, seed: RNG, flattened: List[C])(implicit ct1: ClassTag[C]): G = {
     
     var remaining: List[C] = flattened
@@ -182,23 +180,21 @@ object Grid {
         var cell = remaining.head
         remaining = remaining.tail
         val coordinates: Coordinates = Coordinates(col, row)
-        println("CELL IS NULL? " + cell == null)
-        println("CELL COORDS: " + cell.coords)
         Cell.instantiate[N, C](cell, isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
       }).toArray
     }).toArray
     mazeType match {
       case Square => {
-        val grid = SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
+        val grid = RectangleGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
         grid
       }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
     }
   }
-  def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
+  private def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
     goalCoords: Coordinates, flattened: List[C] = Nil)(implicit ct1: ClassTag[C]): G = {
 
-      // seed not provide, so randomly generate the initial seed
+      // seed not provided, so randomly generate the initial seed
       val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
       instantiate[N, C, G](mazeType, height, width, startCoords, goalCoords, seed, flattened)
   }

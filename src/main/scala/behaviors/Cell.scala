@@ -1,6 +1,5 @@
 package maze.behaviors
 
-import maze.behaviors.Direction
 import maze.classes.{ Coordinates, SquareNeighbors, SquareCell, MazeType }
 import maze.classes.MazeType._
 
@@ -25,11 +24,9 @@ trait Cell {
 
   // abstract methods
   def neighborCoords(): Seq[Coordinates]
-  def isLinked[D <: Direction](direction: D): Boolean
+  def isLinked[D <: Enumeration#Value](direction: D): Boolean
 
   def visit[C <: Cell](visited: Boolean)(implicit ct: ClassTag[C]): C = Cell.instantiate[NEIGHBORS, C](this.asInstanceOf[C], visited)
-
-  // def sortList[N <: Neighbors, C <: Cell[N]](list: Seq[C]): Seq[C]
 
   def unlinkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => !isLinkedCoords(c))
   
@@ -54,8 +51,6 @@ trait Cell {
     c.toString * left + s + c.toString * right
   }
   
-  // implicit def ordering [N <: Neighbors, C <: Cell[N]]: Ordering[C] = Ordering.by(_.coords.inverse())
-
 }
 
 object Cell {
@@ -81,7 +76,4 @@ object Cell {
   def instantiate[N <: Neighbors, C <: Cell](cell: C, distance: Int, onSolutionPath: Boolean, value: String)(implicit ct: ClassTag[C]): C = {
     instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, distance, cell.isStart, cell.isGoal, onSolutionPath, cell.visited, value)
   }
-
-  // // not sure why calling inverse on coords when sorting a list needs to use the inverse to prevent transposing x/y grid
-  // implicit def ordering [N <: Neighbors, C <: Cell[N]]: Ordering[C] = Ordering.by(_.coords.inverse())
 }

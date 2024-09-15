@@ -1,6 +1,5 @@
 package maze.behaviors.builders
 
-// import maze.classes.{ Grid, Cell, Coordinates }
 import maze.classes.{ Coordinates }
 import maze.classes.MazeType._
 import maze.behaviors.{ Linkage, Cell, Grid, Neighbors }
@@ -9,8 +8,6 @@ import maze.utilities.RNG
 import scala.reflect.ClassTag
 
 trait AldousBroder[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G] {
-  // type MAZE_TYPE <: MazeType
-  // val mazeType: MAZE_TYPE
 
   type LINKAGE <: Linkage[N, C, G]
   val linker: LINKAGE
