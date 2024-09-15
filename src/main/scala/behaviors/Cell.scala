@@ -37,6 +37,11 @@ trait Cell {
     case true  => linked.contains(cell.coords) && cell.linked(this.coords)
   }
   def isLinkedCoords(coords: Coordinates): Boolean = linked.contains(coords)
+  
+  def setLinked[N <: Neighbors, C <: Cell](linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
+    Cell.instantiate[N, C](mazeType, coords, neighbors.asInstanceOf[N], linked, distance, isStart, isGoal, onSolutionPath, visited, value)
+  }
+
 
   def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
   def padLeft(s: String, c: Char, n: Int): String = n match {
@@ -67,9 +72,9 @@ object Cell {
   def instantiate[N <: Neighbors, C <: Cell](cell: C, isStart: Boolean, isGoal: Boolean)(implicit ct: ClassTag[C]): C = {
     instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, cell.distance, isStart, isGoal, cell.onSolutionPath, cell.visited, cell.value)
   }
-  def setLinked[N <: Neighbors, C <: Cell](cell: C, linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
-    instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, cell.visited, cell.value)
-  }
+  // def setLinked[N <: Neighbors, C <: Cell](cell: C, linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
+  //   instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, cell.visited, cell.value)
+  // }
   def instantiate[N <: Neighbors, C <: Cell](cell: C, visited: Boolean)(implicit ct: ClassTag[C]): C = {
     instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, visited, cell.value)
   }

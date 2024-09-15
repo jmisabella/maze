@@ -36,9 +36,11 @@ trait Grid[C <: Cell] {
           var cell: C = unreached 
           var neighbor: C = get(neighborCoords)
           if (reachable.contains(neighbor)) {
-            cell = Cell.setLinked[NEIGHBORS, C](cell, linked = cell.linked ++ Set(neighbor.coords))
-            neighbor = Cell.setLinked[NEIGHBORS, C](neighbor, linked = neighbor.linked ++ Set(cell.coords))
-            nextGrid = nextGrid.set[G](cell).set[G](neighbor)
+            // cell = Cell.setLinked[NEIGHBORS, C](cell, linked = cell.linked ++ Set(neighbor.coords))
+            // neighbor = Cell.setLinked[NEIGHBORS, C](neighbor, linked = neighbor.linked ++ Set(cell.coords))
+            cell = cell.setLinked[NEIGHBORS, C](linked = cell.linked ++ Set(neighbor.coords))
+            neighbor = neighbor.setLinked[NEIGHBORS, C](linked = neighbor.linked ++ Set(cell.coords))
+            nextGrid = nextGrid.set[G](cell).set(neighbor)
             return nextGrid
           }
         } 

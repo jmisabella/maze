@@ -55,16 +55,20 @@ trait Wilsons[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G
           if (cell.coords != previousCell.coords) {
             var nextCell = nextGrid.get(cell.coords.x, cell.coords.y)
             if (!previousCell.isLinked(nextCell)) {
-              previousCell = Cell.setLinked(cell = previousCell, linked = previousCell.linked ++  Set(nextCell.coords))
-              nextCell = Cell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
+              // previousCell = Cell.setLinked(cell = previousCell, linked = previousCell.linked ++  Set(nextCell.coords))
+              // nextCell = Cell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
+              previousCell = previousCell.setLinked(linked = previousCell.linked ++  Set(nextCell.coords))
+              nextCell = nextCell.setLinked(linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell
               nextGrid = nextGrid.set[G](previousCell).set(nextCell)
               //// why does the below line yield different results than when linking without linker??
               // nextGrid = linker.link(previousCell, nextCell, nextGrid)
               previousCell = nextCell
               if (path.length == 1) {
                 var lastCell: C = path.head
-                nextCell = Cell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(lastCell.coords))
-                lastCell = Cell.setLinked(cell = lastCell, linked = lastCell.linked ++ Set(nextCell.coords))
+                // nextCell = Cell.setLinked(cell = nextCell, linked = nextCell.linked ++ Set(lastCell.coords))
+                // lastCell = Cell.setLinked(cell = lastCell, linked = lastCell.linked ++ Set(nextCell.coords))
+                nextCell = nextCell.setLinked(linked = nextCell.linked ++ Set(lastCell.coords))
+                lastCell = lastCell.setLinked(linked = lastCell.linked ++ Set(nextCell.coords))
                 nextGrid = nextGrid.set[G](nextCell).set(lastCell)
                 //// why does the below line yield different results than when linking without linker??
                 // nextGrid = linker.link(nextCell, lastCell, nextGrid)
