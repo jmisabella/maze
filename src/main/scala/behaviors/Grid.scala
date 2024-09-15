@@ -165,45 +165,7 @@ object Grid {
     
     mazeType match {
       case Square => {
-        // val grid = SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
-        // grid
-        val empty: SquareGrid = SquareGrid(height, width, Array[Array[SquareCell]](), seed, startCoords, goalCoords).copy(cells = Array.ofDim[SquareCell](height, width))
-        val grid: SquareGrid = empty.copy(cells =
-          (for (row <- 0 until empty.height) yield {
-            (for (col <- 0 until empty.width) yield {
-              SquareCell(col, row)
-            }).toArray
-          }).toArray
-        )
-        grid.copy(
-          cells = (for (row <- 0 until grid.height) yield {
-            // set cells' neighbors
-            (for (col <- 0 until grid.width) yield {
-              val coordinates: Coordinates = Coordinates(col, row)
-              val cell = grid.cells(row)(col)
-              val north = cell.coords.y match {
-                case 0 => None // nothing exists north
-                case _ => Some((grid.cells(cell.coords.y - 1)(cell.coords.x)).coords)
-              }
-              val east = cell.coords.x match {
-                case x if (x >= grid.width - 1) => None // nothing exists east
-                case _ => Some((grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
-              }
-              val south = cell.coords.y match {
-                case y if (y >= grid.height - 1) => None // nothing exists south
-                case _ => Some((grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
-              }
-              val west = cell.coords.x match {
-                case 0 => None // nothing exists west
-                case _ => Some((grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
-              }
-              cell.copy(
-                neighbors = SquareNeighbors(north, east, south, west),
-                isStart = cell.coords == startCoords,
-                isGoal = cell.coords == goalCoords)
-            }).toArray
-          }).toArray
-        ).asInstanceOf[G]
+        SquareGrid(height, width, startCoords, goalCoords).asInstanceOf[G]
       }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
     }

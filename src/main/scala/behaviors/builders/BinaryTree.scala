@@ -15,6 +15,7 @@ trait BinaryTree[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C
 
   override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
     var nextGrid: SquareGrid = grid.asInstanceOf[SquareGrid] // to keep track of next random seeds
+    //// TODO: since refactoring Grid/Cell, apparently line below which flattens grid doesn't set any of the cells' neighbors
     val unflattened: Seq[Seq[SquareCell]] = for (cell <- grid.asInstanceOf[SquareGrid].flatten()) yield {
       val neighbors: Seq[Coordinates] = (cell.neighbors.north, cell.neighbors.east) match {
         case (None, None) => Nil
@@ -23,12 +24,14 @@ trait BinaryTree[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C
         case (Some(north), Some(east)) => Seq(north, east)
       }
       neighbors match {
-        case Nil => Seq(cell)
+        case Nil => println("BINARY SEARCH: EMPTY"); Seq(cell)
         case xs => {
           val (index, nextSeed): (Int, RNG) = nextGrid.randomInt(neighbors.length)
+          println("BINARY SEARCH: CELLS EXIST")
           nextGrid = nextGrid.copy(seed = nextSeed) // we made a random move, update grid's seed to the next seed
           val neighbor: Coordinates = neighbors(index)
           linker.link(Seq(cell, nextGrid.cells(neighbor.y)(neighbor.x)).map(_.asInstanceOf[C])).asInstanceOf[Seq[SquareCell]]
+          // linker.link(Seq(cell.asInstanceOf[SquareCell], nextGrid.cells(neighbor.y)(neighbor.x)).map(_.asInstanceOf[C])).asInstanceOf[Seq[SquareCell]]
           // linker.link(cell, nextGrid.cells(neighbor.y)(neighbor.x), nextGrid)
         }
       }

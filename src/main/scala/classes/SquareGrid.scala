@@ -18,8 +18,6 @@ case class SquareGrid(
 
   override type NEIGHBORS = SquareNeighbors
 
-  // override type CELL = SquareCell
-
   // retrieve row
   def row(y: Int): List[SquareCell] = cells(y).toList
   // retrieve column
@@ -48,19 +46,11 @@ case class SquareGrid(
       var bottom: String = "+"
       for (cell <- row) {
         val body = cell.value
-        // val eastBoundary: String = cell.asInstanceOf[SquareCell].neighbors.east match {
-        //   case Some(east) if (cell.asInstanceOf[SquareCell].isLinked(east)) => " "
-        //   case _ => "|"
-        // }
         val eastBoundary: String = cell.asInstanceOf[SquareCell].neighbors.east.isDefined match {
           case true if (cell.asInstanceOf[SquareCell].isLinked(East)) => " "
           case _ => "|"
         }
         top += body + eastBoundary
-        // val southBoundary: String = cell.asInstanceOf[SquareCell].neighbors.south match {
-        //   case Some(south) if (cell.asInstanceOf[SquareCell].isLinked(south)) => "   "
-        //   case _ => "---"
-        // }
         val southBoundary: String = cell.asInstanceOf[SquareCell].neighbors.south.isDefined match {
           case true if (cell.asInstanceOf[SquareCell].isLinked(South)) => "   "
           case _ => "---"
@@ -76,7 +66,6 @@ case class SquareGrid(
 }
 
 object SquareGrid {
-  //// TODO: this method sets neighbors correctly for each cell, but this constructor is not being called by Grid's instantiate method...
   def apply(height: Int, width: Int, start: Coordinates, goal: Coordinates): SquareGrid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
     val empty: SquareGrid = SquareGrid(height, width, Array[Array[SquareCell]](), seed, start, goal).copy(cells = Array.ofDim[SquareCell](height, width))
