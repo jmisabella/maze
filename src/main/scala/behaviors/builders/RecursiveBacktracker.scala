@@ -1,29 +1,33 @@
 package maze.behaviors.builders
 
-import maze.classes.{ Grid, Cell, Coordinates }
+import maze.classes.{ Coordinates }
+import maze.classes.MazeType._
+import maze.behaviors.{ Linkage, Cell, Grid, Neighbors }
 import maze.behaviors.Linkage
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 import scala.collection.mutable.Stack
 import scala.collection.mutable.ListBuffer
 
-trait RecursiveBacktracker extends Generator {
-  type LINKAGE <: Linkage
+import scala.reflect.ClassTag
+
+trait RecursiveBacktracker[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G] {
+  type LINKAGE <: Linkage[N, C, G]
   val linker: LINKAGE
   
-  override def generate(grid: Grid): Grid = {
+  override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
     @annotation.tailrec
-    def generateMaze(grid: Grid, stack: List[Cell], visited: Set[Coordinates]): Grid = stack match {
+    def generateMaze(grid: G, stack: List[C], visited: Set[Coordinates]): G = stack match {
       case Nil =>
         grid // 
       case current :: rest =>
-        var nextGrid: Grid = grid 
-        val currentCell: Cell = nextGrid.get(current.coords)
-        val unvisitedNeighbors: Seq[Cell] = nextGrid.unlinkedNeighbors(current).filter(c => !visited.contains(c.coords))
+        var nextGrid: G = grid 
+        val currentCell: C = nextGrid.get(current.coords)
+        val unvisitedNeighbors: Seq[C] = nextGrid.unlinkedNeighbors(current).filter(c => !visited.contains(c.coords))
         if (unvisitedNeighbors.nonEmpty) {
           val (randomIndex, seed): (Int, RNG) = nextGrid.randomInt(unvisitedNeighbors.length)
-          nextGrid = nextGrid.copy(seed = seed)
-          val neighbor: Cell = unvisitedNeighbors(randomIndex)
+          nextGrid = nextGrid.set[N, C, G](seed = seed)
+          val neighbor: C = unvisitedNeighbors(randomIndex)
           nextGrid = linker.link(currentCell, neighbor, nextGrid)
           generateMaze(nextGrid, neighbor :: stack, visited + neighbor.coords)
         } else {
@@ -33,7 +37,7 @@ trait RecursiveBacktracker extends Generator {
     }
     // initialize the stack and visited set with randomly selected first cell
     val (randomIndex, seed) = grid.randomInt(grid.size())
-    val initialCell: Cell = grid.flatten()(randomIndex)
-    generateMaze(grid.copy(seed = seed), List(initialCell), Set(initialCell.coords))
+    val initialCell: C = grid.flatten()(randomIndex)
+    generateMaze(grid.set[N, C, G](seed = seed), List(initialCell), Set(initialCell.coords))
   }
 }
