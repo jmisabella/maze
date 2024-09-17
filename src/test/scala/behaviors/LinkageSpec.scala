@@ -1,6 +1,7 @@
 package maze.behaviors
 
-import maze.classes.{ Cell, Grid, Coordinates }
+import maze.classes.{ SquareCell, SquareNeighbors, RectangleGrid, Coordinates }
+import maze.classes.MazeType._
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ BinaryTree, Sidewinder }
 
@@ -10,25 +11,25 @@ import org.scalatest.GivenWhenThen
 
 class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
 
-  case object module extends Linkage
+  case object module extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
 
-  case object sidewinder extends Sidewinder {
-    case object _linkage extends Linkage
-    override type LINKAGE = Linkage
+  case object sidewinder extends Sidewinder[SquareNeighbors, SquareCell, RectangleGrid] {
+    case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
     override val linker = _linkage
-    case object _distance extends Distance
-    override type DISTANCE = Distance
+    case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
+    override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
     override val distance = _distance
   }
 
 
   "Linkage" should "update cell to be visited" in {
     Given("3x3 grid with all unvisited cells") 
-    val grid = Grid(3, 3, Coordinates(0, 2), Coordinates(2, 0))
+    val grid = RectangleGrid(3, 3, Coordinates(0, 2), Coordinates(2, 0))
     grid.count(c => !c.visited) should be (9)
     When("updating first cell to be visited")
-    val first: Cell = module.visit(grid.get(0, 0))
-    val updatedGrid: Grid = grid.set(first)
+    val first: SquareCell = module.visit(grid.get(0, 0))
+    val updatedGrid: RectangleGrid = grid.set(first)
     Then("first cell in grid is only cell in grid which has been visited")
     updatedGrid.get(0, 0).visited should be (true)
     updatedGrid.count(c => c.visited) should be (1)
@@ -37,11 +38,11 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
   
   it should "bi-directionaly link bottom row of cells in a 4x4 grid" in {
     Given("4x4 grid") 
-    val grid: Grid = Grid(4, 4, Coordinates(0, 3), Coordinates(3, 0))
+    val grid: RectangleGrid = RectangleGrid(4, 4, Coordinates(0, 3), Coordinates(3, 0))
     When("linking all cells in bottom row together")
-    val bottomRow: Seq[Cell] = grid.row(3)
-    val linkedBottomRow: Seq[Cell] = module.link(bottomRow)
-    var updated: Grid = grid
+    val bottomRow: Seq[SquareCell] = grid.row(3)
+    val linkedBottomRow: Seq[SquareCell] = module.link(bottomRow)
+    var updated: RectangleGrid = grid
     for (cell <- linkedBottomRow) {
       updated = updated.set(cell)
     }
@@ -73,9 +74,9 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "preserve historic links when adding new links to linked cells in zig-zag pattern upper-left to bottom-right of a 5x5 grid" in {
     Given("5x5 grid") 
-    val originalGrid: Grid = Grid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    val originalGrid: RectangleGrid = RectangleGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     When("linking cells together in a zig-zag pattern from upper-left to bottom-right")
-    def zigZagCells(g: Grid): Seq[Cell] = Seq(
+    def zigZagCells(g: RectangleGrid): Seq[SquareCell] = Seq(
           g.get(0, 0), 
           g.get(1, 0), 
           g.get(1, 1), 
@@ -86,8 +87,8 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
           g.get(4, 3), 
           g.get(4, 4) )
     
-    val linked: Seq[Cell] = module.link(zigZagCells(originalGrid))
-    var updated: Grid = originalGrid
+    val linked: Seq[SquareCell] = module.link(zigZagCells(originalGrid))
+    var updated: RectangleGrid = originalGrid
     for (cell <- linked) {
       updated = updated.set(cell)
     }
@@ -150,7 +151,7 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
     for (cell <- zigZagCells(updated)) {
       val originalLinked: Set[Coordinates] = cell.linked
       if (cell.neighbors.west.isDefined) {
-        val linked: Seq[Cell] = module.link(Seq(cell, updated.cells(cell.neighbors.west.get.y)(cell.neighbors.west.get.x)))
+        val linked: Seq[SquareCell] = module.link(Seq(cell, updated.cells(cell.neighbors.west.get.y)(cell.neighbors.west.get.x)))
         for (linkedCell <- linked) {
           updated = updated.set(linkedCell)
         }
@@ -165,36 +166,36 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "link 2 cells" in {
     Given("5x5 grid") 
-    val grid: Grid = Grid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    val grid: RectangleGrid = RectangleGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     When("selecting 2 unlinked cells from the grid")
-    val twoCells: Seq[Cell] = Seq(grid.flatten().head, grid.flatten().tail.head)
+    val twoCells: Seq[SquareCell] = Seq(grid.flatten().head, grid.flatten().tail.head)
     Then("neither cell should be linked yet") 
     twoCells.head.linked shouldBe empty
     twoCells.tail.head.linked shouldBe empty
     When("linking both cells")
-    val linked: Seq[Cell] = module.link(twoCells)
+    val linked: Seq[SquareCell] = module.link(twoCells)
     Then("both cells should be linked to each other")
     linked.head.linked should contain (linked.tail.head.coords)
     linked.tail.head.linked should contain (linked.head.coords)
   }
 
   it should "know when lower-right corner cell is linked to upper-left corner cell via other cells" in {
-    case object linker extends Linkage
+    case object linker extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
     
-    case object binaryTree extends BinaryTree {
-      case object _linkage extends Linkage
-      override type LINKAGE = Linkage
+    case object binaryTree extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance
-      override type DISTANCE = Distance
+      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x5 grid with a completely isolated (e.g. isolated from all cells) bottom-right corner cell") 
-    var grid: Grid = binaryTree.generate(5, 5, Coordinates(0, 4), Coordinates(4, 0))
-    var bottomRightCell: Cell = grid.get(4, 4)
+    var grid: RectangleGrid = binaryTree.generate(Square, 5, 5, Coordinates(0, 4), Coordinates(4, 0)).asInstanceOf[RectangleGrid]
+    var bottomRightCell: SquareCell = grid.get(4, 4)
     for (linked <- bottomRightCell.linked) {
-      val linkedCell: Cell = grid.get(linked.x, linked.y)
-      val unlinked: Cell = linkedCell.copy(linked = linkedCell.linked.filter(c => c != linkedCell.coords))
+      val linkedCell: SquareCell = grid.get(linked.x, linked.y)
+      val unlinked: SquareCell = linkedCell.copy(linked = linkedCell.linked.filter(c => c != linkedCell.coords))
       grid = grid.set(unlinked)
     }
     grid = grid.set(bottomRightCell.copy(linked = Set(Coordinates(4, 3))))
@@ -204,26 +205,26 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "link 2 neighboring cells and return the updated grid" in {
     Given("6x6 grid with no linked cells")
-    val initialGrid: Grid = Grid(6, 6, Coordinates(0, 0), Coordinates(5, 5))
+    val initialGrid: RectangleGrid = RectangleGrid(6, 6, Coordinates(0, 0), Coordinates(5, 5))
     When("linking cells 0.0 and 0,1 and yielding an updated grid") 
-    val result1: Grid = module.link(initialGrid.get(0, 0), initialGrid.get(0, 1), initialGrid)
+    val result1: RectangleGrid = module.link(initialGrid.get(0, 0), initialGrid.get(0, 1), initialGrid)
     Then("0,0 and 0,1 should be linked")
     result1.get(0, 0).linked should equal (Set(Coordinates(0, 1)))
     result1.get(0, 1).linked should equal (Set(Coordinates(0, 0)))
     When("linking cells 0.0 and 1,0 and yielding an updated grid") 
-    val result2: Grid = module.link(result1.get(0, 0), result1.get(1, 0), result1)
+    val result2: RectangleGrid = module.link(result1.get(0, 0), result1.get(1, 0), result1)
     Then("0,0 and 1,0 should be linked, and 0,0 should still be linked to 0,1")
     result2.get(0, 0).linked should contain (Coordinates(1, 0))
     result2.get(0, 0).linked should contain (Coordinates(0, 1))
     result2.get(0, 1).linked should equal (Set(Coordinates(0, 0)))
     result2.get(1, 0).linked should equal (Set(Coordinates(0, 0)))
     When("manually linking the same cells from the initial grid, without using the Linkage behavior")
-    var linkedCell1: Cell = initialGrid.get(0,0).copy(linked = initialGrid.get(0,0).linked ++ Set(initialGrid.get(0,1).coords))
-    val linkedCell2: Cell = initialGrid.get(0,1).copy(linked = initialGrid.get(0,1).linked ++ Set(initialGrid.get(0,0).coords))
+    var linkedCell1: SquareCell = initialGrid.get(0,0).copy(linked = initialGrid.get(0,0).linked ++ Set(initialGrid.get(0,1).coords))
+    val linkedCell2: SquareCell = initialGrid.get(0,1).copy(linked = initialGrid.get(0,1).linked ++ Set(initialGrid.get(0,0).coords))
     linkedCell1 should equal (result1.get(0,0))
     linkedCell2 should equal (result1.get(0,1))
     linkedCell1 = linkedCell1.copy(linked = linkedCell1.linked ++ Set(initialGrid.get(1,0).coords))
-    val linkedCell3: Cell = initialGrid.get(1,0).copy(linked = initialGrid.get(1,0).linked ++ Set(linkedCell1.coords))
+    val linkedCell3: SquareCell = initialGrid.get(1,0).copy(linked = initialGrid.get(1,0).linked ++ Set(linkedCell1.coords))
     linkedCell1 should equal (result2.get(0,0))
     linkedCell3 should equal (result2.get(1,0))
     info(result2.asci())

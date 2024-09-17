@@ -1,12 +1,14 @@
 package maze.classes
 
-import maze.classes.{ Coordinates, Neighbors }
-import maze.classes.Direction._
+import maze.behaviors.Cell
+import maze.classes.{ Coordinates, MazeType, SquareNeighbors }
+import maze.classes.MazeType._
+import maze.classes.SquareDirection._
 import play.api.libs.json.Json
 
-case class Cell(
+case class SquareCell (
   coords: Coordinates, 
-  neighbors: Neighbors = Neighbors(), 
+  neighbors: SquareNeighbors = SquareNeighbors(), 
   linked: Set[Coordinates] = Set(),
   distance: Int = 0,
   isStart: Boolean = false,
@@ -14,8 +16,14 @@ case class Cell(
   onSolutionPath: Boolean = false, 
   visited: Boolean = false,
   value: String = "   "
-) {
-  def neighborCoords(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
+) extends Cell() {
+
+  override type NEIGHBORS = SquareNeighbors
+
+  // override type MAZE_TYPE = Square
+  override def mazeType: MazeType = Square 
+  
+  override def neighborCoords(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
     // 4 
     case (Some(n), Some(e), Some(s), Some(w)) => Seq(n, e, s, w)
     // 3 
@@ -38,33 +46,12 @@ case class Cell(
     // 0 
     case (None, None, None, None) => Nil
   }
-  def unlinkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => !isLinked(c))
-  def linkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => !linked(c))
 
-  def isLinked(cell: Cell, bidi: Boolean = true): Boolean = bidi match {
-    case false => linked.contains(cell.coords)
-    case true => linked.contains(cell.coords) && cell.linked(this.coords)
-  }
-  def isLinked(coords: Coordinates): Boolean = linked.contains(coords)
-
-  def isLinked(direction: Direction): Boolean = direction match {
-    case North => neighbors.north.isDefined && isLinked(neighbors.north.get)
-    case East => neighbors.east.isDefined && isLinked(neighbors.east.get)
-    case South => neighbors.south.isDefined && isLinked(neighbors.south.get)
-    case West => neighbors.west.isDefined && isLinked(neighbors.west.get)
-  }
-
-  def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
-  def padLeft(s: String, c: Char, n: Int): String = n match {
-    case 0 => s
-    case x if (x < 0) => s
-    case _ => padRight(s, c, n).split(s).tail.mkString + s
-  }
-  // evenly pad left and right; left has 1 extra padding in case of an odd length 
-  def pad(s:String, c: Char, n:Int): String = {
-    val left = (n - s.length) / 2
-    val right = n - left - s.length
-    c.toString * left + s + c.toString * right
+  override def isLinked[SquareDirection](direction: SquareDirection): Boolean = direction match {
+    case North => neighbors.north.isDefined && isLinkedCoords(neighbors.north.get)
+    case East => neighbors.east.isDefined && isLinkedCoords(neighbors.east.get)
+    case South => neighbors.south.isDefined && isLinkedCoords(neighbors.south.get)
+    case West => neighbors.west.isDefined && isLinkedCoords(neighbors.west.get)
   }
 
   override def toString(): String = {
@@ -102,10 +89,6 @@ case class Cell(
   }
 }
 
-object Cell {
-  // def apply(row: Int, column: Int): Cell = Cell(coords = Coordinates(column, row)) // TODO: jmi: this switching has everything else working
-  def apply(x: Int, y: Int): Cell = Cell(coords = Coordinates(x, y)) // TODO: jmi: this appears to be root of bug where Cell mixes up coords
-
-  // not sure why calling inverse on coords when sorting a list needs to use the inverse to prevent transposing x/y grid
-  implicit def ordering [A <: Cell]: Ordering[A] = Ordering.by(_.coords.inverse())
+object SquareCell {
+  def apply(x: Int, y: Int): SquareCell = SquareCell(coords = Coordinates(x, y)) // TODO: jmi: this appears to be root of bug where Cell mixes up coords
 }

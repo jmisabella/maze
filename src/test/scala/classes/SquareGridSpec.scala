@@ -1,18 +1,19 @@
 package maze.classes
 
-import maze.classes.{ Cell, Grid }
-import maze.behaviors.{ Linkage, Distance }
+import maze.classes.{ SquareCell, SquareNeighbors, RectangleGrid }
+import maze.classes.MazeType._
+import maze.behaviors.{ Linkage, Distance, Grid, Cell }
 import maze.behaviors.builders.{ Sidewinder, BinaryTree, Generator }
 
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
-class GridSpec extends AnyFlatSpec with GivenWhenThen {
+class RectangleGridSpec extends AnyFlatSpec with GivenWhenThen {
   
-  "Grid" should "initialize a 3x3 grid" in {
+  "RectangleGrid" should "initialize a 3x3 grid" in {
     When("initializing a 3x3 grid") 
-    val grid = Grid(3, 3, Coordinates(0, 2), Coordinates(2, 0))
+    val grid = RectangleGrid(3, 3, Coordinates(0, 2), Coordinates(2, 0))
     Then("grid should have 3 rows and 3 columns")
     grid.cells.length should be (3)   
     for (row <- grid.cells) {
@@ -23,17 +24,17 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "determine distances from upper-left cell to all others in a 12x12 maze generated using Sidewinder" in {
-    case object module extends Sidewinder {
-      case object _linkage extends Linkage
-      override type LINKAGE = Linkage
+    case object module extends Sidewinder[SquareNeighbors, SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance
-      override type DISTANCE = Distance
+      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("12x12 grid generated using Sidewinder")
-    val unlinked = Grid(12, 12, Coordinates(0, 11), Coordinates(11, 0))
-    val grid: Grid = module.generate(unlinked)
+    val unlinked = RectangleGrid(12, 12, Coordinates(0, 11), Coordinates(11, 0))
+    val grid: RectangleGrid = module.generate(unlinked)
     println(grid) 
     println(grid.asci()) 
     When("determining distances from upper-left cell to each other cell")
@@ -48,17 +49,17 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "determine distances from upper-left cell to all others in a 12x12 maze generated using Binary Tree" in {
-    case object module extends BinaryTree {
-      case object _linkage extends Linkage
-      override type LINKAGE = Linkage
+    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance
-      override type DISTANCE = Distance
+      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("12x12 grid generated using Binary Tree")
-    val unlinked = Grid(12, 12, Coordinates(0, 11), Coordinates(11, 0))
-    val grid: Grid = module.generate(unlinked)
+    val unlinked = RectangleGrid(12, 12, Coordinates(0, 11), Coordinates(11, 0))
+    val grid: RectangleGrid = module.generate(unlinked)
     println(grid) 
     println(grid.asci()) 
     When("determining distances from upper-left cell to each other cell")
@@ -111,18 +112,18 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
   }
 
   it should "honor start and goal coordinates specified when generating a square grid" in {
-    case object module extends BinaryTree {
-      case object _linkage extends Linkage
-      override type LINKAGE = Linkage
+    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance
-      override type DISTANCE = Distance
+      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
+    val request = MazeRequest(Square, 5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
     When("generating the grid")
-    var grid: Grid = Generator.generate(request)
+    var grid: RectangleGrid = Generator.generate(request).asInstanceOf[RectangleGrid]
     Then("grid's start should be southwest")
     grid.startCoords should equal (Coordinates(0, request.height - 1))
     grid.startCoords should equal (Coordinates(0, 4))
@@ -152,18 +153,18 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "honor start and goal coordinates specified when generating a square grid using Generator, version 2" in {
-    case object module extends BinaryTree {
-      case object _linkage extends Linkage
-      override type LINKAGE = Linkage
+    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance
-      override type DISTANCE = Distance
+      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
+    val request = MazeRequest(Square, 5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
     When("generating the grid")
-    val grid: Grid = Generator.generate(request)
+    val grid: RectangleGrid = Generator.generate(request).asInstanceOf[RectangleGrid]
     Then("grid's start should be southwest")
     grid.startCoords should equal (Coordinates(0, request.height - 1))
     Then("grid's goal should be northeast")
@@ -176,31 +177,31 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "honor start and goal coordinates specified when generating a non-square grid using Generator" in {
-    case object module extends BinaryTree {
-      case object _linkage extends Linkage
-      override type LINKAGE = Linkage
+    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance
-      override type DISTANCE = Distance
+      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x10 BinaryTree request")
-    val request = MazeRequest(5, 10, Algorithm.BinaryTree, Coordinates(0, 9), Coordinates(4, 0))
+    val request = MazeRequest(Square, 5, 10, Algorithm.BinaryTree, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
-    val grid: Grid = Generator.generate(request)
+    val grid: RectangleGrid = Generator.generate(request).asInstanceOf[RectangleGrid]
     info("START: " + grid.startCoords.toString())
     info("GOAL: " + grid.goalCoords.toString())
     info("REQUEST WIDTH: " + request.width.toString())
     info("REQUEST HEIGHT: " + request.height.toString())
-    info("GRID WIDTH: " + grid.columns.toString())
-    info("GRID HEIGHT: " + grid.rows.toString())
+    info("GRID WIDTH: " + grid.width.toString())
+    info("GRID HEIGHT: " + grid.height.toString())
     grid.startCoords should equal (Coordinates(0, 9))
     val southwest = Coordinates(0, 9)
     val northeast = Coordinates(4, 0) 
     Then("grid width should be 5")
-    grid.columns should equal (5)
+    grid.width should equal (5)
     Then("grid height should be 10")
-    grid.rows should equal (10)
+    grid.height should equal (10)
     Then("grid's start should be southwest")
     grid.startCoords should equal (southwest)
     Then("grid's goal should be northeast")
@@ -223,19 +224,19 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "honor start and goal coordinates specified in MazeRequest when generating a non-square grid" in {
-    case object module extends BinaryTree {
-      case object _linkage extends Linkage
-      override type LINKAGE = Linkage
+    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance
-      override type DISTANCE = Distance
+      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x10 BinaryTree request")
-    val request = MazeRequest(5, 10, Algorithm.BinaryTree, Coordinates(0, 9), Coordinates(4, 0))
+    val request = MazeRequest(Square, 5, 10, Algorithm.BinaryTree, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
-    var grid: Grid = Generator.generate(request)
-    Then("grid's start should be southwest")
+    var grid: RectangleGrid = Generator.generate(request).asInstanceOf[RectangleGrid]
+    Then("grid's should be southwest")
     grid.startCoords should equal (Coordinates(0, request.height - 1))
     info("START COORDS: " + grid.startCoords.toString())
     Then("grid's goal should be northeast")
