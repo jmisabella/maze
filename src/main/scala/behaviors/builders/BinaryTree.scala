@@ -14,30 +14,26 @@ trait BinaryTree[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C
   val linker: LINKAGE
 
   override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
-    var nextGrid: RectangleGrid = grid.asInstanceOf[RectangleGrid] // to keep track of next random seeds
-    println("GGGGGGGGGGGGGGGGGGGGGGGGG\n" + nextGrid)
-    //// TODO: since refactoring Grid/Cell, apparently line below which flattens grid doesn't set any of the cells' neighbors
-    val unflattened: Seq[Seq[SquareCell]] = for (cell <- grid.asInstanceOf[RectangleGrid].flatten()) yield {
-      val neighbors: Seq[Coordinates] = (cell.neighbors.north, cell.neighbors.east) match {
+    var nextGrid: G = grid
+    for (cell <- grid.flatten()) {
+      val c1 = nextGrid.get(cell.coords)
+      val neighbors: Seq[Coordinates] = (c1.asInstanceOf[SquareCell].neighbors.north, c1.asInstanceOf[SquareCell].neighbors.east) match {
         case (None, None) => Nil
         case (Some(north), None) => Seq(north)
         case (None, Some(east)) => Seq(east)
         case (Some(north), Some(east)) => Seq(north, east)
       }
       neighbors match {
-        case Nil => println("BINARY SEARCH: EMPTY"); Seq(cell)
+        case Nil => Seq(c1)
         case xs => {
           val (index, nextSeed): (Int, RNG) = nextGrid.randomInt(neighbors.length)
-          println("BINARY SEARCH: CELLS EXIST")
-          nextGrid = nextGrid.copy(seed = nextSeed) // we made a random move, update grid's seed to the next seed
+          nextGrid = nextGrid.set(seed = nextSeed) // we made a random move, update grid's seed to the next seed
           val neighbor: Coordinates = neighbors(index)
-          linker.link(Seq(cell, nextGrid.cells(neighbor.y)(neighbor.x)).map(_.asInstanceOf[C])).asInstanceOf[Seq[SquareCell]]
-          // linker.link(Seq(cell.asInstanceOf[SquareCell], nextGrid.cells(neighbor.y)(neighbor.x)).map(_.asInstanceOf[C])).asInstanceOf[Seq[SquareCell]]
-          // linker.link(cell, nextGrid.cells(neighbor.y)(neighbor.x), nextGrid)
+          nextGrid = nextGrid.set(linker.link(Seq(c1, nextGrid.cells(neighbor.y)(neighbor.x))))
         }
       }
     }
-    nextGrid.unflatten(unflattened.flatten)
+    nextGrid
   }
 
 }

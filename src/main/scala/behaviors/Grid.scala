@@ -126,6 +126,11 @@ trait Grid[C <: Cell] {
     }).toArray
     Grid.setCells[NEIGHBORS, C, G](this.asInstanceOf[G], cells)
   }
+  def set[G <: Grid[C]](cells: Seq[C])(implicit ct: ClassTag[C]): G = {
+    var grid = this
+    cells.map(c => grid = grid.set(c))
+    grid.asInstanceOf[G]
+  }
   // set RNG seed 
   def set[N <: Neighbors, C <: Cell, G <: Grid[C]](seed: RNG)(implicit ct: ClassTag[C]): G = {
     Grid.setSeed[N, C, G](this.asInstanceOf[G], seed)
@@ -204,7 +209,10 @@ object Grid {
   }
   private def setCells[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, cells: Array[Array[C]])(implicit ct: ClassTag[C]): G = {
     instantiate[N, C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, cells.toList.flatten)
-  } 
+  }
+  private def setCells[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, cells: Seq[Seq[C]])(implicit ct: ClassTag[C]): G = {
+    setCells(grid, cells.map(xs => xs.toArray).toArray)
+  }
   private def setSeed[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, seed: RNG)(implicit ct: ClassTag[C]): G = {
     instantiate[N, C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, seed, grid.flatten)
   } 
