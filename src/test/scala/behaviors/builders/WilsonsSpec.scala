@@ -2,7 +2,8 @@ package maze.behaviors.builders
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.Wilsons
-import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm }
+import maze.classes.{ SquareNeighbors, SquareCell, RectangleGrid, Coordinates, MazeRequest, Algorithm }
+import maze.classes.MazeType._
 import maze.classes.Algorithm._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -10,22 +11,22 @@ import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
 class WilsonsSpec extends AnyFlatSpec with GivenWhenThen {
-  case object module extends Wilsons {
-    case object _linkage extends Linkage
-    override type LINKAGE = Linkage
+  case object module extends Wilsons[SquareNeighbors, SquareCell, RectangleGrid] {
+    case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
     override val linker = _linkage
 
-    case object _distance extends Distance
-    override type DISTANCE = Distance
+    case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
+    override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
     override val distance = _distance
   }
   
   "Wilsons" should "generate a 6x6 maze using Wilsons and print it to screen" in {
     Given("6x6 grid")
     val dim: Int = 6
-    val grid = Grid(dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
+    val grid = RectangleGrid(dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
     When("generating maze using Wilson's algorithm")
-    val generated: Grid = module.generate(grid)
+    val generated = module.generate(grid)
     Then("resulting maze should contain no stranded unreachable cells") 
     generated.isFullyConnected() shouldBe (true)
     Then("resulting maze is a perfect maze")
@@ -36,9 +37,9 @@ class WilsonsSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "honor start and goal coordinates specified in MazeRequest when generating a non-square Wilson's maze grid" in {
     Given("5x10 Wilsons request")
-    val request = MazeRequest(5, 10, Algorithm.Wilsons, Coordinates(0, 9), Coordinates(4, 0))
+    val request = MazeRequest(Square, 5, 10, Algorithm.Wilsons, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
-    var grid: Grid = Generator.generate(request)
+    var grid = Generator.generate(request).asInstanceOf[RectangleGrid]
     Then("grid's start should be southwest")
     grid.startCoords should equal (Coordinates(0, request.height - 1))
     info("START COORDS: " + grid.startCoords.toString())

@@ -96,23 +96,9 @@ object Generator {
       }
       case (t, Algorithm.BinaryTree) => throw new IllegalArgumentException(s"BinaryTree algorithm only eligible for Square maze type. It is not eligible for [$t]")
       case (t, Algorithm.Sidewinder) => throw new IllegalArgumentException(s"Sidewinder algorithm only eligible for Square maze type. It is not eligible for [$t]")
-      case (t, _) => throw new IllegalArgumentException(s"Unexpected maze type [$t]")
       case (_, a) => throw new IllegalArgumentException(s"Unexpected algorithm [$a]")
+      case (t, _) => throw new IllegalArgumentException(s"Unexpected maze type [$t]")
     }
-    val test = generator.distance.getDistances(generator.generate(request.mazeType, request.width, request.height, request.start, request.goal), request.goal.x, request.goal.y)
-    println("TESTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT\n" + test.mkString(", ")) 
-    val test2 = generator.generate(request.mazeType, request.width, request.height, request.start, request.goal)
-    println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBbB\n" + test2.asci())
-    // generator.distance.pathTo( 
-      val distances = generator.distance.distances(
-        generator.generate(request.mazeType, request.width, request.height, request.start, request.goal)
-        , request.start.x
-        , request.start.y)
-      println("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH\n" + distances.toString()) 
-      // , request.start.x
-      // , request.start.y 
-      // , request.goal.x
-      // , request.goal.y)
     generator.distance.pathTo( // for BinaryTree only, this pathTo call is somehow losing cells' linked neighbors
       generator.distance.distances( // for BinaryTree only, this distances call is somehow losing cells' linked neighbors
         generator.generate(request.mazeType, request.width, request.height, request.start, request.goal)
