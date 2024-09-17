@@ -127,7 +127,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
       override val distance = _distance
     }
     Given("JSON for a 52x29 BinaryTree request")
-    val json = """{"mazeType":"Square","width":"52","height":"29","algorithm":"BinaryTree","startX":"14","startY":"0","goalX":"14","goalY":"28","mazeType":"Solved"}""" 
+    val json = """{"mazeType":"Square","width":"52","height":"29","algorithm":"BinaryTree","startX":"14","startY":"0","goalX":"14","goalY":"28"}""" 
     When("generating the grid")
     val request: MazeRequest = MazeRequest(json)
     var grid = Generator.generate(request)

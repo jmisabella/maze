@@ -21,7 +21,7 @@ private object SerializedMazeRequest {
   implicit val format: Format[SerializedMazeRequest] = Json.format[SerializedMazeRequest]
 }
 case class MazeRequest(mazeType: MazeType, width: Int, height: Int, algorithm: Algorithm, start: Coordinates, goal: Coordinates) {
-  override def toString(): String = (Json.obj(/*"mazeType" -> mazeType,*/ "width" -> width, "height" -> height, "algorithm" -> algorithm, "start" -> start, "goal" -> goal)).toString()
+  override def toString(): String = (Json.obj("mazeType" -> mazeType, "width" -> width, "height" -> height, "algorithm" -> algorithm, "start" -> start, "goal" -> goal)).toString()
 }
 object MazeRequest {
   implicit val format: Format[MazeRequest] = Json.format[MazeRequest]
