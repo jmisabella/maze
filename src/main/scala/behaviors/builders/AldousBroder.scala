@@ -20,7 +20,8 @@ trait AldousBroder[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N,
     var cell: C = cells(randomCellIndex)
     nextGrid = nextGrid.set[N, C, G](seed = seed1) 
     while (unvisited > 0) {
-      val neighbors: Seq[Coordinates]= cell.neighbors.toSeq()
+      // val neighbors: Seq[Coordinates]= cell.neighbors.toSeq()
+      val neighbors: Seq[Coordinates]= cell.neighborCoords()
       val (randomNeighborIndex, seed2): (Int, RNG) = nextGrid.randomInt(neighbors.length)
       nextGrid = nextGrid.set[N, C, G](seed = seed2)
       var neighbor: C = cells.filter(c => c.coords == neighbors(randomNeighborIndex)).head

@@ -21,7 +21,8 @@ trait Linkage[N <: Neighbors, C <: Cell, G <: Grid[C]] {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
-        val neighbors: N = k._3.asInstanceOf[N]
+        // val neighbors: N = k._3.asInstanceOf[N]
+        val neighbors: Map[String, Coordinates] = k._3
         val mazeType: MazeType = k._4
         val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
         val cell: C = Cell.instantiate[N, C](mazeType, coords, visited, neighbors, linked)
@@ -37,7 +38,7 @@ trait Linkage[N <: Neighbors, C <: Cell, G <: Grid[C]] {
   def link(cells: Seq[C], bidi: Boolean = true)(implicit ct: ClassTag[C]): Seq[C] = linkAll(cells, bidi, link)
 
   def link(cell1: C, cell2: C, grid: G)(implicit ct: ClassTag[C]): G = {
-    if (cell1.neighbors.toSeq.contains(cell2.coords) && cell2.neighbors.toSeq.contains(cell1.coords)) {
+    if (cell1.neighborCoords().contains(cell2.coords) && cell2.neighborCoords().contains(cell1.coords)) {
       val updated1: C = cell1.setLinked[N, C](cell1.linked ++ Set(cell2.coords))
       val updated2: C = cell2.setLinked[N, C](cell2.linked ++ Set(cell1.coords))
       grid.set[G](updated1).set(updated2) 

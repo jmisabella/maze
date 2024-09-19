@@ -13,56 +13,35 @@ trait Sidewinder[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C
 
   type LINKAGE <: Linkage[N, C, G]
   val linker: LINKAGE
-
+  
+  //// TODO: because it's not a perfect maze, this implementation of Sidewinder seems to lead to infinite loop when determining solution path from Generator!
   override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
     var nextGrid: G = grid
-    var run: Seq[C] = Nil
-    for (row <- grid.cells) {
-      for (originalCell <- row) {
-        val cell: C = nextGrid.cells(originalCell.coords.y)(originalCell.coords.x)
-        run = run ++ Seq(cell)
-        val (randomOutcome, seed): (Boolean, RNG) = nextGrid.randomBoolean()
-        nextGrid = nextGrid.set(seed = seed) 
-        (cell.asInstanceOf[SquareCell].neighbors.north, cell.asInstanceOf[SquareCell].neighbors.east, randomOutcome) match {
-          case (None, None, _) => {
-            run = Nil // clear current run, onto the next run
+    for (y <- 0 until grid.height) {
+      var run: List[C] = Nil
+      for (x <- 0 until grid.width) {
+        val current: C = nextGrid.get(x, y)
+        run = current :: run
+
+        // Randomly decide whether to carve a passage to the right or down
+        val (randomOutcome, seed1): (Boolean, RNG) = nextGrid.randomBoolean()
+        nextGrid = nextGrid.set(seed1)
+        val carveRight: Boolean = x < grid.width - 1 && (y == grid.height - 1 || randomOutcome)
+        if (carveRight) {
+          nextGrid = linker.link(current, nextGrid.get(current.neighbors("east")), nextGrid)
+        } else {
+          // Carve downwards if not at the last row
+          if (y < grid.height - 1 && run.nonEmpty) {
+            val (randomIndex, seed2): (Int, RNG) = nextGrid.randomInt(run)
+            nextGrid = nextGrid.set(seed2)
+            val random: C = run(randomIndex)
+            nextGrid = linker.link(random, nextGrid.get(random.neighbors("south")), nextGrid)
           }
-          case (Some(north), Some(east), false) => { // go eastward, do not close the current run 
-            for (c <- linker.link(Seq(cell.asInstanceOf[C], nextGrid.cells(east.y)(east.x).asInstanceOf[C]))) {
-              nextGrid = nextGrid.set(c)
-            }
-          }
-          case (None, Some(east), _) => { // cannot go north
-            for (c <- linker.link(Seq(cell.asInstanceOf[C], nextGrid.cells(east.y)(east.x).asInstanceOf[C]))) { // go east
-              nextGrid = nextGrid.set(c)
-            }
-          }
-          case (_, None, _) => { // cannot go east, close run and randomly choose cell from current run from which to move north 
-            val (randomIndex, nextSeed)  = nextGrid.randomInt(run.length)
-            val rand: Coordinates = run(randomIndex).coords
-            val member = nextGrid.cells(rand.y)(rand.x)
-            run = Nil // clear current run, onto the next run
-            if (member.asInstanceOf[SquareCell].neighbors.north.isDefined) {
-              for (c <- linker.link(Seq(member.asInstanceOf[C], nextGrid.cells(member.asInstanceOf[SquareCell].neighbors.north.get.y)(member.asInstanceOf[SquareCell].neighbors.north.get.x).asInstanceOf[C]))) {
-                nextGrid = nextGrid.set(c)
-              }
-            }
-          }
-          case (Some(north), _, true) => { // coin toss is heads: close run and randomly chose one cell from current run from which to move north
-            val (randomIndex, nextSeed)  = nextGrid.randomInt(run.length)
-            val rand: Coordinates = run(randomIndex).coords 
-            val member = nextGrid.cells(rand.y)(rand.x)
-            run = Nil // clear current run, onto the next run
-            if (member.asInstanceOf[SquareCell].neighbors.north.isDefined) {
-              for (c <- linker.link(Seq(member.asInstanceOf[C], nextGrid.cells(member.asInstanceOf[SquareCell].neighbors.north.get.y)(member.asInstanceOf[SquareCell].neighbors.north.get.x).asInstanceOf[C]))) {
-                nextGrid = nextGrid.set(c)
-              }
-            }
-          }
+          run = Nil // Reset the run
         }
       }
     }
-    nextGrid.asInstanceOf[G]
+    nextGrid.linkUnreachables()
   }
 
 }

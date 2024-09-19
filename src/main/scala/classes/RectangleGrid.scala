@@ -24,21 +24,7 @@ case class RectangleGrid(
   def column(x: Int): List[SquareCell] = (for (y <- 0 until height) yield cells(y)(x)).toList
 
   override val mazeType = Square
-
-  override def toString(): String = {
-    var output: String = "{\"rows\":["
-    var currRow: String = ""
-    for (row <- cells) {
-      if (currRow.length() > 0) {
-        output += ","
-      } 
-      currRow = row.mkString("[", ",", "]")
-      output += currRow
-    }
-    output += "]}"
-    output
-  }
-
+  
   override def asci(): String = {
     var output: String = "+" + "---+" * width + "\n"
     for (row <- cells) {
@@ -46,12 +32,12 @@ case class RectangleGrid(
       var bottom: String = "+"
       for (cell <- row) {
         val body = cell.value
-        val eastBoundary: String = cell.asInstanceOf[SquareCell].neighbors.east.isDefined match {
+        val eastBoundary: String = cell.asInstanceOf[SquareCell].neighbors.get("east").isDefined match {
           case true if (cell.asInstanceOf[SquareCell].isLinked(East)) => " "
           case _ => "|"
         }
         top += body + eastBoundary
-        val southBoundary: String = cell.asInstanceOf[SquareCell].neighbors.south.isDefined match {
+        val southBoundary: String = cell.asInstanceOf[SquareCell].neighbors.get("south").isDefined match {
           case true if (cell.asInstanceOf[SquareCell].isLinked(South)) => "   "
           case _ => "---"
         }
@@ -78,28 +64,25 @@ object RectangleGrid {
     )
     grid.copy(
       cells = (for (row <- 0 until grid.height) yield {
+        var neighbors = Map[String, Coordinates]() 
         // set cells' neighbors
         (for (col <- 0 until grid.width) yield {
           val coordinates: Coordinates = Coordinates(col, row)
           val cell = grid.cells(row)(col)
-          val north = cell.coords.y match {
-            case 0 => None // nothing exists north
-            case _ => Some((grid.cells(cell.coords.y - 1)(cell.coords.x)).coords)
+          if (cell.coords.y != 0) {
+            neighbors += ("north" -> grid.cells(cell.coords.y - 1)(cell.coords.x).coords)
           }
-          val east = cell.coords.x match {
-            case x if (x >= grid.width - 1) => None // nothing exists east
-            case _ => Some((grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
+          if (cell.coords.x < grid.width - 1) {
+            neighbors += ("east" -> (grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
           }
-          val south = cell.coords.y match {
-            case y if (y >= grid.height - 1) => None // nothing exists south
-            case _ => Some((grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
+          if (cell.coords.y < grid.height - 1) {
+            neighbors += ("south" -> (grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
           }
-          val west = cell.coords.x match {
-            case 0 => None // nothing exists west
-            case _ => Some((grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
+          if (cell.coords.x != 0) {
+            neighbors += ("west" -> (grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
           }
           cell.copy(
-            neighbors = SquareNeighbors(north, east, south, west),
+            neighbors = neighbors,
             isStart = cell.coords == start,
             isGoal = cell.coords == goal)
         }).toArray

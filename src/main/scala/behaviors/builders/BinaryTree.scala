@@ -15,24 +15,20 @@ trait BinaryTree[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C
 
   override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
     var nextGrid: G = grid
-    for (cell <- grid.flatten()) {
-      val c1 = nextGrid.get(cell.coords)
-      val neighbors: Seq[Coordinates] = (c1.asInstanceOf[SquareCell].neighbors.north, c1.asInstanceOf[SquareCell].neighbors.east) match {
-        case (None, None) => Nil
-        case (Some(north), None) => Seq(north)
-        case (None, Some(east)) => Seq(east)
-        case (Some(north), Some(east)) => Seq(north, east)
-      }
-      neighbors match {
-        case Nil => Seq(c1)
-        case xs => {
-          val (index, nextSeed): (Int, RNG) = nextGrid.randomInt(neighbors.length)
-          nextGrid = nextGrid.set(seed = nextSeed) // we made a random move, update grid's seed to the next seed
-          val neighbor: Coordinates = neighbors(index)
-          nextGrid = nextGrid.set(linker.link(Seq(c1, nextGrid.cells(neighbor.y)(neighbor.x))))
+    for (y <- 0 until grid.height) {
+      for (x <- 0 until grid.width) {
+        val current: C = nextGrid.get(x, y)
+        // randomly decide to carve north or east 
+        val (randomOutcome, seed): (Boolean, RNG) = nextGrid.randomBoolean()
+        nextGrid = nextGrid.set(seed)
+        if (y > 0 && (x == 0 || randomOutcome)) {
+          // carve north
+          nextGrid = linker.link(current, nextGrid.get(current.neighbors("north")), nextGrid)
+        } else if (x > 0) {
+          nextGrid = linker.link(current, nextGrid.get(current.neighbors("west")), nextGrid)
         }
       }
-    }
+    }    
     nextGrid
   }
 

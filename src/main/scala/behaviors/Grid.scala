@@ -13,7 +13,6 @@ trait Grid[C <: Cell] {
 
   def mazeType: MazeType
 
-
   def width: Int
   def height: Int  
   def cells: Array[Array[C]]
@@ -22,9 +21,11 @@ trait Grid[C <: Cell] {
   def goalCoords: Coordinates
   def asci(): String
 
-  def neighbors(cell: C): Seq[C] = cell.neighbors.toSeq().map(c => get(c.x, c.y))
+  // def neighbors(cell: C): Seq[C] = cell.neighbors.toSeq().map(c => get(c.x, c.y))
+  def neighbors(cell: C): Seq[C] = cell.neighborCoords().map(c => get(c.x, c.y))
   
-  def neighbors(coords: Coordinates): Seq[C] = get(coords).neighbors.toSeq().map(c => get(c.x, c.y))
+  // def neighbors(coords: Coordinates): Seq[C] = get(coords).neighbors.toSeq().map(c => get(c.x, c.y))
+  def neighbors(coords: Coordinates): Seq[C] = get(coords).neighborCoords().map(c => get(c.x, c.y))
   
   def linkOneUnreachable[G <: Grid[C]]()(implicit ct: ClassTag[C]): G = {
     var nextGrid: G = this.asInstanceOf[G]
@@ -93,7 +94,8 @@ trait Grid[C <: Cell] {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
-        val neighbors: NEIGHBORS = k._3.asInstanceOf[NEIGHBORS]
+        // val neighbors: NEIGHBORS = k._3.asInstanceOf[NEIGHBORS]
+        val neighbors: Map[String, Coordinates ]= k._3
         val value: String = k._4
         val distance: Int = k._5
         val onSolutionPath: Boolean = k._6
@@ -150,6 +152,7 @@ trait Grid[C <: Cell] {
   def linkedNeighbors(coords: Coordinates): Seq[C] = get(coords).linkedNeighbors().map(c => get(c.x, c.y))
 
   def randomInt(upperBoundary: Int): (Int, RNG) = seed.boundedPositiveInt(upperBoundary)
+  def randomInt(collection: Seq[Any]): (Int, RNG) = seed.boundedPositiveInt(collection.length)
   def randomBoolean(): (Boolean, RNG) = seed.nextBoolean
 
   def foreach(block: C => Unit): Unit = cells.foreach(row => row.foreach(block))
@@ -162,6 +165,20 @@ trait Grid[C <: Cell] {
   def contains(c: C): Boolean = flatten().contains(c)
   def contains(cs: Seq[C]): Boolean = flatten().foldLeft(false)((acc, c) => flatten().contains(c))
   def find(p: C => Boolean): Option[C] = flatten().find(p)
+
+  override def toString(): String = {
+    var output: String = "{\"rows\":["
+    var currRow: String = ""
+    for (row <- cells) {
+      if (currRow.length() > 0) {
+        output += ","
+      } 
+      currRow = row.mkString("[", ",", "]")
+      output += currRow
+    }
+    output += "]}"
+    output
+  }
 }
 
 object Grid {

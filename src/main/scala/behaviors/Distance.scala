@@ -1,6 +1,5 @@
 package maze.behaviors
 
-// import maze.classes.{ Coordinates, Neighbors, Cell, Grid }
 import maze.behaviors.{ Neighbors, Cell, Grid}
 import maze.classes.{ Coordinates }
 
@@ -42,12 +41,7 @@ trait Distance[N <: Neighbors, C <: Cell, G <: Grid[C]] {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDistances: Seq[C] = grid.cells.flatten.map(c => 
       Cell.instantiate[N, C](cell = c, distance = dist.get(c.coords).getOrElse(0), onSolutionPath = dist.get(c.coords).isDefined, value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3))
-      // c.copy(
-      //   value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3),
-      //   onSolutionPath = dist.get(c.coords).isDefined, 
-      //   distance = dist.get(c.coords).getOrElse(0)
-      // )
-      ).toSeq
+    ).toSeq
     grid.unflatten[C, G](withDistances)
   }
   def distances(grid: G, startCoords: Coordinates)(implicit ct: ClassTag[C]): G = distances(grid, startCoords.x, startCoords.y)
@@ -70,14 +64,6 @@ trait Distance[N <: Neighbors, C <: Cell, G <: Grid[C]] {
         distance = try { path.get(c.coords).getOrElse("0").toInt } catch { case _: java.lang.NumberFormatException => 0 },
         onSolutionPath = path.get(c.coords).isDefined, 
         value = pad(path.get(c.coords).getOrElse(" ").toString(), ' ', 3))
-      // c.copy(
-      //   value = pad(path.get(c.coords).getOrElse(" ").toString(), ' ', 3),
-      //   onSolutionPath = path.get(c.coords).isDefined, 
-      //   distance = try {
-      //     path.get(c.coords).getOrElse("0").toInt
-      //   } catch {
-      //     case _: java.lang.NumberFormatException => 0
-      //   })
     ).toSeq
     grid.unflatten[C, G](withDistances)
   }
@@ -108,14 +94,6 @@ trait Distance[N <: Neighbors, C <: Cell, G <: Grid[C]] {
         onSolutionPath = shortestPath.get(c.coords).isDefined, 
         value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3))
     
-      // c.copy(
-      //   value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3),
-      //   onSolutionPath = shortestPath.get(c.coords).isDefined, 
-      //   distance = try {
-      //     distances.get(c.coords).getOrElse(grid.columns * grid.rows)
-      //   } catch {
-      //     case _: java.lang.NumberFormatException => grid.columns * grid.rows
-      //   })
       ).toSeq
     grid.unflatten[C, G](withDistances)
   }

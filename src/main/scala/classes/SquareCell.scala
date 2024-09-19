@@ -8,7 +8,8 @@ import play.api.libs.json.Json
 
 case class SquareCell (
   coords: Coordinates, 
-  neighbors: SquareNeighbors = SquareNeighbors(), 
+  // neighbors: SquareNeighbors = SquareNeighbors(), 
+  neighbors: Map[String, Coordinates] = Map(),
   linked: Set[Coordinates] = Set(),
   distance: Int = 0,
   isStart: Boolean = false,
@@ -23,43 +24,47 @@ case class SquareCell (
   // override type MAZE_TYPE = Square
   override def mazeType: MazeType = Square 
   
-  override def neighborCoords(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
-    // 4 
-    case (Some(n), Some(e), Some(s), Some(w)) => Seq(n, e, s, w)
-    // 3 
-    case (Some(n), Some(e), Some(s), None) => Seq(n, e, s)
-    case (Some(n), Some(e), None, Some(w)) => Seq(n, e, w)
-    case (Some(n), None, Some(s), Some(w)) => Seq(n, s, w)
-    case (None, Some(e), Some(s), Some(w)) => Seq(e, s, w)
-    // 2 
-    case (Some(n), Some(e), None, None) => Seq(n, e)
-    case (Some(n), None, Some(s), None) => Seq(n, s)
-    case (Some(n), None, None, Some(w)) => Seq(n, w)
-    case (None, Some(e), Some(s), None) => Seq(e, s)
-    case (None, Some(e), None, Some(w)) => Seq(e, w)
-    case (None, None, Some(s), Some(w)) => Seq(s, w)
-    // 1
-    case (Some(n), None, None, None) => Seq(n)
-    case (None, Some(e), None, None) => Seq(e)
-    case (None, None, Some(s), None) => Seq(s)
-    case (None, None, None, Some(w)) => Seq(w)
-    // 0 
-    case (None, None, None, None) => Nil
-  }
+  // override def neighborCoords(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
+  //   // 4 
+  //   case (Some(n), Some(e), Some(s), Some(w)) => Seq(n, e, s, w)
+  //   // 3 
+  //   case (Some(n), Some(e), Some(s), None) => Seq(n, e, s)
+  //   case (Some(n), Some(e), None, Some(w)) => Seq(n, e, w)
+  //   case (Some(n), None, Some(s), Some(w)) => Seq(n, s, w)
+  //   case (None, Some(e), Some(s), Some(w)) => Seq(e, s, w)
+  //   // 2 
+  //   case (Some(n), Some(e), None, None) => Seq(n, e)
+  //   case (Some(n), None, Some(s), None) => Seq(n, s)
+  //   case (Some(n), None, None, Some(w)) => Seq(n, w)
+  //   case (None, Some(e), Some(s), None) => Seq(e, s)
+  //   case (None, Some(e), None, Some(w)) => Seq(e, w)
+  //   case (None, None, Some(s), Some(w)) => Seq(s, w)
+  //   // 1
+  //   case (Some(n), None, None, None) => Seq(n)
+  //   case (None, Some(e), None, None) => Seq(e)
+  //   case (None, None, Some(s), None) => Seq(s)
+  //   case (None, None, None, Some(w)) => Seq(w)
+  //   // 0 
+  //   case (None, None, None, None) => Nil
+  // }
 
   override def isLinked[SquareDirection](direction: SquareDirection): Boolean = direction match {
-    case North => neighbors.north.isDefined && isLinkedCoords(neighbors.north.get)
-    case East => neighbors.east.isDefined && isLinkedCoords(neighbors.east.get)
-    case South => neighbors.south.isDefined && isLinkedCoords(neighbors.south.get)
-    case West => neighbors.west.isDefined && isLinkedCoords(neighbors.west.get)
+    // case North => neighbors.north.isDefined && isLinkedCoords(neighbors.north.get)
+    // case East => neighbors.east.isDefined && isLinkedCoords(neighbors.east.get)
+    // case South => neighbors.south.isDefined && isLinkedCoords(neighbors.south.get)
+    // case West => neighbors.west.isDefined && isLinkedCoords(neighbors.west.get)
+    case North => neighbors.get("north").isDefined && isLinkedCoords(neighbors.get("north").get)
+    case East => neighbors.get("east").isDefined && isLinkedCoords(neighbors.get("east").get)
+    case South => neighbors.get("south").isDefined && isLinkedCoords(neighbors.get("south").get)
+    case West => neighbors.get("west").isDefined && isLinkedCoords(neighbors.get("west").get)
   }
 
   override def toString(): String = {
     val linkedCells: Seq[String] = 
-      (linked.contains(neighbors.north.getOrElse(Coordinates(-1, -1))),
-       linked.contains(neighbors.east.getOrElse(Coordinates(-1, -1))),
-       linked.contains(neighbors.south.getOrElse(Coordinates(-1, -1))),
-       linked.contains(neighbors.west.getOrElse(Coordinates(-1, -1))),
+      (linked.contains(neighbors.get("north").getOrElse(Coordinates(-1, -1))),
+       linked.contains(neighbors.get("east").getOrElse(Coordinates(-1, -1))),
+       linked.contains(neighbors.get("south").getOrElse(Coordinates(-1, -1))),
+       linked.contains(neighbors.get("west").getOrElse(Coordinates(-1, -1))),
       ) match {
         case (true, true, true, true) => Seq("north","east","south","west")
         case (true, true, true, false) => Seq("north","east","south")

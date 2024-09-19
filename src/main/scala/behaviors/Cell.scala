@@ -13,7 +13,8 @@ trait Cell {
   type NEIGHBORS <: Neighbors
 
   val coords: Coordinates
-  def neighbors: NEIGHBORS
+  // def neighbors: NEIGHBORS
+  def neighbors: Map[String, Coordinates]
   def linked: Set[Coordinates]
   def distance: Int
   def isStart: Boolean
@@ -23,23 +24,27 @@ trait Cell {
   def value: String
 
   // abstract methods
-  def neighborCoords(): Seq[Coordinates]
   def isLinked[D <: Enumeration#Value](direction: D): Boolean
 
+  def neighborCoords(): Seq[Coordinates] = neighbors.values.toSeq
+ 
   def visit[C <: Cell](visited: Boolean)(implicit ct: ClassTag[C]): C = Cell.instantiate[NEIGHBORS, C](this.asInstanceOf[C], visited)
 
   def unlinkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => !isLinkedCoords(c))
   
-  def linkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => !linked(c))
+  // def linkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => !linked(c))
+  def linkedNeighbors(): Seq[Coordinates] = neighborCoords().filter(c => linked(c))
 
   def isLinked[C <: Cell](cell: C, bidi: Boolean = true): Boolean = bidi match {
     case false => linked.contains(cell.coords)
     case true  => linked.contains(cell.coords) && cell.linked(this.coords)
   }
   def isLinkedCoords(coords: Coordinates): Boolean = linked.contains(coords)
+  def isLinkedCoords(coords: Option[Coordinates]): Boolean = coords.isDefined && linked.contains(coords.get)
   
   def setLinked[N <: Neighbors, C <: Cell](linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
-    Cell.instantiate[N, C](mazeType, coords, neighbors.asInstanceOf[N], linked, distance, isStart, isGoal, onSolutionPath, visited, value)
+    // Cell.instantiate[N, C](mazeType, coords, neighbors.asInstanceOf[N], linked, distance, isStart, isGoal, onSolutionPath, visited, value)
+    Cell.instantiate[N, C](mazeType, coords, neighbors, linked, distance, isStart, isGoal, onSolutionPath, visited, value)
   }
 
 
@@ -59,23 +64,31 @@ trait Cell {
 }
 
 object Cell {
-  def instantiate[N <: Neighbors, C <: Cell](mazeType: MazeType, coords: Coordinates, neighbors: N, 
+  // def instantiate[N <: Neighbors, C <: Cell](mazeType: MazeType, coords: Coordinates, neighbors: N, 
+  def instantiate[N <: Neighbors, C <: Cell](mazeType: MazeType, coords: Coordinates, neighbors: Map[String, Coordinates], 
     linked: Set[Coordinates], distance: Int, isStart: Boolean = false, isGoal: Boolean = false, onSolutionPath: Boolean = false, 
     visited: Boolean = false, value: String = "   ")(implicit ct: ClassTag[C]): C = mazeType match {
 
-      case Square => SquareCell(coords = coords, neighbors = neighbors.asInstanceOf[SquareNeighbors], linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
+      // case Square => SquareCell(coords = coords, neighbors = neighbors.asInstanceOf[SquareNeighbors], linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
+      case Square => SquareCell(coords = coords, neighbors = neighbors, linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
   }
-  def instantiate[N <: Neighbors, C <: Cell](mazeType: MazeType, coords: Coordinates, visited: Boolean, neighbors: N, linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
+  // def instantiate[N <: Neighbors, C <: Cell](mazeType: MazeType, coords: Coordinates, visited: Boolean, neighbors: N, linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
+  //   instantiate[N, C](mazeType, coords, neighbors, linked, 0, false, false, false, visited, "   ")
+  // }
+  def instantiate[N <: Neighbors, C <: Cell](mazeType: MazeType, coords: Coordinates, visited: Boolean, neighbors: Map[String, Coordinates], linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {
     instantiate[N, C](mazeType, coords, neighbors, linked, 0, false, false, false, visited, "   ")
   }
   def instantiate[N <: Neighbors, C <: Cell](cell: C, isStart: Boolean, isGoal: Boolean)(implicit ct: ClassTag[C]): C = {
-    instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, cell.distance, isStart, isGoal, cell.onSolutionPath, cell.visited, cell.value)
+    // instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, cell.distance, isStart, isGoal, cell.onSolutionPath, cell.visited, cell.value)
+    instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors, cell.linked, cell.distance, isStart, isGoal, cell.onSolutionPath, cell.visited, cell.value)
   }
   def instantiate[N <: Neighbors, C <: Cell](cell: C, visited: Boolean)(implicit ct: ClassTag[C]): C = {
-    instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, visited, cell.value)
+    // instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, visited, cell.value)
+    instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors, cell.linked, cell.distance, cell.isStart, cell.isGoal, cell.onSolutionPath, visited, cell.value)
   }
   def instantiate[N <: Neighbors, C <: Cell](cell: C, distance: Int, onSolutionPath: Boolean, value: String)(implicit ct: ClassTag[C]): C = {
-    instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, distance, cell.isStart, cell.isGoal, onSolutionPath, cell.visited, value)
+    // instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors.asInstanceOf[N], cell.linked, distance, cell.isStart, cell.isGoal, onSolutionPath, cell.visited, value)
+    instantiate[N, C](cell.mazeType, cell.coords, cell.neighbors, cell.linked, distance, cell.isStart, cell.isGoal, onSolutionPath, cell.visited, value)
   }
 }
