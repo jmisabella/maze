@@ -20,6 +20,11 @@ trait Grid[C <: Cell] {
   def startCoords: Coordinates
   def goalCoords: Coordinates
   def asci(): String
+  
+  // retrieve row
+  def row(y: Int): List[C] = cells(y).toList
+  // retrieve column
+  def column(x: Int): List[C] = (for (y <- 0 until height) yield cells(y)(x)).toList
 
   // def neighbors(cell: C): Seq[C] = cell.neighbors.toSeq().map(c => get(c.x, c.y))
   def neighbors(cell: C): Seq[C] = cell.neighborCoords().map(c => get(c.x, c.y))
@@ -83,6 +88,7 @@ trait Grid[C <: Cell] {
     // a maze is perfect if it's fully connected and is a tree (no cycles and exactly v-1 edges)
     isFullyConnected() && countEdges(this) == size() - 1
   }
+  //// TODO: could we have a method to bi-directionally link cells which are not already?
 
   def flatten(): List[C] = cells.toList.flatten
 

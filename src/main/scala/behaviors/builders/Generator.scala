@@ -100,10 +100,10 @@ object Generator {
       case (t, _) => throw new IllegalArgumentException(s"Unexpected maze type [$t]")
     }
     // generator.distance.pathTo( // for BinaryTree only, this pathTo call is somehow losing cells' linked neighbors
-      generator.distance.distances( // for BinaryTree only, this distances call is somehow losing cells' linked neighbors
+      // generator.distance.distances( // for BinaryTree only, this distances call is somehow losing cells' linked neighbors
         generator.generate(request.mazeType, request.width, request.height, request.start, request.goal)
-        , request.start.x
-        , request.start.y)
+        // , request.start.x
+        // , request.start.y)
       // , request.start.x
       // , request.start.y 
       // , request.goal.x

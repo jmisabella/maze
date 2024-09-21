@@ -8,11 +8,13 @@ import scala.reflect.ClassTag
 
 trait Linkage[N <: Neighbors, C <: Cell, G <: Grid[C]] {
 
+
   def visit(cell: C): C = cell.visit(visited = true)
   
   def linked(cell1: C, cell2: C, bidi: Boolean = true): Boolean = bidi match {
-    case false => cell1.linked.contains(cell2.coords)
-    case true => cell1.linked.contains(cell2.coords) && cell2.linked.contains(cell1.coords) 
+    // case false => cell1.linked.contains(cell2.coords)
+    // case true => cell1.linked.contains(cell2.coords) && cell2.linked.contains(cell1.coords) 
+    case _ => cell1.linked.contains(cell2.coords) && cell2.linked.contains(cell1.coords) 
   }
   def linkAll(cells: Seq[C], bidi: Boolean, f: (C, C, Boolean) => Seq[C])(implicit ct: ClassTag[C]): Seq[C] = {
     val ungrouped: Seq[C] = (for ((c1, c2) <- cells zip cells.drop(1)) yield f(c1, c2, bidi)).flatten
@@ -32,18 +34,56 @@ trait Linkage[N <: Neighbors, C <: Cell, G <: Grid[C]] {
     merged.filter(_.isDefined).map(_.get)
   }
   def link(cell1: C, cell2: C, bidi: Boolean)(implicit ct: ClassTag[C]): Seq[C] = bidi match {
-    case false => Seq(cell1.setLinked[N, C](cell1.linked + cell2.coords))
-    case true => Seq(cell1.setLinked[N, C](cell1.linked + cell2.coords), cell2.setLinked[N, C](cell2.linked + cell1.coords))
+    // case false => Seq(cell1.setLinked[N, C](cell1.linked + cell2.coords))
+    // case true => Seq(cell1.setLinked[N, C](cell1.linked + cell2.coords), cell2.setLinked[N, C](cell2.linked + cell1.coords))
+    case _ => Seq(cell1.setLinked[N, C](cell1.linked + cell2.coords), cell2.setLinked[N, C](cell2.linked + cell1.coords))
   }
   def link(cells: Seq[C], bidi: Boolean = true)(implicit ct: ClassTag[C]): Seq[C] = linkAll(cells, bidi, link)
 
+  //// TODO: doesn't always link bi-directionally in Sidewinder, causing false negative (unreachable cells) in RectangleGrid's asci() method's rendering of the maze
   def link(cell1: C, cell2: C, grid: G)(implicit ct: ClassTag[C]): G = {
+    // val linked = link(Seq(cell1, cell2))
+    // println("CELL 1 LINKED: " + linked.head)
+    // println("CELL 2 LINKED: " + linked.tail.head)
+    // grid.set[G](linked.head).set(linked.tail.head)
     if (cell1.neighborCoords().contains(cell2.coords) && cell2.neighborCoords().contains(cell1.coords)) {
       val updated1: C = cell1.setLinked[N, C](cell1.linked ++ Set(cell2.coords))
       val updated2: C = cell2.setLinked[N, C](cell2.linked ++ Set(cell1.coords))
-      grid.set[G](updated1).set(updated2) 
+      grid.set[G](updated1).set(updated2)
     } else {
       grid
     }
+  }
+
+  //// TODO: fix actual bug causing unidirectional linking so we can remove this bandaid method
+  def repairUniDirectonalLinks(grid: G)(implicit ct: ClassTag[C]): G = {
+    var updated: G = grid
+    for (y <- 0 until grid.height) {
+      val row: Seq[C] = updated.row(y)
+      for (cell <- row) {
+        if (cell.coords.x < grid.width - 1) {
+          val neighbor: C = updated.get(cell.neighbors("east"))
+          if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
+            updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
+          } else if (!cell.linked.contains(neighbor.coords) && neighbor.linked.contains(cell.coords)) {
+            updated = updated.set(cell.setLinked(cell.linked ++ Set(neighbor.coords))) 
+          }
+        }
+      }
+    }
+    for (x <- 0 until grid.width) {
+      val column: Seq[C] = grid.column(x)
+      for (cell <- column) {
+        if (cell.coords.y < grid.height - 1) {
+          val neighbor: C = updated.get(cell.neighbors("south"))
+          if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
+            updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
+          } else if (!cell.linked.contains(neighbor.coords) && neighbor.linked.contains(cell.coords)) {
+            updated = updated.set(cell.setLinked(cell.linked ++ Set(neighbor.coords))) 
+          }
+        }
+      } 
+    }
+    updated
   }
 }

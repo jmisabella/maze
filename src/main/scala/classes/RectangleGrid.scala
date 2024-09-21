@@ -18,10 +18,6 @@ case class RectangleGrid(
 
   override type NEIGHBORS = SquareNeighbors
 
-  // retrieve row
-  def row(y: Int): List[SquareCell] = cells(y).toList
-  // retrieve column
-  def column(x: Int): List[SquareCell] = (for (y <- 0 until height) yield cells(y)(x)).toList
 
   override val mazeType = Square
   
@@ -32,13 +28,13 @@ case class RectangleGrid(
       var bottom: String = "+"
       for (cell <- row) {
         val body = cell.value
-        val eastBoundary: String = cell.asInstanceOf[SquareCell].neighbors.get("east").isDefined match {
-          case true if (cell.asInstanceOf[SquareCell].isLinked(East)) => " "
+        val eastBoundary: String = cell.neighbors.get("east").isDefined match {
+          case true if (cell.isLinked(East)) => " "
           case _ => "|"
         }
         top += body + eastBoundary
-        val southBoundary: String = cell.asInstanceOf[SquareCell].neighbors.get("south").isDefined match {
-          case true if (cell.asInstanceOf[SquareCell].isLinked(South)) => "   "
+        val southBoundary: String = cell.neighbors.get("south").isDefined match {
+          case true if (cell.isLinked(South)) => "   "
           case _ => "---"
         }
         val corner: String= "+"
