@@ -22,7 +22,15 @@ case class SquareCell (
   // override type NEIGHBORS = SquareNeighbors
 
   // override type MAZE_TYPE = Square
-  override def mazeType: MazeType = Square 
+  override def mazeType: MazeType = Square
+
+  override def neighbor[D <: Enumeration#Value](direction: D): Coordinates = direction match {
+    case North => neighborsByDirection("north")
+    case East => neighborsByDirection("east")
+    case South => neighborsByDirection("south")
+    case West => neighborsByDirection("west")
+    case d => throw new IllegalArgumentException(s"Unexpected direction [$d] for SquareCell; expecting one of [North, East, South West]")
+  }
   
   // override def neighborCoords(): Seq[Coordinates] = (neighbors.north, neighbors.east, neighbors.south, neighbors.west) match {
   //   // 4 

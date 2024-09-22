@@ -3,7 +3,7 @@ package maze.behaviors
 import maze.behaviors.{ Cell, Grid }
 import maze.classes.{ Coordinates }
 import maze.classes.MazeType._
-
+import maze.classes.SquareDirection._
 import scala.reflect.ClassTag
 
 trait Linkage[C <: Cell, G <: Grid[C]] {
@@ -60,7 +60,7 @@ trait Linkage[C <: Cell, G <: Grid[C]] {
       val row: Seq[C] = updated.row(y)
       for (cell <- row) {
         if (cell.coords.x < grid.width - 1) {
-          val neighbor: C = updated.get(cell.neighborsByDirection("east"))
+          val neighbor: C = updated.get(cell.neighbor(East))
           if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
             updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
           } else if (!cell.linked.contains(neighbor.coords) && neighbor.linked.contains(cell.coords)) {
@@ -73,7 +73,7 @@ trait Linkage[C <: Cell, G <: Grid[C]] {
       val column: Seq[C] = grid.column(x)
       for (cell <- column) {
         if (cell.coords.y < grid.height - 1) {
-          val neighbor: C = updated.get(cell.neighborsByDirection("south"))
+          val neighbor: C = updated.get(cell.neighbor(South))
           if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
             updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
           } else if (!cell.linked.contains(neighbor.coords) && neighbor.linked.contains(cell.coords)) {

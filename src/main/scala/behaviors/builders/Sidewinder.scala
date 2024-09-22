@@ -1,7 +1,7 @@
 package maze.behaviors.builders
 
-import maze.classes.{ Coordinates }
 import maze.classes.{ RectangleGrid, SquareCell, Coordinates }
+import maze.classes.SquareDirection._
 import maze.behaviors.{ Linkage, Cell, Grid }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
@@ -31,11 +31,11 @@ trait Sidewinder[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
           nextGrid = nextGrid.set(seed2)
           val random: C = run(randomIndex)
           if (random.coords.y > 0) {
-            nextGrid = linker.link(random, nextGrid.get(random.neighborsByDirection("north")), nextGrid)
+            nextGrid = linker.link(random, nextGrid.get(random.neighbor(North)), nextGrid)
             run = Nil // clear run after closing out the eastward dig
           }
         } else if (!atEasternWall) {
-          nextGrid = linker.link(current, nextGrid.get(current.neighborsByDirection("east")), nextGrid)
+          nextGrid = linker.link(current, nextGrid.get(current.neighbor(East)), nextGrid)
         }
       }
     }

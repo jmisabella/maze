@@ -23,6 +23,8 @@ trait Cell {
   def isLinked[D <: Enumeration#Value](direction: D): Boolean
 
   def neighbors(): Seq[Coordinates] = neighborsByDirection.values.toSeq
+
+  def neighbor[D <: Enumeration#Value](direction: D): Coordinates
  
   def visit[C <: Cell](visited: Boolean)(implicit ct: ClassTag[C]): C = Cell.instantiate[C](this.asInstanceOf[C], visited)
 

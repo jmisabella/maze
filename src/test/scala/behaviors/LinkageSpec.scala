@@ -2,6 +2,7 @@ package maze.behaviors
 
 import maze.classes.{ SquareCell, RectangleGrid, Coordinates }
 import maze.classes.MazeType._
+import maze.classes.SquareDirection._
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ BinaryTree, Sidewinder }
 
@@ -151,12 +152,12 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
     for (cell <- zigZagCells(updated)) {
       val originalLinked: Set[Coordinates] = cell.linked
       if (cell.neighborsByDirection.keySet.contains("west")) {
-        val linked: Seq[SquareCell] = module.link(Seq(cell, updated.cells(cell.neighborsByDirection("west").y)(cell.neighborsByDirection("west").x)))
+        val linked: Seq[SquareCell] = module.link(Seq(cell, updated.cells(cell.neighbor(West).y)(cell.neighbor(West).x)))
         for (linkedCell <- linked) {
           updated = updated.set(linkedCell)
         }
         updated.cells(cell.coords.y)(cell.coords.x).linked.toList.containsSlice(originalLinked.toList) shouldBe (true)
-        updated.cells(cell.coords.y)(cell.coords.x).linked.contains(cell.neighborsByDirection("west")) shouldBe (true)
+        updated.cells(cell.coords.y)(cell.coords.x).linked.contains(cell.neighbor(West)) shouldBe (true)
       }
     }
     println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
