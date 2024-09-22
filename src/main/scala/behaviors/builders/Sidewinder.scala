@@ -31,11 +31,11 @@ trait Sidewinder[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
           nextGrid = nextGrid.set(seed2)
           val random: C = run(randomIndex)
           if (random.coords.y > 0) {
-            nextGrid = linker.link(random, nextGrid.get(random.neighbors("north")), nextGrid)
+            nextGrid = linker.link(random, nextGrid.get(random.neighborsByDirection("north")), nextGrid)
             run = Nil // clear run after closing out the eastward dig
           }
         } else if (!atEasternWall) {
-          nextGrid = linker.link(current, nextGrid.get(current.neighbors("east")), nextGrid)
+          nextGrid = linker.link(current, nextGrid.get(current.neighborsByDirection("east")), nextGrid)
         }
       }
     }

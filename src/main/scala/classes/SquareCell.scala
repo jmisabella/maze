@@ -9,7 +9,7 @@ import play.api.libs.json.Json
 case class SquareCell (
   coords: Coordinates, 
   // neighbors: SquareNeighbors = SquareNeighbors(), 
-  neighbors: Map[String, Coordinates] = Map(),
+  neighborsByDirection: Map[String, Coordinates] = Map(),
   linked: Set[Coordinates] = Set(),
   distance: Int = 0,
   isStart: Boolean = false,
@@ -53,18 +53,18 @@ case class SquareCell (
     // case East => neighbors.east.isDefined && isLinkedCoords(neighbors.east.get)
     // case South => neighbors.south.isDefined && isLinkedCoords(neighbors.south.get)
     // case West => neighbors.west.isDefined && isLinkedCoords(neighbors.west.get)
-    case North => neighbors.get("north").isDefined && isLinkedCoords(neighbors.get("north"))
-    case East => neighbors.get("east").isDefined && isLinkedCoords(neighbors.get("east"))
-    case South => neighbors.get("south").isDefined && isLinkedCoords(neighbors.get("south"))
-    case West => neighbors.get("west").isDefined && isLinkedCoords(neighbors.get("west"))
+    case North => neighborsByDirection.get("north").isDefined && isLinkedCoords(neighborsByDirection.get("north"))
+    case East => neighborsByDirection.get("east").isDefined && isLinkedCoords(neighborsByDirection.get("east"))
+    case South => neighborsByDirection.get("south").isDefined && isLinkedCoords(neighborsByDirection.get("south"))
+    case West => neighborsByDirection.get("west").isDefined && isLinkedCoords(neighborsByDirection.get("west"))
   }
 
   override def toString(): String = {
     val linkedCells: Seq[String] = 
-      (linked.contains(neighbors.get("north").getOrElse(Coordinates(-1, -1))),
-       linked.contains(neighbors.get("east").getOrElse(Coordinates(-1, -1))),
-       linked.contains(neighbors.get("south").getOrElse(Coordinates(-1, -1))),
-       linked.contains(neighbors.get("west").getOrElse(Coordinates(-1, -1))),
+      (linked.contains(neighborsByDirection.get("north").getOrElse(Coordinates(-1, -1))),
+       linked.contains(neighborsByDirection.get("east").getOrElse(Coordinates(-1, -1))),
+       linked.contains(neighborsByDirection.get("south").getOrElse(Coordinates(-1, -1))),
+       linked.contains(neighborsByDirection.get("west").getOrElse(Coordinates(-1, -1))),
       ) match {
         case (true, true, true, true) => Seq("north","east","south","west")
         case (true, true, true, false) => Seq("north","east","south")

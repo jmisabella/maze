@@ -25,12 +25,12 @@ case class RectangleGrid(
       var bottom: String = "+"
       for (cell <- row) {
         val body = cell.value
-        val eastBoundary: String = cell.neighbors.get("east").isDefined match {
+        val eastBoundary: String = cell.neighborsByDirection.get("east").isDefined match {
           case true if (cell.isLinked(East)) => " "
           case _ => "|"
         }
         top += body + eastBoundary
-        val southBoundary: String = cell.neighbors.get("south").isDefined match {
+        val southBoundary: String = cell.neighborsByDirection.get("south").isDefined match {
           case true if (cell.isLinked(South)) => "   "
           case _ => "---"
         }
@@ -57,25 +57,25 @@ object RectangleGrid {
     )
     grid.copy(
       cells = (for (row <- 0 until grid.height) yield {
-        var neighbors = Map[String, Coordinates]() 
+        var neighborsByDirection = Map[String, Coordinates]() 
         // set cells' neighbors
         (for (col <- 0 until grid.width) yield {
           val coordinates: Coordinates = Coordinates(col, row)
           val cell = grid.cells(row)(col)
           if (cell.coords.y != 0) {
-            neighbors += ("north" -> grid.cells(cell.coords.y - 1)(cell.coords.x).coords)
+            neighborsByDirection += ("north" -> grid.cells(cell.coords.y - 1)(cell.coords.x).coords)
           }
           if (cell.coords.x < grid.width - 1) {
-            neighbors += ("east" -> (grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
+            neighborsByDirection += ("east" -> (grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
           }
           if (cell.coords.y < grid.height - 1) {
-            neighbors += ("south" -> (grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
+            neighborsByDirection += ("south" -> (grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
           }
           if (cell.coords.x != 0) {
-            neighbors += ("west" -> (grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
+            neighborsByDirection += ("west" -> (grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
           }
           cell.copy(
-            neighbors = neighbors,
+            neighborsByDirection = neighborsByDirection,
             isStart = cell.coords == start,
             isGoal = cell.coords == goal)
         }).toArray

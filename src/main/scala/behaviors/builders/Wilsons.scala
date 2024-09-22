@@ -16,7 +16,7 @@ trait Wilsons[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
     val path = scala.collection.mutable.ListBuffer[C](currentCell)
     val visitedDuringWalk = scala.collection.mutable.Set[C](currentCell)
     while (true) {
-      val neighbors: Seq[Coordinates] = currentCell.neighborCoords()
+      val neighbors: Seq[Coordinates] = currentCell.neighbors()
       val unvisitedNeighbors: Seq[C] = neighbors.flatMap { coords =>
         val neighborCell = grid.get(coords.x, coords.y)
         if (unvisited.contains(neighborCell) && !visitedDuringWalk.contains(neighborCell)) {

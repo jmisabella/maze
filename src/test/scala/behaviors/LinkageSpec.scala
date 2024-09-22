@@ -150,13 +150,13 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
     Then("original links of the zig-zag should be preserved")
     for (cell <- zigZagCells(updated)) {
       val originalLinked: Set[Coordinates] = cell.linked
-      if (cell.neighbors.keySet.contains("west")) {
-        val linked: Seq[SquareCell] = module.link(Seq(cell, updated.cells(cell.neighbors("west").y)(cell.neighbors("west").x)))
+      if (cell.neighborsByDirection.keySet.contains("west")) {
+        val linked: Seq[SquareCell] = module.link(Seq(cell, updated.cells(cell.neighborsByDirection("west").y)(cell.neighborsByDirection("west").x)))
         for (linkedCell <- linked) {
           updated = updated.set(linkedCell)
         }
         updated.cells(cell.coords.y)(cell.coords.x).linked.toList.containsSlice(originalLinked.toList) shouldBe (true)
-        updated.cells(cell.coords.y)(cell.coords.x).linked.contains(cell.neighbors("west")) shouldBe (true)
+        updated.cells(cell.coords.y)(cell.coords.x).linked.contains(cell.neighborsByDirection("west")) shouldBe (true)
       }
     }
     println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")

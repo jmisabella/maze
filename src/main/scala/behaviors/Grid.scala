@@ -25,10 +25,10 @@ trait Grid[C <: Cell] {
   def column(x: Int): List[C] = (for (y <- 0 until height) yield cells(y)(x)).toList
 
   // def neighbors(cell: C): Seq[C] = cell.neighbors.toSeq().map(c => get(c.x, c.y))
-  def neighbors(cell: C): Seq[C] = cell.neighborCoords().map(c => get(c.x, c.y))
+  def neighbors(cell: C): Seq[C] = cell.neighbors().map(c => get(c.x, c.y))
   
   // def neighbors(coords: Coordinates): Seq[C] = get(coords).neighbors.toSeq().map(c => get(c.x, c.y))
-  def neighbors(coords: Coordinates): Seq[C] = get(coords).neighborCoords().map(c => get(c.x, c.y))
+  def neighbors(coords: Coordinates): Seq[C] = get(coords).neighbors().map(c => get(c.x, c.y))
   
   def linkOneUnreachable[G <: Grid[C]]()(implicit ct: ClassTag[C]): G = {
     var nextGrid: G = this.asInstanceOf[G]
@@ -93,17 +93,17 @@ trait Grid[C <: Cell] {
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
   def unflatten[C <: Cell, G <: Grid[C]](flattened: Seq[C])(implicit ct: ClassTag[C]): G = {
-    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighbors, c.value, c.distance, c.onSolutionPath))
+    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighborsByDirection, c.value, c.distance, c.onSolutionPath))
     val merged: Seq[Option[C]] = grouped.foldLeft(Nil: Seq[Option[C]]) {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
-        val neighbors: Map[String, Coordinates ]= k._3
+        val neighborsByDirection: Map[String, Coordinates ]= k._3
         val value: String = k._4
         val distance: Int = k._5
         val onSolutionPath: Boolean = k._6
         val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
-        val cell: C = Cell.instantiate(mazeType, coords, neighbors, linked, distance)
+        val cell: C = Cell.instantiate(mazeType, coords, neighborsByDirection, linked, distance)
         acc ++ Seq(Some(cell))
       }
     }

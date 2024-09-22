@@ -23,9 +23,9 @@ trait BinaryTree[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
         nextGrid = nextGrid.set(seed)
         if (y > 0 && (x == 0 || randomOutcome)) {
           // carve north
-          nextGrid = linker.link(current, nextGrid.get(current.neighbors("north")), nextGrid)
+          nextGrid = linker.link(current, nextGrid.get(current.neighborsByDirection("north")), nextGrid)
         } else if (x > 0) {
-          nextGrid = linker.link(current, nextGrid.get(current.neighbors("west")), nextGrid)
+          nextGrid = linker.link(current, nextGrid.get(current.neighborsByDirection("west")), nextGrid)
         }
       }
     }    

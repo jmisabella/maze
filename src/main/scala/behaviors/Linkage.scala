@@ -18,16 +18,16 @@ trait Linkage[C <: Cell, G <: Grid[C]] {
   }
   def linkAll(cells: Seq[C], bidi: Boolean, f: (C, C, Boolean) => Seq[C])(implicit ct: ClassTag[C]): Seq[C] = {
     val ungrouped: Seq[C] = (for ((c1, c2) <- cells zip cells.drop(1)) yield f(c1, c2, bidi)).flatten
-    val grouped = ungrouped.groupBy(c => (c.coords, c.visited, c.neighbors, c.mazeType))
+    val grouped = ungrouped.groupBy(c => (c.coords, c.visited, c.neighborsByDirection, c.mazeType))
     val merged: Seq[Option[C]] = grouped.foldLeft(Nil: Seq[Option[C]]) {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
         // val neighbors: N = k._3.asInstanceOf[N]
-        val neighbors: Map[String, Coordinates] = k._3
+        val neighborsByDirection: Map[String, Coordinates] = k._3
         val mazeType: MazeType = k._4
         val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
-        val cell: C = Cell.instantiate[C](mazeType, coords, visited, neighbors, linked)
+        val cell: C = Cell.instantiate[C](mazeType, coords, visited, neighborsByDirection, linked)
         acc ++ Seq(Some(cell))
       }
     }
@@ -44,7 +44,7 @@ trait Linkage[C <: Cell, G <: Grid[C]] {
     // println("CELL 1 LINKED: " + linked.head)
     // println("CELL 2 LINKED: " + linked.tail.head)
     // grid.set[G](linked.head).set(linked.tail.head)
-    if (cell1.neighborCoords().contains(cell2.coords) && cell2.neighborCoords().contains(cell1.coords)) {
+    if (cell1.neighbors().contains(cell2.coords) && cell2.neighbors().contains(cell1.coords)) {
       val updated1: C = cell1.setLinked[C](cell1.linked ++ Set(cell2.coords))
       val updated2: C = cell2.setLinked[C](cell2.linked ++ Set(cell1.coords))
       grid.set[G](updated1).set(updated2)
@@ -60,7 +60,7 @@ trait Linkage[C <: Cell, G <: Grid[C]] {
       val row: Seq[C] = updated.row(y)
       for (cell <- row) {
         if (cell.coords.x < grid.width - 1) {
-          val neighbor: C = updated.get(cell.neighbors("east"))
+          val neighbor: C = updated.get(cell.neighborsByDirection("east"))
           if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
             updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
           } else if (!cell.linked.contains(neighbor.coords) && neighbor.linked.contains(cell.coords)) {
@@ -73,7 +73,7 @@ trait Linkage[C <: Cell, G <: Grid[C]] {
       val column: Seq[C] = grid.column(x)
       for (cell <- column) {
         if (cell.coords.y < grid.height - 1) {
-          val neighbor: C = updated.get(cell.neighbors("south"))
+          val neighbor: C = updated.get(cell.neighborsByDirection("south"))
           if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
             updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
           } else if (!cell.linked.contains(neighbor.coords) && neighbor.linked.contains(cell.coords)) {
