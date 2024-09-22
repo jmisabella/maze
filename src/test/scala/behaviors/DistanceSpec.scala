@@ -2,7 +2,7 @@ package maze.behaviors
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ Sidewinder, BinaryTree }
-import maze.classes.{ SquareNeighbors, SquareCell, RectangleGrid, Coordinates }
+import maze.classes.{ SquareCell, RectangleGrid, Coordinates }
 import maze.classes.MazeType._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -12,22 +12,22 @@ import org.scalatest.GivenWhenThen
 
 class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
 
-  case object sidewinder extends Sidewinder[SquareNeighbors, SquareCell, RectangleGrid] {
-    case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-    override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+  case object sidewinder extends Sidewinder[SquareCell, RectangleGrid] {
+    case object _linkage extends Linkage[SquareCell, RectangleGrid]
+    override type LINKAGE = Linkage[SquareCell, RectangleGrid]
     override val linker = _linkage
-    case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-    override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+    case object _distance extends Distance[SquareCell, RectangleGrid]
+    override type DISTANCE = Distance[SquareCell, RectangleGrid]
     override val distance = _distance
   }
   
-  case object binaryTree extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
-    case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-    override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+  case object binaryTree extends BinaryTree[SquareCell, RectangleGrid] {
+    case object _linkage extends Linkage[SquareCell, RectangleGrid]
+    override type LINKAGE = Linkage[SquareCell, RectangleGrid]
     override val linker = _linkage
 
-    case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-    override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+    case object _distance extends Distance[SquareCell, RectangleGrid]
+    override type DISTANCE = Distance[SquareCell, RectangleGrid]
     override val distance = _distance
   }
   

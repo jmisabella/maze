@@ -1,6 +1,6 @@
 package maze.classes
 
-import maze.classes.{ SquareCell, SquareNeighbors, RectangleGrid }
+import maze.classes.{ SquareCell, RectangleGrid }
 import maze.classes.MazeType._
 import maze.behaviors.{ Linkage, Distance, Grid, Cell }
 import maze.behaviors.builders.{ Sidewinder, BinaryTree, Generator }
@@ -24,12 +24,12 @@ class RectangleGridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "determine distances from upper-left cell to all others in a 12x12 maze generated using Sidewinder" in {
-    case object module extends Sidewinder[SquareNeighbors, SquareCell, RectangleGrid] {
-      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    case object module extends Sidewinder[SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      case object _distance extends Distance[SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("12x12 grid generated using Sidewinder")
@@ -49,12 +49,12 @@ class RectangleGridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "determine distances from upper-left cell to all others in a 12x12 maze generated using Binary Tree" in {
-    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
-      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    case object module extends BinaryTree[SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      case object _distance extends Distance[SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("12x12 grid generated using Binary Tree")
@@ -112,12 +112,12 @@ class RectangleGridSpec extends AnyFlatSpec with GivenWhenThen {
   }
 
   it should "honor start and goal coordinates specified when generating a square grid" in {
-    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
-      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    case object module extends BinaryTree[SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      case object _distance extends Distance[SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x5 BinaryTree request")
@@ -153,12 +153,12 @@ class RectangleGridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "honor start and goal coordinates specified when generating a square grid using Generator, version 2" in {
-    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
-      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    case object module extends BinaryTree[SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      case object _distance extends Distance[SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x5 BinaryTree request")
@@ -177,12 +177,12 @@ class RectangleGridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "honor start and goal coordinates specified when generating a non-square grid using Generator" in {
-    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
-      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    case object module extends BinaryTree[SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      case object _distance extends Distance[SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x10 BinaryTree request")
@@ -224,12 +224,12 @@ class RectangleGridSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "honor start and goal coordinates specified in MazeRequest when generating a non-square grid" in {
-    case object module extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
-      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    case object module extends BinaryTree[SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      case object _distance extends Distance[SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x10 BinaryTree request")

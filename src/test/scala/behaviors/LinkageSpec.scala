@@ -1,6 +1,6 @@
 package maze.behaviors
 
-import maze.classes.{ SquareCell, SquareNeighbors, RectangleGrid, Coordinates }
+import maze.classes.{ SquareCell, RectangleGrid, Coordinates }
 import maze.classes.MazeType._
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ BinaryTree, Sidewinder }
@@ -11,14 +11,14 @@ import org.scalatest.GivenWhenThen
 
 class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
 
-  case object module extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+  case object module extends Linkage[SquareCell, RectangleGrid]
 
-  case object sidewinder extends Sidewinder[SquareNeighbors, SquareCell, RectangleGrid] {
-    case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-    override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+  case object sidewinder extends Sidewinder[SquareCell, RectangleGrid] {
+    case object _linkage extends Linkage[SquareCell, RectangleGrid]
+    override type LINKAGE = Linkage[SquareCell, RectangleGrid]
     override val linker = _linkage
-    case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-    override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+    case object _distance extends Distance[SquareCell, RectangleGrid]
+    override type DISTANCE = Distance[SquareCell, RectangleGrid]
     override val distance = _distance
   }
 
@@ -180,14 +180,14 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
   }
 
   it should "know when lower-right corner cell is linked to upper-left corner cell via other cells" in {
-    case object linker extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    case object linker extends Linkage[SquareCell, RectangleGrid]
     
-    case object binaryTree extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
-      case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-      override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+    case object binaryTree extends BinaryTree[SquareCell, RectangleGrid] {
+      case object _linkage extends Linkage[SquareCell, RectangleGrid]
+      override type LINKAGE = Linkage[SquareCell, RectangleGrid]
       override val linker = _linkage
-      case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-      override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+      case object _distance extends Distance[SquareCell, RectangleGrid]
+      override type DISTANCE = Distance[SquareCell, RectangleGrid]
       override val distance = _distance
     }
     Given("5x5 grid with a completely isolated (e.g. isolated from all cells) bottom-right corner cell") 

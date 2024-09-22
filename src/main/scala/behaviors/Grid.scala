@@ -1,7 +1,7 @@
 package maze.behaviors
 
 import maze.behaviors.Cell
-import maze.classes.{ RectangleGrid, SquareCell, SquareNeighbors, Coordinates, MazeType }
+import maze.classes.{ RectangleGrid, SquareCell, Coordinates, MazeType }
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
@@ -9,8 +9,6 @@ import scala.reflect.ClassTag
 
 trait Grid[C <: Cell] {
   
-  type NEIGHBORS <: Neighbors
-
   def mazeType: MazeType
 
   def width: Int
@@ -42,8 +40,8 @@ trait Grid[C <: Cell] {
           var cell: C = unreached 
           var neighbor: C = get(neighborCoords)
           if (reachable.contains(neighbor)) {
-            cell = cell.setLinked[NEIGHBORS, C](linked = cell.linked ++ Set(neighbor.coords))
-            neighbor = neighbor.setLinked[NEIGHBORS, C](linked = neighbor.linked ++ Set(cell.coords))
+            cell = cell.setLinked[C](linked = cell.linked ++ Set(neighbor.coords))
+            neighbor = neighbor.setLinked[C](linked = neighbor.linked ++ Set(cell.coords))
             nextGrid = nextGrid.set[G](cell).set(neighbor)
             return nextGrid
           }
@@ -100,7 +98,6 @@ trait Grid[C <: Cell] {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
         val visited: Boolean = k._2
-        // val neighbors: NEIGHBORS = k._3.asInstanceOf[NEIGHBORS]
         val neighbors: Map[String, Coordinates ]= k._3
         val value: String = k._4
         val distance: Int = k._5
@@ -111,11 +108,9 @@ trait Grid[C <: Cell] {
       }
     }
     val mergedCells: Seq[C] = merged.filter(_.isDefined).map(_.get)
-    // var remaining: List[C] = mergedCells.toList.sorted
-    // var remaining: List[C] = flattened.head.sortList[N, C](mergedCells.toList).toList
     var remaining: List[C] = flattened.toList.sortBy(_.coords.inverse())
 
-    Grid.instantiate[NEIGHBORS, C, G](mazeType, height, width, startCoords, goalCoords, remaining)
+    Grid.instantiate[C, G](mazeType, height, width, startCoords, goalCoords, remaining)
   }
 
   def get(x: Int, y: Int): C = cells(y)(x).asInstanceOf[C]
@@ -132,7 +127,7 @@ trait Grid[C <: Cell] {
         }
       }).toArray
     }).toArray
-    Grid.setCells[NEIGHBORS, C, G](this.asInstanceOf[G], cells)
+    Grid.setCells[C, G](this.asInstanceOf[G], cells)
   }
   def set[G <: Grid[C]](cells: Seq[C])(implicit ct: ClassTag[C]): G = {
     var grid = this
@@ -140,8 +135,8 @@ trait Grid[C <: Cell] {
     grid.asInstanceOf[G]
   }
   // set RNG seed 
-  def set[N <: Neighbors, C <: Cell, G <: Grid[C]](seed: RNG)(implicit ct: ClassTag[C]): G = {
-    Grid.setSeed[N, C, G](this.asInstanceOf[G], seed)
+  def set[C <: Cell, G <: Grid[C]](seed: RNG)(implicit ct: ClassTag[C]): G = {
+    Grid.setSeed[C, G](this.asInstanceOf[G], seed)
   } 
   
   def size(): Int = cells.length * cells.headOption.getOrElse(Array(0)).length
@@ -188,7 +183,7 @@ trait Grid[C <: Cell] {
 }
 
 object Grid {
-  def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
+  def instantiate[C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
     goalCoords: Coordinates)(implicit ct1: ClassTag[C]): G = {
     
     val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
@@ -200,7 +195,7 @@ object Grid {
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
     }
   }
-  private def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
+  private def instantiate[C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
     goalCoords: Coordinates, seed: RNG, flattened: List[C])(implicit ct1: ClassTag[C]): G = {
     
     var remaining: List[C] = flattened
@@ -212,7 +207,7 @@ object Grid {
         var cell = remaining.head
         remaining = remaining.tail
         val coordinates: Coordinates = Coordinates(col, row)
-        Cell.instantiate[N, C](cell, isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
+        Cell.instantiate[C](cell, isStart = coordinates == startCoords, isGoal = coordinates == goalCoords)
       }).toArray
     }).toArray
     mazeType match {
@@ -223,20 +218,20 @@ object Grid {
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
     }
   }
-  private def instantiate[N <: Neighbors, C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
+  private def instantiate[C <: Cell, G <: Grid[C]](mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
     goalCoords: Coordinates, flattened: List[C] = Nil)(implicit ct1: ClassTag[C]): G = {
 
       // seed not provided, so randomly generate the initial seed
       val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
-      instantiate[N, C, G](mazeType, height, width, startCoords, goalCoords, seed, flattened)
+      instantiate[C, G](mazeType, height, width, startCoords, goalCoords, seed, flattened)
   }
-  private def setCells[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, cells: Array[Array[C]])(implicit ct: ClassTag[C]): G = {
-    instantiate[N, C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, cells.toList.flatten)
+  private def setCells[C <: Cell, G <: Grid[C]](grid: G, cells: Array[Array[C]])(implicit ct: ClassTag[C]): G = {
+    instantiate[C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, cells.toList.flatten)
   }
-  private def setCells[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, cells: Seq[Seq[C]])(implicit ct: ClassTag[C]): G = {
+  private def setCells[C <: Cell, G <: Grid[C]](grid: G, cells: Seq[Seq[C]])(implicit ct: ClassTag[C]): G = {
     setCells(grid, cells.map(xs => xs.toArray).toArray)
   }
-  private def setSeed[N <: Neighbors, C <: Cell, G <: Grid[C]](grid: G, seed: RNG)(implicit ct: ClassTag[C]): G = {
-    instantiate[N, C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, seed, grid.flatten)
+  private def setSeed[C <: Cell, G <: Grid[C]](grid: G, seed: RNG)(implicit ct: ClassTag[C]): G = {
+    instantiate[C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, seed, grid.flatten)
   } 
 }

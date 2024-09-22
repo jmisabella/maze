@@ -16,9 +16,6 @@ case class RectangleGrid(
   startCoords: Coordinates,
   goalCoords: Coordinates) extends Grid[SquareCell] {
 
-  override type NEIGHBORS = SquareNeighbors
-
-
   override val mazeType = Square
   
   override def asci(): String = {

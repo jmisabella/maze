@@ -1,17 +1,17 @@
 package maze.behaviors.builders
 
 import maze.classes.{ Coordinates }
-import maze.classes.{ SquareNeighbors, RectangleGrid, SquareCell, Coordinates }
-import maze.behaviors.{ Linkage, Neighbors, Cell, Grid }
+import maze.classes.{ RectangleGrid, SquareCell, Coordinates }
+import maze.behaviors.{ Linkage, Cell, Grid }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 
 import scala.reflect.ClassTag
 
 // Sidewinder algorithm only works with Square maze type
-trait Sidewinder[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G] {
+trait Sidewinder[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
 
-  type LINKAGE <: Linkage[N, C, G]
+  type LINKAGE <: Linkage[C, G]
   val linker: LINKAGE
   
   override def generate(grid: G)(implicit ct: ClassTag[C]): G = {

@@ -2,7 +2,7 @@ package maze.behaviors.builders
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.HuntAndKill
-import maze.classes.{ SquareNeighbors, SquareCell, RectangleGrid, Coordinates, MazeRequest, Algorithm }
+import maze.classes.{ SquareCell, RectangleGrid, Coordinates, MazeRequest, Algorithm }
 import maze.classes.MazeType._
 import maze.classes.Algorithm._
 
@@ -11,13 +11,13 @@ import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
 class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
-  case object module extends HuntAndKill[SquareNeighbors, SquareCell, RectangleGrid] {
-    case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-    override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+  case object module extends HuntAndKill[SquareCell, RectangleGrid] {
+    case object _linkage extends Linkage[SquareCell, RectangleGrid]
+    override type LINKAGE = Linkage[SquareCell, RectangleGrid]
     override val linker = _linkage
 
-    case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-    override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+    case object _distance extends Distance[SquareCell, RectangleGrid]
+    override type DISTANCE = Distance[SquareCell, RectangleGrid]
     override val distance = _distance
   }
   
