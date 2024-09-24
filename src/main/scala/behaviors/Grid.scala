@@ -1,7 +1,7 @@
 package maze.behaviors
 
 import maze.behaviors.Cell
-import maze.classes.{ RectangleGrid, SquareCell, Coordinates, MazeType }
+import maze.classes.{ SquareGrid, SquareCell, Coordinates, MazeType }
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
@@ -24,10 +24,8 @@ trait Grid[C <: Cell] {
   // retrieve column
   def column(x: Int): List[C] = (for (y <- 0 until height) yield cells(y)(x)).toList
 
-  // def neighbors(cell: C): Seq[C] = cell.neighbors.toSeq().map(c => get(c.x, c.y))
   def neighbors(cell: C): Seq[C] = cell.neighbors().map(c => get(c.x, c.y))
   
-  // def neighbors(coords: Coordinates): Seq[C] = get(coords).neighbors.toSeq().map(c => get(c.x, c.y))
   def neighbors(coords: Coordinates): Seq[C] = get(coords).neighbors().map(c => get(c.x, c.y))
   
   def linkOneUnreachable[G <: Grid[C]]()(implicit ct: ClassTag[C]): G = {
@@ -190,7 +188,7 @@ object Grid {
     
     mazeType match {
       case Square => {
-        RectangleGrid(height, width, startCoords, goalCoords).asInstanceOf[G]
+        SquareGrid(height, width, startCoords, goalCoords).asInstanceOf[G]
       }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
     }
@@ -212,7 +210,7 @@ object Grid {
     }).toArray
     mazeType match {
       case Square => {
-        val grid = RectangleGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
+        val grid = SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
         grid
       }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")

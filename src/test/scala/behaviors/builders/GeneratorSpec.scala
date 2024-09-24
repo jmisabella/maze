@@ -2,7 +2,7 @@ package maze.behaviors
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ Generator, BinaryTree, Sidewinder }
-import maze.classes.{ SquareCell, RectangleGrid, MazeRequest, Algorithm }
+import maze.classes.{ SquareCell, SquareGrid, MazeRequest, Algorithm }
 import maze.classes.MazeType._
 
 import org.scalatest.flatspec.AnyFlatSpec

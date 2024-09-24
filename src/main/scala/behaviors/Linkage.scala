@@ -38,12 +38,7 @@ trait Linkage[C <: Cell, G <: Grid[C]] {
   }
   def link(cells: Seq[C], bidi: Boolean = true)(implicit ct: ClassTag[C]): Seq[C] = linkAll(cells, bidi, link)
 
-  //// TODO: doesn't always link bi-directionally in Sidewinder, causing false negative (unreachable cells) in RectangleGrid's asci() method's rendering of the maze
   def link(cell1: C, cell2: C, grid: G)(implicit ct: ClassTag[C]): G = {
-    // val linked = link(Seq(cell1, cell2))
-    // println("CELL 1 LINKED: " + linked.head)
-    // println("CELL 2 LINKED: " + linked.tail.head)
-    // grid.set[G](linked.head).set(linked.tail.head)
     if (cell1.neighbors().contains(cell2.coords) && cell2.neighbors().contains(cell1.coords)) {
       val updated1: C = cell1.setLinked[C](cell1.linked ++ Set(cell2.coords))
       val updated2: C = cell2.setLinked[C](cell2.linked ++ Set(cell1.coords))
@@ -60,7 +55,7 @@ trait Linkage[C <: Cell, G <: Grid[C]] {
       val row: Seq[C] = updated.row(y)
       for (cell <- row) {
         if (cell.coords.x < grid.width - 1) {
-          val neighbor: C = updated.get(cell.neighbor(East))
+          val neighbor: C = updated.get(cell.neighbors(East).head)
           if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
             updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
           } else if (!cell.linked.contains(neighbor.coords) && neighbor.linked.contains(cell.coords)) {
@@ -73,7 +68,7 @@ trait Linkage[C <: Cell, G <: Grid[C]] {
       val column: Seq[C] = grid.column(x)
       for (cell <- column) {
         if (cell.coords.y < grid.height - 1) {
-          val neighbor: C = updated.get(cell.neighbor(South))
+          val neighbor: C = updated.get(cell.neighbors(South).head)
           if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
             updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
           } else if (!cell.linked.contains(neighbor.coords) && neighbor.linked.contains(cell.coords)) {

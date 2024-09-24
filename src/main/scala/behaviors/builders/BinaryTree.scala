@@ -1,6 +1,6 @@
 package maze.behaviors.builders
 
-import maze.classes.{ RectangleGrid, SquareCell, Coordinates }
+import maze.classes.{ SquareGrid, SquareCell, Coordinates }
 import maze.classes.SquareDirection._
 import maze.behaviors.{ Linkage, Cell, Grid }
 import maze.behaviors.builders.Generator
@@ -24,9 +24,9 @@ trait BinaryTree[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
         nextGrid = nextGrid.set(seed)
         if (y > 0 && (x == 0 || randomOutcome)) {
           // carve north
-          nextGrid = linker.link(current, nextGrid.get(current.neighbor(North)), nextGrid)
+          nextGrid = linker.link(current, nextGrid.get(current.neighbors(North).head), nextGrid)
         } else if (x > 0) {
-          nextGrid = linker.link(current, nextGrid.get(current.neighbor(West)), nextGrid)
+          nextGrid = linker.link(current, nextGrid.get(current.neighbors(West).head), nextGrid)
         }
       }
     }    

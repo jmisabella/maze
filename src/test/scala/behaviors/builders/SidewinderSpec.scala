@@ -2,7 +2,7 @@ package maze.behaviors.builders
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.Sidewinder
-import maze.classes.{ SquareCell, RectangleGrid, Coordinates }
+import maze.classes.{ SquareCell, SquareGrid, Coordinates }
 import maze.classes.MazeType._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -11,18 +11,18 @@ import org.scalatest.GivenWhenThen
 
 class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
 
-  case object module extends Sidewinder[SquareCell, RectangleGrid] {
-    case object _linkage extends Linkage[SquareCell, RectangleGrid]
-    override type LINKAGE = Linkage[SquareCell, RectangleGrid]
+  case object module extends Sidewinder[SquareCell, SquareGrid] {
+    case object _linkage extends Linkage[SquareCell, SquareGrid]
+    override type LINKAGE = Linkage[SquareCell, SquareGrid]
     override val linker = _linkage
-    case object _distance extends Distance[SquareCell, RectangleGrid]
-    override type DISTANCE = Distance[SquareCell, RectangleGrid]
+    case object _distance extends Distance[SquareCell, SquareGrid]
+    override type DISTANCE = Distance[SquareCell, SquareGrid]
     override val distance = _distance
   }
   
   "Sidewinder" should "generate a 5x5 maze using Sidewinder and print it to screen" in {
     Given("5x5 grid")
-    val grid = RectangleGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    val grid = SquareGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     When("generating maze using Sidewinder")
     val generated = module.generate(grid)
     Then("generated maze should have height of 5 cells")
@@ -40,9 +40,9 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 12x12 maze using Sidewinder and print it to screen" in {
     Given("12x12 grid")
-    val grid = RectangleGrid(12, 12, Coordinates(0, 11), Coordinates(4, 11))
+    val grid = SquareGrid(12, 12, Coordinates(0, 11), Coordinates(4, 11))
     When("generating maze using Sidewinder")
-    val generated = module.generate(grid).asInstanceOf[RectangleGrid]
+    val generated = module.generate(grid).asInstanceOf[SquareGrid]
     Then("generated maze should have height of 12 cells")
     generated.height should be (12)
     generated.cells.length should be (12)
@@ -58,7 +58,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 25x25 maze using Sidewinder and print it to screen" in {
     Given("25x25 grid")
-    val grid = RectangleGrid(25, 25, Coordinates(0, 24), Coordinates(24, 0))
+    val grid = SquareGrid(25, 25, Coordinates(0, 24), Coordinates(24, 0))
     When("generating maze using Sidewinder")
     val generated = module.generate(grid)
     Then("generated maze should have height of 25 cells")
@@ -74,7 +74,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 35x35 maze using Sidewinder and print it to screen" in {
     Given("35x35 grid")
-    val grid = RectangleGrid(35, 35, Coordinates(0, 34), Coordinates(34, 0))
+    val grid = SquareGrid(35, 35, Coordinates(0, 34), Coordinates(34, 0))
     When("generating maze using Sidewinder")
     val generated = module.generate(grid)
     Then("generated maze should have height of 35 cells")
@@ -91,7 +91,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 40x40 maze using Sidewinder and print it to screen" in {
     Given("40x40 grid")
-    val grid = RectangleGrid(40, 40, Coordinates(0, 39), Coordinates(39, 0))
+    val grid = SquareGrid(40, 40, Coordinates(0, 39), Coordinates(39, 0))
     When("generating maze using Sidewinder")
     val generated = module.generate(grid)
     Then("generated maze should have height of 40 cells")
@@ -132,7 +132,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
   
   it should "generate a 5x10 maze using Sidewinder and print it to screen" in {
     Given("5x10 grid")
-    val grid = RectangleGrid(10, 5, Coordinates(0, 9), Coordinates(4, 0))
+    val grid = SquareGrid(10, 5, Coordinates(0, 9), Coordinates(4, 0))
     When("generating maze using Sidewinder")
     val generated = module.generate(grid)
     Then("generated maze should have height of 10 cells")

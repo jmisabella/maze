@@ -8,7 +8,7 @@ import maze.utilities.RNG // can control initial seed to ensure repeatability fo
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
 import scala.annotation.tailrec
 
-case class RectangleGrid(
+case class SquareGrid(
   height: Int, 
   width: Int, 
   cells: Array[Array[SquareCell]],
@@ -44,11 +44,11 @@ case class RectangleGrid(
   }
 }
 
-object RectangleGrid {
-  def apply(height: Int, width: Int, start: Coordinates, goal: Coordinates): RectangleGrid = {
+object SquareGrid {
+  def apply(height: Int, width: Int, start: Coordinates, goal: Coordinates): SquareGrid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
-    val empty: RectangleGrid = RectangleGrid(height, width, Array[Array[SquareCell]](), seed, start, goal).copy(cells = Array.ofDim[SquareCell](height, width))
-    val grid: RectangleGrid = empty.copy(cells =
+    val empty: SquareGrid = SquareGrid(height, width, Array[Array[SquareCell]](), seed, start, goal).copy(cells = Array.ofDim[SquareCell](height, width))
+    val grid: SquareGrid = empty.copy(cells =
       (for (row <- 0 until empty.height) yield {
         (for (col <- 0 until empty.width) yield {
           SquareCell(col, row)

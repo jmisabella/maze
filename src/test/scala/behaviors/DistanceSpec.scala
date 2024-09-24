@@ -2,7 +2,7 @@ package maze.behaviors
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ Sidewinder, BinaryTree }
-import maze.classes.{ SquareCell, RectangleGrid, Coordinates }
+import maze.classes.{ SquareCell, SquareGrid, Coordinates }
 import maze.classes.MazeType._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -12,28 +12,28 @@ import org.scalatest.GivenWhenThen
 
 class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
 
-  case object sidewinder extends Sidewinder[SquareCell, RectangleGrid] {
-    case object _linkage extends Linkage[SquareCell, RectangleGrid]
-    override type LINKAGE = Linkage[SquareCell, RectangleGrid]
+  case object sidewinder extends Sidewinder[SquareCell, SquareGrid] {
+    case object _linkage extends Linkage[SquareCell, SquareGrid]
+    override type LINKAGE = Linkage[SquareCell, SquareGrid]
     override val linker = _linkage
-    case object _distance extends Distance[SquareCell, RectangleGrid]
-    override type DISTANCE = Distance[SquareCell, RectangleGrid]
+    case object _distance extends Distance[SquareCell, SquareGrid]
+    override type DISTANCE = Distance[SquareCell, SquareGrid]
     override val distance = _distance
   }
   
-  case object binaryTree extends BinaryTree[SquareCell, RectangleGrid] {
-    case object _linkage extends Linkage[SquareCell, RectangleGrid]
-    override type LINKAGE = Linkage[SquareCell, RectangleGrid]
+  case object binaryTree extends BinaryTree[SquareCell, SquareGrid] {
+    case object _linkage extends Linkage[SquareCell, SquareGrid]
+    override type LINKAGE = Linkage[SquareCell, SquareGrid]
     override val linker = _linkage
 
-    case object _distance extends Distance[SquareCell, RectangleGrid]
-    override type DISTANCE = Distance[SquareCell, RectangleGrid]
+    case object _distance extends Distance[SquareCell, SquareGrid]
+    override type DISTANCE = Distance[SquareCell, SquareGrid]
     override val distance = _distance
   }
   
   "Distance" should "generate a 5x5 maze using Sidewinder and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
     Given("5x5 grid generated using Sidewinder")
-    val unlinked = RectangleGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    val unlinked = SquareGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     val grid = sidewinder.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
     val result = sidewinder.distance.distances(grid, 0, 0)
@@ -42,7 +42,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 5x5 maze using Sidewinder and show shortest path from upper-left cell to botom-right cell before printing to screen" in {
     Given("5x5 grid generated using Sidewinder")
-    val unlinked = RectangleGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    val unlinked = SquareGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     val grid = sidewinder.generate(unlinked)
     When("determining distances from upper-left cell to each other cell")
     val result = sidewinder.distance.pathTo(grid, 0, 0, 4, 4)
@@ -87,7 +87,7 @@ class DistanceSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 5x5 maze using Binary Tree and determine distances from upper-left cell to all other reachable cells before printing to screen" in {
     Given("5x5 grid generated using BinaryTree")
-    val unlinked = RectangleGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    val unlinked = SquareGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     val grid = binaryTree.generate(unlinked)
     println(grid)
     println(grid.asci())
