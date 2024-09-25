@@ -5,6 +5,5 @@ object PolarDirection extends Enumeration {
   val ClockWise, CounterClockWise, Inward, Outward = Value
   
   def fromString(s: String): Option[PolarDirection] = values.find(_.toString.toLowerCase == s.toLowerCase)
-
 }
 
