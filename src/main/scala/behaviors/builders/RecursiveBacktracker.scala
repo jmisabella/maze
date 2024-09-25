@@ -29,7 +29,6 @@ trait RecursiveBacktracker[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
           nextGrid = nextGrid.set[C, G](seed = seed)
           val neighbor: C = unvisitedNeighbors(randomIndex)
           nextGrid = linker.link(currentCell, neighbor, nextGrid)
-          println(nextGrid.asci())
           generateMaze(nextGrid, neighbor :: stack, visited + neighbor.coords)
         } else {
           // backtrack if no unvisited neighbors
