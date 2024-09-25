@@ -2,13 +2,13 @@ package maze.behaviors.builders
 
 import maze.classes.{ Coordinates }
 import maze.classes.MazeType._
-import maze.behaviors.{ Linkage, Cell, Grid, Neighbors }
+import maze.behaviors.{ Linkage, Cell, Grid }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 
 import scala.reflect.ClassTag
 
-trait Wilsons[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G] {
+trait Wilsons[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
 
   private def randomWalk(startCell: C, unvisited: scala.collection.mutable.Set[C], grid: G)(implicit ct: ClassTag[C]): (List[C], G) = {
     var nextGrid = grid
@@ -16,7 +16,7 @@ trait Wilsons[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G
     val path = scala.collection.mutable.ListBuffer[C](currentCell)
     val visitedDuringWalk = scala.collection.mutable.Set[C](currentCell)
     while (true) {
-      val neighbors: Seq[Coordinates] = currentCell.neighborCoords()
+      val neighbors: Seq[Coordinates] = currentCell.neighbors()
       val unvisitedNeighbors: Seq[C] = neighbors.flatMap { coords =>
         val neighborCell = grid.get(coords.x, coords.y)
         if (unvisited.contains(neighborCell) && !visitedDuringWalk.contains(neighborCell)) {
@@ -29,7 +29,7 @@ trait Wilsons[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G
         return (path.toList, nextGrid)
       } else {
         val (randomIndex, seed): (Int, RNG) = nextGrid.randomInt(unvisitedNeighbors.length)
-        nextGrid = nextGrid.set[N, C, G](seed = seed)
+        nextGrid = nextGrid.set[C, G](seed = seed)
         currentCell = unvisitedNeighbors(randomIndex)
         path += currentCell
         visitedDuringWalk.add(currentCell)

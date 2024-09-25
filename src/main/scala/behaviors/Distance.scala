@@ -1,12 +1,11 @@
 package maze.behaviors
 
-// import maze.classes.{ Coordinates, Neighbors, Cell, Grid }
-import maze.behaviors.{ Neighbors, Cell, Grid}
+import maze.behaviors.{ Cell, Grid}
 import maze.classes.{ Coordinates }
 
 import scala.reflect.ClassTag
 
-trait Distance[N <: Neighbors, C <: Cell, G <: Grid[C]] {
+trait Distance[C <: Cell, G <: Grid[C]] {
   def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
   def padLeft(s: String, c: Char, n: Int): String = n match {
     case 0 => s
@@ -41,13 +40,8 @@ trait Distance[N <: Neighbors, C <: Cell, G <: Grid[C]] {
   def distances(grid: G, startX: Int, startY: Int)(implicit ct2: ClassTag[C]): G = {
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDistances: Seq[C] = grid.cells.flatten.map(c => 
-      Cell.instantiate[N, C](cell = c, distance = dist.get(c.coords).getOrElse(0), onSolutionPath = dist.get(c.coords).isDefined, value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3))
-      // c.copy(
-      //   value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3),
-      //   onSolutionPath = dist.get(c.coords).isDefined, 
-      //   distance = dist.get(c.coords).getOrElse(0)
-      // )
-      ).toSeq
+      Cell.instantiate[C](cell = c, distance = dist.get(c.coords).getOrElse(0), onSolutionPath = dist.get(c.coords).isDefined, value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3))
+    ).toSeq
     grid.unflatten[C, G](withDistances)
   }
   def distances(grid: G, startCoords: Coordinates)(implicit ct: ClassTag[C]): G = distances(grid, startCoords.x, startCoords.y)
@@ -65,19 +59,11 @@ trait Distance[N <: Neighbors, C <: Cell, G <: Grid[C]] {
       case Some(c) => getLongestPath(grid).map(kv => kv._1 -> c.toString()).toMap
     }
     val withDistances: Seq[C] = grid.cells.flatten.map(c => 
-      Cell.instantiate[N, C](
+      Cell.instantiate[C](
         cell = c, 
         distance = try { path.get(c.coords).getOrElse("0").toInt } catch { case _: java.lang.NumberFormatException => 0 },
         onSolutionPath = path.get(c.coords).isDefined, 
         value = pad(path.get(c.coords).getOrElse(" ").toString(), ' ', 3))
-      // c.copy(
-      //   value = pad(path.get(c.coords).getOrElse(" ").toString(), ' ', 3),
-      //   onSolutionPath = path.get(c.coords).isDefined, 
-      //   distance = try {
-      //     path.get(c.coords).getOrElse("0").toInt
-      //   } catch {
-      //     case _: java.lang.NumberFormatException => 0
-      //   })
     ).toSeq
     grid.unflatten[C, G](withDistances)
   }
@@ -102,20 +88,12 @@ trait Distance[N <: Neighbors, C <: Cell, G <: Grid[C]] {
     }
     val distances: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDistances: Seq[C] = grid.cells.flatten.map(c => 
-      Cell.instantiate[N, C](
+      Cell.instantiate[C](
         cell = c, 
         distance = try { distances.get(c.coords).getOrElse(grid.width * grid.height) } catch { case _: java.lang.NumberFormatException => grid.width * grid.height },
         onSolutionPath = shortestPath.get(c.coords).isDefined, 
         value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3))
     
-      // c.copy(
-      //   value = pad(shortestPath.get(c.coords).getOrElse(" ").toString(), ' ', 3),
-      //   onSolutionPath = shortestPath.get(c.coords).isDefined, 
-      //   distance = try {
-      //     distances.get(c.coords).getOrElse(grid.columns * grid.rows)
-      //   } catch {
-      //     case _: java.lang.NumberFormatException => grid.columns * grid.rows
-      //   })
       ).toSeq
     grid.unflatten[C, G](withDistances)
   }

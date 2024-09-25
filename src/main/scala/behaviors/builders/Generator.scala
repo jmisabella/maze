@@ -1,24 +1,24 @@
 package maze.behaviors.builders
 
 import maze.classes.{ Coordinates, MazeRequest, Algorithm }
-import maze.behaviors.{ Linkage, Distance, Cell, Grid, Neighbors }
+import maze.behaviors.{ Linkage, Distance, Cell, Grid }
 import maze.behaviors.builders.{ BinaryTree, Sidewinder, AldousBroder, Wilsons, HuntAndKill }
-import maze.classes.{ SquareNeighbors, SquareCell, RectangleGrid }
+import maze.classes.{ SquareCell, SquareGrid }
 import maze.classes.MazeType._
 import scala.reflect.ClassTag
 
-trait Generator[N <: Neighbors, C <: Cell, G <: Grid[C]] {
+trait Generator[C <: Cell, G <: Grid[C]] {
 
-  type LINKAGE <: Linkage[N, C, G]
+  type LINKAGE <: Linkage[C, G]
   val linker: LINKAGE
 
-  type DISTANCE <: Distance[N, C, G]
+  type DISTANCE <: Distance[C, G]
   val distance: DISTANCE
  
   def generate(grid: G)(implicit ct: ClassTag[C]): G
 
   def generate(mazeType: MazeType, width: Int, height: Int, start: Coordinates, goal: Coordinates)(implicit ct: ClassTag[C]): G = {
-    generate(Grid.instantiate[N, C, G](mazeType, height, width, start, goal))
+    generate(Grid.instantiate[C, G](mazeType, height, width, start, goal))
   }
 }
 
@@ -28,68 +28,68 @@ object Generator {
 
       case (Square, Algorithm.BinaryTree) => {
         // BinaryTree algorithm only eligible for Square MazeType
-        case object binaryTree extends BinaryTree[SquareNeighbors, SquareCell, RectangleGrid] {
-          case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-          override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+        case object binaryTree extends BinaryTree[SquareCell, SquareGrid] {
+          case object _linkage extends Linkage[SquareCell, SquareGrid]
+          override type LINKAGE = Linkage[SquareCell, SquareGrid]
           override val linker = _linkage
-          case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-          override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+          case object _distance extends Distance[SquareCell, SquareGrid]
+          override type DISTANCE = Distance[SquareCell, SquareGrid]
           override val distance = _distance
         }
         binaryTree
       }
       case (Square, Algorithm.Sidewinder) => {
         // Sidewinder algorithm only eligible for Square MazeType
-        case object sidewinder extends Sidewinder[SquareNeighbors, SquareCell, RectangleGrid] {
-          case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-          override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+        case object sidewinder extends Sidewinder[SquareCell, SquareGrid] {
+          case object _linkage extends Linkage[SquareCell, SquareGrid]
+          override type LINKAGE = Linkage[SquareCell, SquareGrid]
           override val linker = _linkage
-          case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-          override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+          case object _distance extends Distance[SquareCell, SquareGrid]
+          override type DISTANCE = Distance[SquareCell, SquareGrid]
           override val distance = _distance
         }
         sidewinder
       }
       case (Square, Algorithm.AldousBroder) => {
-        case object aldousBroder extends AldousBroder[SquareNeighbors, SquareCell, RectangleGrid] {
-          case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-          override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+        case object aldousBroder extends AldousBroder[SquareCell, SquareGrid] {
+          case object _linkage extends Linkage[SquareCell, SquareGrid]
+          override type LINKAGE = Linkage[SquareCell, SquareGrid]
           override val linker = _linkage
-          case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-          override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+          case object _distance extends Distance[SquareCell, SquareGrid]
+          override type DISTANCE = Distance[SquareCell, SquareGrid]
           override val distance = _distance
         }
         aldousBroder
       }
       case (Square, Algorithm.Wilsons) => {
-        case object wilsons extends Wilsons[SquareNeighbors, SquareCell, RectangleGrid] {
-          case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-          override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+        case object wilsons extends Wilsons[SquareCell, SquareGrid] {
+          case object _linkage extends Linkage[SquareCell, SquareGrid]
+          override type LINKAGE = Linkage[SquareCell, SquareGrid]
           override val linker = _linkage
-          case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-          override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+          case object _distance extends Distance[SquareCell, SquareGrid]
+          override type DISTANCE = Distance[SquareCell, SquareGrid]
           override val distance = _distance
         }
         wilsons
       }
       case (Square, Algorithm.HuntAndKill) => {
-        case object huntAndKill extends HuntAndKill[SquareNeighbors, SquareCell, RectangleGrid] {
-          case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-          override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+        case object huntAndKill extends HuntAndKill[SquareCell, SquareGrid] {
+          case object _linkage extends Linkage[SquareCell, SquareGrid]
+          override type LINKAGE = Linkage[SquareCell, SquareGrid]
           override val linker = _linkage
-          case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-          override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+          case object _distance extends Distance[SquareCell, SquareGrid]
+          override type DISTANCE = Distance[SquareCell, SquareGrid]
           override val distance = _distance
         }
         huntAndKill
       }
       case (Square, Algorithm.RecursiveBacktracker) => {
-        case object recursiveBacktracker extends RecursiveBacktracker[SquareNeighbors, SquareCell, RectangleGrid] {
-          case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-          override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+        case object recursiveBacktracker extends RecursiveBacktracker[SquareCell, SquareGrid] {
+          case object _linkage extends Linkage[SquareCell, SquareGrid]
+          override type LINKAGE = Linkage[SquareCell, SquareGrid]
           override val linker = _linkage
-          case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-          override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+          case object _distance extends Distance[SquareCell, SquareGrid]
+          override type DISTANCE = Distance[SquareCell, SquareGrid]
           override val distance = _distance
         }
         recursiveBacktracker

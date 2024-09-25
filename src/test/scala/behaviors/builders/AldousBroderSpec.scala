@@ -2,7 +2,7 @@ package maze.behaviors.builders
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.AldousBroder
-import maze.classes.{ SquareNeighbors, SquareCell, RectangleGrid, Coordinates }
+import maze.classes.{ SquareCell, SquareGrid, Coordinates }
 import maze.classes.MazeType._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -10,19 +10,19 @@ import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
 class AldousBroderSpec extends AnyFlatSpec with GivenWhenThen {
-  case object module extends AldousBroder[SquareNeighbors, SquareCell, RectangleGrid] {
-    case object _linkage extends Linkage[SquareNeighbors, SquareCell, RectangleGrid]
-    override type LINKAGE = Linkage[SquareNeighbors, SquareCell, RectangleGrid]
+  case object module extends AldousBroder[SquareCell, SquareGrid] {
+    case object _linkage extends Linkage[SquareCell, SquareGrid]
+    override type LINKAGE = Linkage[SquareCell, SquareGrid]
     override val linker = _linkage
 
-    case object _distance extends Distance[SquareNeighbors, SquareCell, RectangleGrid]
-    override type DISTANCE = Distance[SquareNeighbors, SquareCell, RectangleGrid]
+    case object _distance extends Distance[SquareCell, SquareGrid]
+    override type DISTANCE = Distance[SquareCell, SquareGrid]
     override val distance = _distance
   }
   
   "AldousBroder" should "generate a 5x5 maze using AldousBroder and print it to screen" in {
     Given("5x5 grid")
-    val grid = RectangleGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    val grid = SquareGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
     When("generating maze using AldousBroder")
     val generated = module.generate(grid)
     Then("generated maze should have height of 5 cells")

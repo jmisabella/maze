@@ -1,68 +1,45 @@
 package maze.behaviors.builders
 
-import maze.classes.{ Coordinates }
-import maze.classes.{ SquareNeighbors, RectangleGrid, SquareCell, Coordinates }
-import maze.behaviors.{ Linkage, Neighbors, Cell, Grid }
+import maze.classes.{ SquareGrid, SquareCell, Coordinates }
+import maze.classes.SquareDirection._
+import maze.behaviors.{ Linkage, Cell, Grid }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 
 import scala.reflect.ClassTag
 
 // Sidewinder algorithm only works with Square maze type
-trait Sidewinder[N <: Neighbors, C <: Cell, G <: Grid[C]] extends Generator[N, C, G] {
+trait Sidewinder[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
 
-  type LINKAGE <: Linkage[N, C, G]
+  type LINKAGE <: Linkage[C, G]
   val linker: LINKAGE
-
+  
   override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
     var nextGrid: G = grid
-    var run: Seq[C] = Nil
-    for (row <- grid.cells) {
-      for (originalCell <- row) {
-        val cell: C = nextGrid.cells(originalCell.coords.y)(originalCell.coords.x)
-        run = run ++ Seq(cell)
-        val (randomOutcome, seed): (Boolean, RNG) = nextGrid.randomBoolean()
-        nextGrid = nextGrid.set(seed = seed) 
-        (cell.asInstanceOf[SquareCell].neighbors.north, cell.asInstanceOf[SquareCell].neighbors.east, randomOutcome) match {
-          case (None, None, _) => {
-            run = Nil // clear current run, onto the next run
+    for (y <- 0 until grid.height) {
+      var run: List[C] = Nil
+      for (x <- 0 until grid.width) {
+        val current: C = nextGrid.get(x, y)
+        run = run ++ Seq(current)
+        val atEasternWall: Boolean = !(current.coords.x < grid.width - 1)
+        val atNorthernWall: Boolean = current.coords.y == 0 
+        val (randomOutcome, seed1): (Boolean, RNG) = nextGrid.randomBoolean()
+        nextGrid = nextGrid.set(seed1)
+        val shouldCloseOut: Boolean = atEasternWall || (randomOutcome && !atNorthernWall)
+        if (shouldCloseOut) {
+          val (randomIndex, seed2): (Int, RNG) = nextGrid.randomInt(run)
+          nextGrid = nextGrid.set(seed2)
+          val random: C = run(randomIndex)
+          if (random.coords.y > 0) {
+            nextGrid = linker.link(random, nextGrid.get(random.neighbors(North).head), nextGrid)
+            run = Nil // clear run after closing out the eastward carving
           }
-          case (Some(north), Some(east), false) => { // go eastward, do not close the current run 
-            for (c <- linker.link(Seq(cell.asInstanceOf[C], nextGrid.cells(east.y)(east.x).asInstanceOf[C]))) {
-              nextGrid = nextGrid.set(c)
-            }
-          }
-          case (None, Some(east), _) => { // cannot go north
-            for (c <- linker.link(Seq(cell.asInstanceOf[C], nextGrid.cells(east.y)(east.x).asInstanceOf[C]))) { // go east
-              nextGrid = nextGrid.set(c)
-            }
-          }
-          case (_, None, _) => { // cannot go east, close run and randomly choose cell from current run from which to move north 
-            val (randomIndex, nextSeed)  = nextGrid.randomInt(run.length)
-            val rand: Coordinates = run(randomIndex).coords
-            val member = nextGrid.cells(rand.y)(rand.x)
-            run = Nil // clear current run, onto the next run
-            if (member.asInstanceOf[SquareCell].neighbors.north.isDefined) {
-              for (c <- linker.link(Seq(member.asInstanceOf[C], nextGrid.cells(member.asInstanceOf[SquareCell].neighbors.north.get.y)(member.asInstanceOf[SquareCell].neighbors.north.get.x).asInstanceOf[C]))) {
-                nextGrid = nextGrid.set(c)
-              }
-            }
-          }
-          case (Some(north), _, true) => { // coin toss is heads: close run and randomly chose one cell from current run from which to move north
-            val (randomIndex, nextSeed)  = nextGrid.randomInt(run.length)
-            val rand: Coordinates = run(randomIndex).coords 
-            val member = nextGrid.cells(rand.y)(rand.x)
-            run = Nil // clear current run, onto the next run
-            if (member.asInstanceOf[SquareCell].neighbors.north.isDefined) {
-              for (c <- linker.link(Seq(member.asInstanceOf[C], nextGrid.cells(member.asInstanceOf[SquareCell].neighbors.north.get.y)(member.asInstanceOf[SquareCell].neighbors.north.get.x).asInstanceOf[C]))) {
-                nextGrid = nextGrid.set(c)
-              }
-            }
-          }
+        } else if (!atEasternWall) {
+          nextGrid = linker.link(current, nextGrid.get(current.neighbors(East).head), nextGrid)
         }
       }
     }
-    nextGrid.asInstanceOf[G]
+    linker.repairUniDirectonalLinks(nextGrid)
   }
 
 }
