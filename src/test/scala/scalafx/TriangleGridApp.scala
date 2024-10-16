@@ -3,11 +3,20 @@ import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.Polygon
 import java.util.Arrays
+import play.api.libs.json.{ Json, Format }
 
-// Triangle trait to define shared properties
-trait Triangle {
-  def points: Array[Double]
-  def walls: Walls
+object TriangleType extends Enumeration {
+  type TriangleType = Value
+  val Upward, Downward = Value
+  
+  implicit val format: Format[TriangleType] = Json.formatEnum(this)
+
+  def fromString(s: String): Option[TriangleType] = values.find(_.toString.toLowerCase == s.toLowerCase())
+}
+import TriangleType._
+
+case class Triangle(v1: (Double, Double), v2: (Double, Double), v3: (Double, Double), walls: Walls = Walls()) {
+  def points: Array[Double] = Array(v1._1, v1._2, v2._1, v2._2, v3._1, v3._2)
   def toPolygon: Polygon = {
     val polygon = new Polygon()
     // Convert Scala Double to Java Double
@@ -21,25 +30,12 @@ trait Triangle {
 // Walls class to manage the wall state
 case class Walls(upperLeft: Boolean = true, upperRight: Boolean = true, bottom: Boolean = true)
 
-// UpwardTriangle class
-case class UpwardTriangle(v1: (Double, Double), v2: (Double, Double), v3: (Double, Double), walls: Walls = Walls()) extends Triangle {
-  def points: Array[Double] = Array(v1._1, v1._2, v2._1, v2._2, v3._1, v3._2)
-}
-
-// DownwardTriangle class
-case class DownwardTriangle(v1: (Double, Double), v2: (Double, Double), v3: (Double, Double), walls: Walls = Walls()) extends Triangle {
-  def points: Array[Double] = Array(v1._1, v1._2, v2._1, v2._2, v3._1, v3._2)
-}
-
 // Cell class
-case class Cell(row: Int, col: Int, triangleType: String) {
+case class Cell(row: Int, col: Int, triangleType: TriangleType) {
   var walls: Walls = Walls()
 }
 
 object TriangleGridApp extends JFXApp {
-//   val rows = 5
-//   val cols = 5
-//   val cellSize = 50
   val rows = 16 
   val cols = 20 
   val cellSize = 35 
@@ -52,7 +48,7 @@ object TriangleGridApp extends JFXApp {
     val maze = Array.ofDim[Cell](rows, cols)
     for (row <- 0 until rows; col <- 0 until cols) {
       // Alternating between upward and downward triangles
-      val triangleType = if ((row + col) % 2 == 0) "upward" else "downward"
+      val triangleType = if ((row + col) % 2 == 0) Upward else Downward
       maze(row)(col) = Cell(row, col, triangleType)
     }
     maze
@@ -76,22 +72,12 @@ object TriangleGridApp extends JFXApp {
         val adjustedWidthFactor: Double = 0.5
 
         triangle = cell.triangleType match {
-        //   case "upward" => UpwardTriangle(
-        //     (x + cellSize / 2, y),               // Top
-        //     (x, y + triangleHeight),             // Bottom Left
-        //     (x + cellSize, y + triangleHeight)   // Bottom Right
-        //   )
-        //   case "downward" => DownwardTriangle(
-        //     (x, y),                             // Top Left
-        //     (x + cellSize, y),                   // Top Right
-        //     (x + cellSize / 2, y + triangleHeight) // Bottom
-        //   )
-          case "upward" => UpwardTriangle(
+          case Upward => Triangle(
             (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor),               // Top
             (x * adjustedWidthFactor, y * adjustedHeightFactor + triangleHeight),             // Bottom Left
             (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor + triangleHeight)   // Bottom Right
           )
-          case "downward" => DownwardTriangle(
+          case Downward => Triangle(
             (x * adjustedWidthFactor, y * adjustedHeightFactor),                             // Top Left
             (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor),                   // Top Right
             (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor + triangleHeight) // Bottom
