@@ -1,3 +1,5 @@
+package triangle
+
 import scalafx.application.JFXApp
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
