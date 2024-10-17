@@ -17,7 +17,8 @@ object TriangleType extends Enumeration {
 }
 import TriangleType._
 
-case class Triangle(v1: (Double, Double), v2: (Double, Double), v3: (Double, Double), walls: Walls = Walls()) {
+case class Triangle(v1: (Double, Double), v2: (Double, Double), v3: (Double, Double), triangleType: TriangleType) {
+  def walls: Walls = Walls(triangleType) 
   def points: Array[Double] = Array(v1._1, v1._2, v2._1, v2._2, v3._1, v3._2)
   def toPolygon: Polygon = {
     val polygon = new Polygon()
@@ -30,11 +31,17 @@ case class Triangle(v1: (Double, Double), v2: (Double, Double), v3: (Double, Dou
 }
 
 // Walls class to manage the wall state
-case class Walls(upperLeft: Boolean = true, upperRight: Boolean = true, bottom: Boolean = true)
+case class Walls(upperLeft: Boolean, upperRight: Boolean, bottom: Boolean, top: Boolean, lowerLeft: Boolean, lowerRight: Boolean)
+object Walls {
+  def apply(triangleType: TriangleType): Walls = triangleType match {
+    case Upward => Walls(true, true, true, false, false, false)
+    case Downward => Walls(false, false, false, true, true, true)
+  }
+}
 
 // Cell class
 case class Cell(row: Int, col: Int, triangleType: TriangleType) {
-  var walls: Walls = Walls()
+  var walls: Walls = Walls(triangleType)
 }
 
 object TriangleGridApp extends JFXApp {
@@ -77,12 +84,14 @@ object TriangleGridApp extends JFXApp {
           case Upward => Triangle(
             (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor),               // Top
             (x * adjustedWidthFactor, y * adjustedHeightFactor + triangleHeight),             // Bottom Left
-            (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor + triangleHeight)   // Bottom Right
+            (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor + triangleHeight),   // Bottom Right
+            Upward
           )
           case Downward => Triangle(
             (x * adjustedWidthFactor, y * adjustedHeightFactor),                             // Top Left
             (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor),                   // Top Right
-            (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor + triangleHeight) // Bottom
+            (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor + triangleHeight), // Bottom
+            Downward 
           )
         }
 
