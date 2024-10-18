@@ -16,7 +16,7 @@ case class SquareGrid(
   startCoords: Coordinates,
   goalCoords: Coordinates) extends Grid[SquareCell] {
 
-  override val mazeType = Square
+  override val mazeType = Orthogonal 
   
   override def asci(): String = {
     var output: String = "+" + "---+" * width + "\n"

@@ -187,7 +187,7 @@ object Grid {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
     
     mazeType match {
-      case Square => {
+      case Orthogonal => {
         SquareGrid(height, width, startCoords, goalCoords).asInstanceOf[G]
       }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
@@ -209,7 +209,7 @@ object Grid {
       }).toArray
     }).toArray
     mazeType match {
-      case Square => {
+      case Orthogonal => {
         val grid = SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
         grid
       }

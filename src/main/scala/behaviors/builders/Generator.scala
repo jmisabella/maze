@@ -26,7 +26,7 @@ object Generator {
   def generate(request: MazeRequest): Grid[_] = {
     val generator = (request.mazeType, request.algorithm) match {
 
-      case (Square, Algorithm.BinaryTree) => {
+      case (Orthogonal, Algorithm.BinaryTree) => {
         // BinaryTree algorithm only eligible for Square MazeType
         case object binaryTree extends BinaryTree[SquareCell, SquareGrid] {
           case object _linkage extends Linkage[SquareCell, SquareGrid]
@@ -38,7 +38,7 @@ object Generator {
         }
         binaryTree
       }
-      case (Square, Algorithm.Sidewinder) => {
+      case (Orthogonal, Algorithm.Sidewinder) => {
         // Sidewinder algorithm only eligible for Square MazeType
         case object sidewinder extends Sidewinder[SquareCell, SquareGrid] {
           case object _linkage extends Linkage[SquareCell, SquareGrid]
@@ -50,7 +50,7 @@ object Generator {
         }
         sidewinder
       }
-      case (Square, Algorithm.AldousBroder) => {
+      case (Orthogonal, Algorithm.AldousBroder) => {
         case object aldousBroder extends AldousBroder[SquareCell, SquareGrid] {
           case object _linkage extends Linkage[SquareCell, SquareGrid]
           override type LINKAGE = Linkage[SquareCell, SquareGrid]
@@ -61,7 +61,7 @@ object Generator {
         }
         aldousBroder
       }
-      case (Square, Algorithm.Wilsons) => {
+      case (Orthogonal, Algorithm.Wilsons) => {
         case object wilsons extends Wilsons[SquareCell, SquareGrid] {
           case object _linkage extends Linkage[SquareCell, SquareGrid]
           override type LINKAGE = Linkage[SquareCell, SquareGrid]
@@ -72,7 +72,7 @@ object Generator {
         }
         wilsons
       }
-      case (Square, Algorithm.HuntAndKill) => {
+      case (Orthogonal, Algorithm.HuntAndKill) => {
         case object huntAndKill extends HuntAndKill[SquareCell, SquareGrid] {
           case object _linkage extends Linkage[SquareCell, SquareGrid]
           override type LINKAGE = Linkage[SquareCell, SquareGrid]
@@ -83,7 +83,7 @@ object Generator {
         }
         huntAndKill
       }
-      case (Square, Algorithm.RecursiveBacktracker) => {
+      case (Orthogonal, Algorithm.RecursiveBacktracker) => {
         case object recursiveBacktracker extends RecursiveBacktracker[SquareCell, SquareGrid] {
           case object _linkage extends Linkage[SquareCell, SquareGrid]
           override type LINKAGE = Linkage[SquareCell, SquareGrid]

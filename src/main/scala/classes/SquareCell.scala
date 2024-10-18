@@ -18,7 +18,7 @@ case class SquareCell (
   value: String = "   "
 ) extends Cell() {
 
-  override def mazeType: MazeType = Square
+  override def mazeType: MazeType = Orthogonal 
 
   override def neighbors[D <: Enumeration#Value](direction: D): Seq[Coordinates] = direction match {
     case North => Seq(neighborsByDirection("north"))

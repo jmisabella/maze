@@ -121,7 +121,7 @@ class SquareGridSpec extends AnyFlatSpec with GivenWhenThen {
       override val distance = _distance
     }
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(Square, 5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
+    val request = MazeRequest(Orthogonal, 5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
     When("generating the grid")
     var grid: SquareGrid = Generator.generate(request).asInstanceOf[SquareGrid]
     Then("grid's start should be southwest")
@@ -162,7 +162,7 @@ class SquareGridSpec extends AnyFlatSpec with GivenWhenThen {
       override val distance = _distance
     }
     Given("5x5 BinaryTree request")
-    val request = MazeRequest(Square, 5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
+    val request = MazeRequest(Orthogonal, 5, 5, Algorithm.BinaryTree, Coordinates(0, 4), Coordinates(4, 0))
     When("generating the grid")
     val grid: SquareGrid = Generator.generate(request).asInstanceOf[SquareGrid]
     Then("grid's start should be southwest")
@@ -186,7 +186,7 @@ class SquareGridSpec extends AnyFlatSpec with GivenWhenThen {
       override val distance = _distance
     }
     Given("5x10 BinaryTree request")
-    val request = MazeRequest(Square, 5, 10, Algorithm.BinaryTree, Coordinates(0, 9), Coordinates(4, 0))
+    val request = MazeRequest(Orthogonal, 5, 10, Algorithm.BinaryTree, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
     val grid: SquareGrid = Generator.generate(request).asInstanceOf[SquareGrid]
     info("START: " + grid.startCoords.toString())
@@ -233,7 +233,7 @@ class SquareGridSpec extends AnyFlatSpec with GivenWhenThen {
       override val distance = _distance
     }
     Given("5x10 BinaryTree request")
-    val request = MazeRequest(Square, 5, 10, Algorithm.BinaryTree, Coordinates(0, 9), Coordinates(4, 0))
+    val request = MazeRequest(Orthogonal, 5, 10, Algorithm.BinaryTree, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
     var grid: SquareGrid = Generator.generate(request).asInstanceOf[SquareGrid]
     Then("grid's should be southwest")

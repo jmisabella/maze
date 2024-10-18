@@ -192,7 +192,7 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
       override val distance = _distance
     }
     Given("5x5 grid with a completely isolated (e.g. isolated from all cells) bottom-right corner cell") 
-    var grid: SquareGrid = binaryTree.generate(Square, 5, 5, Coordinates(0, 4), Coordinates(4, 0)).asInstanceOf[SquareGrid]
+    var grid: SquareGrid = binaryTree.generate(Orthogonal, 5, 5, Coordinates(0, 4), Coordinates(4, 0)).asInstanceOf[SquareGrid]
     var bottomRightCell: SquareCell = grid.get(4, 4)
     for (linked <- bottomRightCell.linked) {
       val linkedCell: SquareCell = grid.get(linked.x, linked.y)

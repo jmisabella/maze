@@ -64,7 +64,7 @@ object Cell {
     linked: Set[Coordinates], distance: Int, isStart: Boolean = false, isGoal: Boolean = false, onSolutionPath: Boolean = false, 
     visited: Boolean = false, value: String = "   ")(implicit ct: ClassTag[C]): C = mazeType match {
 
-      case Square => SquareCell(coords = coords, neighborsByDirection = neighborsByDirection, linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
+      case Orthogonal => SquareCell(coords = coords, neighborsByDirection = neighborsByDirection, linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
   }
   def instantiate[C <: Cell](mazeType: MazeType, coords: Coordinates, visited: Boolean, neighbors: Map[String, Coordinates], linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {

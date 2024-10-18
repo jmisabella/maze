@@ -51,7 +51,7 @@ class RecursiveBacktrackerSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "honor start and goal coordinates specified in MazeRequest when generating a non-square RecursiveBacktracker maze grid" in {
     Given("5x10 RecursiveBacktracker request")
-    val request = MazeRequest(Square, 5, 10, Algorithm.RecursiveBacktracker, Coordinates(0, 9), Coordinates(4, 0))
+    val request = MazeRequest(Orthogonal, 5, 10, Algorithm.RecursiveBacktracker, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
     var grid = Generator.generate(request).asInstanceOf[SquareGrid]
     Then("grid's start should be southwest")
