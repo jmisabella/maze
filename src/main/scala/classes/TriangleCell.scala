@@ -101,7 +101,6 @@ case class TriangleCell (
       "isGoal" -> isGoal, 
       "onSolutionPath" -> onSolutionPath//,
     )).toString()
-    ???
   }
 }
 
