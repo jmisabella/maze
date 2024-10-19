@@ -2,7 +2,9 @@ package maze.behaviors.builders
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.AldousBroder
-import maze.classes.{ SquareCell, SquareGrid, Coordinates }
+import maze.classes.Coordinates
+import maze.classes.cell.SquareCell
+import maze.classes.grid.SquareGrid
 import maze.classes.MazeType._
 
 import org.scalatest.flatspec.AnyFlatSpec

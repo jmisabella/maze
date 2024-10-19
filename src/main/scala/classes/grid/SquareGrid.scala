@@ -1,9 +1,10 @@
-package maze.classes
+package maze.classes.grid
 
 import maze.behaviors.{ Cell, Grid }
-import maze.classes.{ SquareCell, Coordinates, MazeType }
+import maze.classes.{ Coordinates, MazeType }
+import maze.classes.cell.SquareCell
 import maze.classes.MazeType._
-import maze.classes.SquareDirection._
+import maze.classes.direction.SquareDirection._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
 import scala.annotation.tailrec

@@ -1,6 +1,7 @@
 package maze.classes
 
-import maze.classes.{ SquareCell, SquareGrid }
+import maze.classes.cell.SquareCell
+import maze.classes.grid.SquareGrid
 import maze.classes.MazeType._
 import maze.behaviors.{ Linkage, Distance, Grid, Cell }
 import maze.behaviors.builders.{ Sidewinder, BinaryTree, Generator }

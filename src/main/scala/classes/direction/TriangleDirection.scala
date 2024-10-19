@@ -1,4 +1,4 @@
-package maze.classes
+package maze.classes.direction
 
 object TriangleDirection extends Enumeration {
   type TriangleDirection = Value

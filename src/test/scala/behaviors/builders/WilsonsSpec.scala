@@ -2,7 +2,9 @@ package maze.behaviors.builders
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.Wilsons
-import maze.classes.{ SquareCell, SquareGrid, Coordinates, MazeRequest, Algorithm }
+import maze.classes.{ Coordinates, MazeRequest, Algorithm }
+import maze.classes.cell.SquareCell
+import maze.classes.grid.SquareGrid
 import maze.classes.MazeType._
 import maze.classes.Algorithm._
 

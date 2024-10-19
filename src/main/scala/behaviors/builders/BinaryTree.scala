@@ -1,7 +1,9 @@
 package maze.behaviors.builders
 
-import maze.classes.{ SquareGrid, SquareCell, Coordinates }
-import maze.classes.SquareDirection._
+import maze.classes.Coordinates
+import maze.classes.cell.SquareCell
+import maze.classes.direction.SquareDirection._
+import maze.classes.grid.SquareGrid
 import maze.behaviors.{ Linkage, Cell, Grid }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG

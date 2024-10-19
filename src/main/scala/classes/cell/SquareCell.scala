@@ -1,9 +1,9 @@
-package maze.classes
+package maze.classes.cell
 
 import maze.behaviors.Cell
 import maze.classes.{ Coordinates, MazeType }
 import maze.classes.MazeType._
-import maze.classes.SquareDirection._
+import maze.classes.direction.SquareDirection._
 import play.api.libs.json.Json
 
 case class SquareCell (

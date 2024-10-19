@@ -3,7 +3,7 @@ package maze.behaviors
 import maze.behaviors.{ Cell, Grid }
 import maze.classes.{ Coordinates }
 import maze.classes.MazeType._
-import maze.classes.SquareDirection._
+import maze.classes.direction.SquareDirection._
 import scala.reflect.ClassTag
 
 trait Linkage[C <: Cell, G <: Grid[C]] {

@@ -3,7 +3,8 @@ package maze.behaviors.builders
 import maze.classes.{ Coordinates, MazeRequest, Algorithm }
 import maze.behaviors.{ Linkage, Distance, Cell, Grid }
 import maze.behaviors.builders.{ BinaryTree, Sidewinder, AldousBroder, Wilsons, HuntAndKill }
-import maze.classes.{ SquareCell, SquareGrid }
+import maze.classes.cell.SquareCell
+import maze.classes.grid.SquareGrid
 import maze.classes.MazeType._
 import scala.reflect.ClassTag
 

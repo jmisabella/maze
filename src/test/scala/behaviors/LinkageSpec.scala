@@ -1,8 +1,10 @@
 package maze.behaviors
 
-import maze.classes.{ SquareCell, SquareGrid, Coordinates }
+import maze.classes.Coordinates
+import maze.classes.cell.SquareCell
 import maze.classes.MazeType._
-import maze.classes.SquareDirection._
+import maze.classes.direction.SquareDirection._
+import maze.classes.grid.SquareGrid
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ BinaryTree, Sidewinder }
 

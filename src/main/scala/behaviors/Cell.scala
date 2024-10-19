@@ -1,6 +1,7 @@
 package maze.behaviors
 
-import maze.classes.{ Coordinates, SquareCell, MazeType }
+import maze.classes.{ Coordinates, MazeType }
+import maze.classes.cell.SquareCell
 import maze.classes.MazeType._
 
 import scala.reflect.ClassTag
