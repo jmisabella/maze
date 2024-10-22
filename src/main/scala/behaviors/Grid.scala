@@ -19,7 +19,6 @@ trait Grid[C <: Cell] {
   def seed: RNG
   def startCoords: Coordinates
   def goalCoords: Coordinates
-  def asci(): String
   
   // retrieve row
   def row(y: Int): List[C] = cells(y).toList
@@ -167,6 +166,8 @@ trait Grid[C <: Cell] {
   def contains(cs: Seq[C]): Boolean = flatten().foldLeft(false)((acc, c) => flatten().contains(c))
   def find(p: C => Boolean): Option[C] = flatten().find(p)
 
+  def asci(): String = ""
+  
   override def toString(): String = {
     var output: String = "{\"rows\":["
     var currRow: String = ""

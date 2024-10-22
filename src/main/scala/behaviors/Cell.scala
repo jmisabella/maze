@@ -44,7 +44,6 @@ trait Cell {
     Cell.instantiate[C](mazeType, coords, neighborsByDirection, linked, distance, isStart, isGoal, onSolutionPath, visited, value)
   }
 
-
   def padRight(s: String, c: Char, n: Int): String = s.padTo(n, c).mkString
   def padLeft(s: String, c: Char, n: Int): String = n match {
     case 0 => s

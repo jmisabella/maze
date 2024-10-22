@@ -1,13 +1,12 @@
 package maze.classes.grid
 
 import maze.behaviors.{ Cell, Grid }
-import maze.classes.{ Coordinates, MazeType }
+import maze.classes.Coordinates
 import maze.classes.cell.SquareCell
 import maze.classes.MazeType._
 import maze.classes.direction.SquareDirection._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
-import scala.annotation.tailrec
 
 case class SquareGrid(
   height: Int, 
@@ -63,6 +62,7 @@ object SquareGrid {
         (for (col <- 0 until grid.width) yield {
           val coordinates: Coordinates = Coordinates(col, row)
           val cell = grid.cells(row)(col)
+
           if (cell.coords.y != 0) {
             neighborsByDirection += ("north" -> grid.cells(cell.coords.y - 1)(cell.coords.x).coords)
           }
@@ -75,6 +75,7 @@ object SquareGrid {
           if (cell.coords.x != 0) {
             neighborsByDirection += ("west" -> (grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
           }
+
           cell.copy(
             neighborsByDirection = neighborsByDirection,
             isStart = cell.coords == start,
