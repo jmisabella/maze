@@ -67,10 +67,10 @@ object TriangleGrid {
           val up: Option[Coordinates] = if (cell.orientation == Downward && row > 0) Some(Coordinates(col, row - 1)) else None
           val down: Option[Coordinates] = if (cell.orientation == Upward && row < height - 1) Some(Coordinates(col, row + 1)) else None
           if (up.isDefined) {
-            neighborsByDirection += ("top" -> up.get)
+            neighborsByDirection += ("up" -> up.get)
           }
           if (down.isDefined) {
-            neighborsByDirection += ("bottom" -> down.get)
+            neighborsByDirection += ("down" -> down.get)
           }
           cell.copy(
             neighborsByDirection = neighborsByDirection,

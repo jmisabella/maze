@@ -35,33 +35,33 @@ case class TriangleCell (
   override def neighbors[D <: Enumeration#Value](direction: D): Seq[Coordinates] = direction match {
     case UpperLeft => Seq(neighborsByDirection("upperleft"))
     case UpperRight => Seq(neighborsByDirection("upperright"))
-    case Bottom => Seq(neighborsByDirection("bottom"))
-    case Top => Seq(neighborsByDirection("top"))
+    case Down => Seq(neighborsByDirection("down"))
+    case Up => Seq(neighborsByDirection("up"))
     case LowerLeft => Seq(neighborsByDirection("lowerleft"))
     case LowerRight => Seq(neighborsByDirection("lowerright"))
     case d => {
         throw new IllegalArgumentException(
-            s"Unexpected direction [$d] for TriangleCell; expecting one of [UpperLeft, UpperRight, Bottom, Top, LowerLeft, LowerRight]")
+            s"Unexpected direction [$d] for TriangleCell; expecting one of [UpperLeft, UpperRight, Down, Up, LowerLeft, LowerRight]")
     } 
   }
 
   override def isLinked[TriangleDirection](direction: TriangleDirection): Boolean = direction match {
     case UpperLeft => neighborsByDirection.get("upperleft").isDefined && isLinkedCoords(neighborsByDirection.get("upperleft"))
     case UpperRight => neighborsByDirection.get("upperright").isDefined && isLinkedCoords(neighborsByDirection.get("upperright"))
-    case Bottom => neighborsByDirection.get("bottom").isDefined && isLinkedCoords(neighborsByDirection.get("bottom"))
-    case Top => neighborsByDirection.get("top").isDefined && isLinkedCoords(neighborsByDirection.get("top"))
+    case Down => neighborsByDirection.get("down").isDefined && isLinkedCoords(neighborsByDirection.get("down"))
+    case Up => neighborsByDirection.get("up").isDefined && isLinkedCoords(neighborsByDirection.get("up"))
     case LowerLeft => neighborsByDirection.get("lowerleft").isDefined && isLinkedCoords(neighborsByDirection.get("lowerleft"))
     case LowerRight => neighborsByDirection.get("lowerright").isDefined && isLinkedCoords(neighborsByDirection.get("lowerright"))
   }
 
   override def toString(): String = {
     val excessiveNeighborCountErrorMsg = "Illegal linkage for TriangleCell: more than 3 neighbors which is not possible for TriangleCell"
-    val impossibleNeighborErrorMsg = "Upward triangle cannot have directions Top, LowerLeft, or LowerRight. Downward triangle cannot have directions UpperLeft, UpperRight, Bottom"
+    val impossibleNeighborErrorMsg = "Upward triangle cannot have directions Up, LowerLeft, or LowerRight. Downward triangle cannot have directions UpperLeft, UpperRight, Down"
     val linkedCells: Seq[String] = 
       (linked.contains(neighborsByDirection.get("upperleft").getOrElse(Coordinates(-1, -1))),
        linked.contains(neighborsByDirection.get("upperright").getOrElse(Coordinates(-1, -1))), 
-       linked.contains(neighborsByDirection.get("bottom").getOrElse(Coordinates(-1, -1))), 
-       linked.contains(neighborsByDirection.get("top").getOrElse(Coordinates(-1, -1))), 
+       linked.contains(neighborsByDirection.get("down").getOrElse(Coordinates(-1, -1))), 
+       linked.contains(neighborsByDirection.get("up").getOrElse(Coordinates(-1, -1))), 
        linked.contains(neighborsByDirection.get("lowerleft").getOrElse(Coordinates(-1, -1))), 
        linked.contains(neighborsByDirection.get("lowerright").getOrElse(Coordinates(-1, -1)))
       ) match {
@@ -89,18 +89,18 @@ case class TriangleCell (
         case (true, _, _, _, _, true) => throw new IllegalStateException(impossibleNeighborErrorMsg)
         case (_, true, _, _, _, true) => throw new IllegalStateException(impossibleNeighborErrorMsg)
         case (_, _, true, _, _, true) => throw new IllegalStateException(impossibleNeighborErrorMsg)
-        case (true, true, true, _, _, _) => Seq("upperleft", "upperright", "bottom")
+        case (true, true, true, _, _, _) => Seq("upperleft", "upperright", "down")
         case (true, true, _, _, _, _) => Seq("upperleft", "upperright")
-        case (true, _, true, _, _, _) => Seq("upperleft", "bottom")
-        case (_, true, true, _, _, _) => Seq("upperright", "bottom")
+        case (true, _, true, _, _, _) => Seq("upperleft", "down")
+        case (_, true, true, _, _, _) => Seq("upperright", "down")
         case (true, _, _, _, _, _) => Seq("upperleft")
         case (_, true, _, _, _, _) => Seq("upperright")
-        case (_, _, true, _, _, _) => Seq("bottom")
-        case (_, _, _, true, true, true) => Seq("top", "lowerleft", "lowerright")
-        case (_, _, _, true, true, _) => Seq("top", "lowerleft")
-        case (_, _, _, true, _, true) => Seq("top", "lowerright")
+        case (_, _, true, _, _, _) => Seq("down")
+        case (_, _, _, true, true, true) => Seq("up", "lowerleft", "lowerright")
+        case (_, _, _, true, true, _) => Seq("up", "lowerleft")
+        case (_, _, _, true, _, true) => Seq("up", "lowerright")
         case (_, _, _, _, true, true) => Seq("lowerleft", "lowerright")
-        case (_, _, _, true, _, _) => Seq("top")
+        case (_, _, _, true, _, _) => Seq("up")
         case (_, _, _, _, true, _) => Seq("lowerleft")
         case (_, _, _, _, _, true) => Seq("lowerright")
         case (_, _, _, _, _, _) => Seq()
