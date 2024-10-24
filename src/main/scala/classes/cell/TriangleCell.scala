@@ -4,7 +4,18 @@ import maze.behaviors.Cell
 import maze.classes.{ Coordinates, MazeType }
 import maze.classes.MazeType._
 import maze.classes.direction.TriangleDirection._
-import play.api.libs.json.Json
+import play.api.libs.json.{ Json, Format }
+
+object TriangleOrientation extends Enumeration {
+  type TriangleOrientation = Value
+  val Upward, Downward = Value
+  
+  implicit val format: Format[TriangleOrientation] = Json.formatEnum(this)
+
+  def fromString(s: String): Option[TriangleOrientation] = values.find(_.toString.toLowerCase == s.toLowerCase())
+}
+import TriangleOrientation._
+
 
 case class TriangleCell (
   coords: Coordinates, 
@@ -15,7 +26,8 @@ case class TriangleCell (
   isGoal: Boolean = false,
   onSolutionPath: Boolean = false, 
   visited: Boolean = false,
-  value: String = "   "
+  value: String = "   ",
+  orientation: TriangleOrientation = Upward
 ) extends Cell() {
 
   override def mazeType: MazeType = Delta
@@ -105,6 +117,7 @@ case class TriangleCell (
 }
 
 object TriangleCell {
-  def apply(x: Int, y: Int): TriangleCell = TriangleCell(coords = Coordinates(x, y))
+  def apply(x: Int, y: Int, orientation: TriangleOrientation): TriangleCell = TriangleCell(coords = Coordinates(x, y), orientation = orientation)
+  // def apply(x: Int, y: Int): TriangleCell = TriangleCell(coords = Coordinates(x, y))
 }
 
