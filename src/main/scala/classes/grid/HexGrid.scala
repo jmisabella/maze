@@ -69,7 +69,7 @@ object HexGrid {
         }).toArray
       }).toArray
     )
-    ???
+    // ???
   }
 }
 

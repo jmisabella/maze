@@ -1,7 +1,7 @@
 package maze.behaviors
 
 import maze.classes.{ Coordinates, MazeType }
-import maze.classes.cell.SquareCell
+import maze.classes.cell._
 import maze.classes.MazeType._
 
 import scala.reflect.ClassTag
@@ -65,6 +65,8 @@ object Cell {
     visited: Boolean = false, value: String = "   ")(implicit ct: ClassTag[C]): C = mazeType match {
 
       case Orthogonal => SquareCell(coords = coords, neighborsByDirection = neighborsByDirection, linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
+      case Delta => TriangleCell(coords = coords, neighborsByDirection = neighborsByDirection, linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
+      case Sigma => HexCell(coords = coords, neighborsByDirection = neighborsByDirection, linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
   }
   def instantiate[C <: Cell](mazeType: MazeType, coords: Coordinates, visited: Boolean, neighbors: Map[String, Coordinates], linked: Set[Coordinates])(implicit ct: ClassTag[C]): C = {

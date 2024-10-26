@@ -2,7 +2,7 @@ package maze.behaviors
 
 import maze.behaviors.{ Cell, Grid}
 import maze.classes.{ Coordinates }
-
+import maze.classes.cell._
 import scala.reflect.ClassTag
 
 trait Distance[C <: Cell, G <: Grid[C]] {
@@ -38,6 +38,10 @@ trait Distance[C <: Cell, G <: Grid[C]] {
   def getDistances(grid: G, startX: Int, startY: Int): Map[Coordinates, Int] = distances(grid, grid.cells(startY)(startX))
   def getDistances(grid: G, startCoords: Coordinates): Map[Coordinates, Int] = distances(grid, grid.cells(startCoords.y)(startCoords.x))
   def distances(grid: G, startX: Int, startY: Int)(implicit ct2: ClassTag[C]): G = {
+  // def distances(grid: G, startX: Int, startY: Int): G = {
+  //   implicit val ct1: ClassTag[C] = ClassTag(classOf[SquareCell])
+  //   implicit val ct2: ClassTag[C] = ClassTag(classOf[TriangleCell])
+  //   implicit val ct3: ClassTag[C] = ClassTag(classOf[HexCell])
     val dist: Map[Coordinates, Int] = getDistances(grid, startX, startY)
     val withDistances: Seq[C] = grid.cells.flatten.map(c => 
       Cell.instantiate[C](cell = c, distance = dist.get(c.coords).getOrElse(0), onSolutionPath = dist.get(c.coords).isDefined, value = pad(dist.get(c.coords).getOrElse(" ").toString(), ' ', 3))

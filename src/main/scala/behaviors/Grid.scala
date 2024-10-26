@@ -2,8 +2,9 @@ package maze.behaviors
 
 import maze.behaviors.Cell
 import maze.classes.{ Coordinates, MazeType }
-import maze.classes.cell.SquareCell
-import maze.classes.grid.SquareGrid
+import maze.classes.cell.{ SquareCell, TriangleCell, HexCell }
+import maze.classes.cell.TriangleOrientation._
+import maze.classes.grid.{ SquareGrid, TriangleGrid, HexGrid }
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
@@ -193,6 +194,12 @@ object Grid {
       case Orthogonal => {
         SquareGrid(height, width, startCoords, goalCoords).asInstanceOf[G]
       }
+      case Delta => {
+        TriangleGrid(height, width, startCoords, goalCoords).asInstanceOf[G]
+      }
+      case Sigma => {
+        HexGrid(height, width, startCoords, goalCoords).asInstanceOf[G]
+      }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
     }
   }
@@ -214,6 +221,14 @@ object Grid {
     mazeType match {
       case Orthogonal => {
         val grid = SquareGrid(height, width, cells.asInstanceOf[Array[Array[SquareCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
+        grid
+      }
+      case Delta => {
+        val grid = TriangleGrid(height, width, cells.asInstanceOf[Array[Array[TriangleCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
+        grid
+      }
+      case Sigma => {
+        val grid = HexGrid(height, width, cells.asInstanceOf[Array[Array[HexCell]]], seed, startCoords, goalCoords).asInstanceOf[G]
         grid
       }
       case t => throw new IllegalArgumentException("Unexpected MazeType [" + t + "]")
