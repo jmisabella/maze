@@ -1,27 +1,28 @@
 package maze.behaviors.builders
 
-import maze.classes.Coordinates
-import maze.classes.cell.SquareCell
+import maze.classes.{ Coordinates, Cell, Grid }
+// import maze.classes.cell.SquareCell
 import maze.classes.direction.SquareDirection._
 import maze.classes.grid.SquareGrid
-import maze.behaviors.{ Linkage, Cell, Grid }
+// import maze.behaviors.{ Linkage, Cell, Grid }
+import maze.behaviors.Linkage
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 
 import scala.reflect.ClassTag
 
 // Sidewinder algorithm only works with Square maze type
-trait Sidewinder[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
+trait Sidewinder extends Generator {
 
-  type LINKAGE <: Linkage[C, G]
+  type LINKAGE <: Linkage
   val linker: LINKAGE
   
-  override def generate(grid: G)(implicit ct: ClassTag[C]): G = {
-    var nextGrid: G = grid
+  override def generate(grid: Grid): Grid = {
+    var nextGrid: Grid = grid
     for (y <- 0 until grid.height) {
-      var run: List[C] = Nil
+      var run: List[Cell] = Nil
       for (x <- 0 until grid.width) {
-        val current: C = nextGrid.get(x, y)
+        val current: Cell = nextGrid.get(x, y)
         run = run ++ Seq(current)
         val atEasternWall: Boolean = !(current.coords.x < grid.width - 1)
         val atNorthernWall: Boolean = current.coords.y == 0 
@@ -31,7 +32,7 @@ trait Sidewinder[C <: Cell, G <: Grid[C]] extends Generator[C, G] {
         if (shouldCloseOut) {
           val (randomIndex, seed2): (Int, RNG) = nextGrid.randomInt(run)
           nextGrid = nextGrid.set(seed2)
-          val random: C = run(randomIndex)
+          val random: Cell = run(randomIndex)
           if (random.coords.y > 0) {
             nextGrid = linker.link(random, nextGrid.get(random.neighbors(North).head), nextGrid)
             run = Nil // clear run after closing out the eastward carving
