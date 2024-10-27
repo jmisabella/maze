@@ -2,9 +2,9 @@ package maze.behaviors.builders
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.HuntAndKill
-import maze.classes.{ Coordinates, MazeRequest, Algorithm }
-import maze.classes.cell.SquareCell
-import maze.classes.grid.SquareGrid
+import maze.classes.{ Cell, Grid, Coordinates, MazeRequest, Algorithm }
+// import maze.classes.cell.SquareCell
+// import maze.classes.grid.SquareGrid
 import maze.classes.MazeType._
 import maze.classes.Algorithm._
 
@@ -13,20 +13,20 @@ import org.scalatest.matchers.should.Matchers._
 import org.scalatest.GivenWhenThen
 
 class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
-  case object module extends HuntAndKill[SquareCell, SquareGrid] {
-    case object _linkage extends Linkage[SquareCell, SquareGrid]
-    override type LINKAGE = Linkage[SquareCell, SquareGrid]
+  case object module extends HuntAndKill {
+    case object _linkage extends Linkage
+    override type LINKAGE = Linkage
     override val linker = _linkage
 
-    case object _distance extends Distance[SquareCell, SquareGrid]
-    override type DISTANCE = Distance[SquareCell, SquareGrid]
+    case object _distance extends Distance
+    override type DISTANCE = Distance
     override val distance = _distance
   }
   
   "HuntAndKill" should "generate a 6x6 maze using HuntAndKill and print it to screen" in {
     Given("6x6 grid")
     val dim: Int = 6
-    val grid = SquareGrid(dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
+    val grid = Grid(Orthogonal, dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
     When("generating maze using HuntAndKill algorithm")
     val generated = module.generate(grid)
     Then("resulting maze should contain no stranded unreachable cells") 
@@ -40,7 +40,7 @@ class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
   it should "generate a 30x30 maze using HuntAndKill and print it to screen" in {
     Given("30x30 grid")
     val dim: Int = 30
-    val grid = SquareGrid(dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
+    val grid = Grid(Orthogonal, dim, dim, Coordinates(0, dim - 1), Coordinates(dim - 1, 0))
     When("generating maze using HuntAndKill algorithm")
     val generated = module.generate(grid)
     Then("resulting maze should contain no stranded unreachable cells") 
@@ -55,7 +55,7 @@ class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
     Given("5x10 HuntAndKill request")
     val request = MazeRequest(Orthogonal, 5, 10, Algorithm.HuntAndKill, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
-    var grid = Generator.generate(request).asInstanceOf[SquareGrid]
+    var grid = Generator.generate(request)
     Then("grid's start should be southwest")
     grid.startCoords should equal (Coordinates(0, request.height - 1))
     info("START COORDS: " + grid.startCoords.toString())
