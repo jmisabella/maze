@@ -51,10 +51,10 @@ trait Wilsons extends Generator {
       val (path, updatedGrid) = randomWalk(currentCell, unvisited, nextGrid)
       nextGrid = updatedGrid
       if (path.nonEmpty) {
-        var previousCell = path.head
+        var previousCell: Cell = path.head
         path.foreach { cell =>
           if (cell.coords != previousCell.coords) {
-            var nextCell = nextGrid.get(cell.coords.x, cell.coords.y)
+            var nextCell: Cell = nextGrid.get(cell.coords.x, cell.coords.y)
             if (!previousCell.isLinked(nextCell)) {
               previousCell = previousCell.setLinked(linked = previousCell.linked ++  Set(nextCell.coords))
               nextCell = nextCell.setLinked(linked = nextCell.linked ++ Set(previousCell.coords)) // Link back to the original cell

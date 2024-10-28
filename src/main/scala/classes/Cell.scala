@@ -28,11 +28,12 @@ case class Cell (
     case d => throw new IllegalArgumentException(s"Unexpected direction [$d] for SquareCell; expecting one of [North, East, South West]")
   }
 
-  def isLinked[SquareDirection](direction: SquareDirection): Boolean = direction match {
+  def isLinkedDirection[SquareDirection](direction: SquareDirection): Boolean = direction match {
     case North => neighborsByDirection.get("north").isDefined && isLinkedCoords(neighborsByDirection.get("north"))
     case East => neighborsByDirection.get("east").isDefined && isLinkedCoords(neighborsByDirection.get("east"))
     case South => neighborsByDirection.get("south").isDefined && isLinkedCoords(neighborsByDirection.get("south"))
     case West => neighborsByDirection.get("west").isDefined && isLinkedCoords(neighborsByDirection.get("west"))
+    case d => throw new IllegalArgumentException(s"Unexpected direction [$d] for SquareCell; expecting one of [North, East, South West]")
   }
 
   override def toString(): String = {
@@ -75,7 +76,7 @@ case class Cell (
   
   def linkedNeighbors(): Seq[Coordinates] = neighbors().filter(c => linked(c))
 
-  def isLinked[C <: Cell](cell: C, bidi: Boolean = true): Boolean = bidi match {
+  def isLinked(cell: Cell, bidi: Boolean = true): Boolean = bidi match {
     case false => linked.contains(cell.coords)
     case true  => linked.contains(cell.coords) && cell.linked(this.coords)
   }

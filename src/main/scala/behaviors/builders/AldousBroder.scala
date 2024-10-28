@@ -38,7 +38,8 @@ trait AldousBroder extends Generator {
       }
       cell = neighbor
     }
-    nextGrid.unflatten(cells)
+    // nextGrid.unflatten(cells)
+    nextGrid.unflatten(cells).linkUnreachables()
   }
 
 }
