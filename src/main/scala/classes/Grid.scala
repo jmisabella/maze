@@ -8,6 +8,7 @@ import maze.classes.cell.TriangleOrientation._
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
+import java.net.CookieStore
 
 case class Grid(
   mazeType: MazeType,
@@ -187,15 +188,44 @@ object Grid {
     
     val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
 
-    Grid(mazeType, height, width, ???, seed, startCoords, goalCoords)
+    val empty: Grid = Grid(mazeType, height, width, Array[Array[Cell]](), seed, startCoords, goalCoords).copy(cells = Array.ofDim[Cell](height, width))
+    val grid: Grid = empty.copy(cells =
+      (for (row <- 0 until empty.height) yield {
+        (for (col <- 0 until empty.width) yield {
+          val coords = Coordinates(col, row)
+          Cell(mazeType = mazeType, coords = coords)
+        }).toArray
+      }).toArray
+    )
+   // grid
+    grid.copy(
+      cells = (for (row <- 0 until grid.height) yield {
+        var neighborsByDirection = Map[String, Coordinates]() 
+        // set cells' neighbors
+        (for (col <- 0 until grid.width) yield {
+          val coordinates: Coordinates = Coordinates(col, row)
+          val cell = grid.cells(row)(col)
 
-//   mazeType: MazeType,
-//   height: Int, 
-//   width: Int, 
-//   cells: Array[Array[Cell]],
-//   seed: RNG,
-//   startCoords: Coordinates,
-//   goalCoords: Coordinates) {
+          if (cell.coords.y != 0) {
+            neighborsByDirection += ("north" -> grid.cells(cell.coords.y - 1)(cell.coords.x).coords)
+          }
+          if (cell.coords.x < grid.width - 1) {
+            neighborsByDirection += ("east" -> (grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
+          }
+          if (cell.coords.y < grid.height - 1) {
+            neighborsByDirection += ("south" -> (grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
+          }
+          if (cell.coords.x != 0) {
+            neighborsByDirection += ("west" -> (grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
+          }
+
+          cell.copy(
+            neighborsByDirection = neighborsByDirection,
+            isStart = cell.coords == startCoords,
+            isGoal = cell.coords == goalCoords)
+        }).toArray
+      }).toArray
+    )
   }
   def apply(mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
     goalCoords: Coordinates, seed: RNG, flattened: List[Cell]): Grid = {
