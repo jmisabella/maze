@@ -2,10 +2,7 @@ package maze.behaviors.builders
 
 import maze.classes.Coordinates
 import maze.classes.{ Cell, Grid }
-import maze.classes.cell.SquareCell
 import maze.classes.direction.SquareDirection._
-import maze.classes.grid.SquareGrid
-// import maze.behaviors.{ Linkage, Cell, Grid }
 import maze.behaviors.Linkage
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG

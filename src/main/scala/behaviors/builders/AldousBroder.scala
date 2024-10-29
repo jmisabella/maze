@@ -3,7 +3,6 @@ package maze.behaviors.builders
 import maze.classes.{ Coordinates, Cell, Grid }
 import maze.classes.MazeType._
 import maze.behaviors.Linkage
-// import maze.behaviors.{ Linkage, Cell, Grid }
 import maze.behaviors.builders.Generator
 import maze.utilities.RNG
 import scala.reflect.ClassTag

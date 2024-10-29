@@ -11,13 +11,10 @@ import play.api.libs.json.{ Json, Format }
 object CellOrientation extends Enumeration {
   type CellOrientation = Value
   val Normal, Inverted = Value
-  
   implicit val format: Format[CellOrientation] = Json.formatEnum(this)
-
   def fromString(s: String): Option[CellOrientation] = values.find(_.toString.toLowerCase == s.toLowerCase())
 }
 import CellOrientation._
-
 
 case class Cell (
   coords: Coordinates, 
