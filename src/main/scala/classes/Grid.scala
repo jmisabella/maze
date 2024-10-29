@@ -2,8 +2,9 @@ package maze.classes
 
 // import maze.behaviors.Cell
 import maze.classes.{ Cell, Coordinates, MazeType }
+import maze.classes.CellOrientation._
 // import maze.classes.cell.{ SquareCell, TriangleCell, HexCell }
-import maze.classes.cell.TriangleOrientation._
+// import maze.classes.cell.TriangleOrientation._
 // import maze.classes.grid.{ SquareGrid, TriangleGrid, HexGrid }
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
@@ -183,11 +184,8 @@ case class Grid(
 }
 
 object Grid {
-  def apply(mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
-    goalCoords: Coordinates): Grid = {
-    
+  def apply(mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, goalCoords: Coordinates): Grid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
-
     val empty: Grid = Grid(mazeType, height, width, Array[Array[Cell]](), seed, startCoords, goalCoords).copy(cells = Array.ofDim[Cell](height, width))
     val grid: Grid = empty.copy(cells =
       (for (row <- 0 until empty.height) yield {
@@ -197,34 +195,109 @@ object Grid {
         }).toArray
       }).toArray
     )
-   // grid
     grid.copy(
-      cells = (for (row <- 0 until grid.height) yield {
-        var neighborsByDirection = Map[String, Coordinates]() 
-        // set cells' neighbors
-        (for (col <- 0 until grid.width) yield {
-          val coordinates: Coordinates = Coordinates(col, row)
-          val cell = grid.cells(row)(col)
+      cells = mazeType match {
+        case Orthogonal => {
+          (for (row <- 0 until grid.height) yield {
+            var neighborsByDirection = Map[String, Coordinates]() 
+            // set cells' neighbors
+            (for (col <- 0 until grid.width) yield {
+              val coordinates: Coordinates = Coordinates(col, row)
+              val cell = grid.cells(row)(col)
 
-          if (cell.coords.y != 0) {
-            neighborsByDirection += ("north" -> grid.cells(cell.coords.y - 1)(cell.coords.x).coords)
-          }
-          if (cell.coords.x < grid.width - 1) {
-            neighborsByDirection += ("east" -> (grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
-          }
-          if (cell.coords.y < grid.height - 1) {
-            neighborsByDirection += ("south" -> (grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
-          }
-          if (cell.coords.x != 0) {
-            neighborsByDirection += ("west" -> (grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
-          }
+              if (cell.coords.y != 0) {
+                neighborsByDirection += ("north" -> grid.cells(cell.coords.y - 1)(cell.coords.x).coords)
+              }
+              if (cell.coords.x < grid.width - 1) {
+                neighborsByDirection += ("east" -> (grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
+              }
+              if (cell.coords.y < grid.height - 1) {
+                neighborsByDirection += ("south" -> (grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
+              }
+              if (cell.coords.x != 0) {
+                neighborsByDirection += ("west" -> (grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
+              }
+              cell.copy(
+                neighborsByDirection = neighborsByDirection,
+                isStart = cell.coords == startCoords,
+                isGoal = cell.coords == goalCoords)
+            }).toArray
+          }).toArray
+        }
+        case Delta => {
+          (for (row <- 0 until grid.height) yield {
+            var neighborsByDirection = Map[String, Coordinates]() 
+            // set cells' neighbors
+            (for (col <- 0 until grid.width) yield {
+              val coordinates: Coordinates = Coordinates(col, row)
+              val cell = grid.cells(row)(col)
+              val left: Option[Coordinates] = if (col > 0) Some(Coordinates(col - 1, row)) else None
+              val right: Option[Coordinates] = if (col < width - 1) Some(Coordinates(col + 1, row)) else None
+              if (left.isDefined) {
+                val key = if (cell.orientation == Normal) "upperleft" else "lowerleft"
+                neighborsByDirection += (key -> left.get)
+              }
+              if (right.isDefined) {
+                val key = if (cell.orientation == Normal) "upperright" else "lowerright"
+                neighborsByDirection += (key -> right.get)
+              }
+              val up: Option[Coordinates] = if (cell.orientation == Inverted && row > 0) Some(Coordinates(col, row - 1)) else None
+              val down: Option[Coordinates] = if (cell.orientation == Normal && row < height - 1) Some(Coordinates(col, row + 1)) else None
+              if (up.isDefined) {
+                neighborsByDirection += ("up" -> up.get)
+              }
+              if (down.isDefined) {
+                neighborsByDirection += ("down" -> down.get)
+              }
+              cell.copy(
+                neighborsByDirection = neighborsByDirection,
+                isStart = cell.coords == startCoords,
+                isGoal = cell.coords == goalCoords)
+            }).toArray
+          }).toArray
+        }
+        case Sigma => {
+          (for (row <- 0 until grid.height) yield {
+            var neighborsByDirection = Map[String, Coordinates]() 
+            // set cells' neighbors
+            (for (col <- 0 until grid.width) yield {
+              val coordinates: Coordinates = Coordinates(col, row)
+              val cell = grid.cells(row)(col)
 
-          cell.copy(
-            neighborsByDirection = neighborsByDirection,
-            isStart = cell.coords == startCoords,
-            isGoal = cell.coords == goalCoords)
-        }).toArray
-      }).toArray
+              def isEven(value: Int): Boolean = value % 2 == 0
+              val (northDiagonal, southDiagonal): (Int, Int) = isEven(col) match {
+                case true => (row - 1, row)
+                case false => (row, row + 1)
+              }
+              if (col > 0 && northDiagonal >= 0 && northDiagonal < height) {
+                neighborsByDirection += ("northwest" -> grid.get(col - 1, northDiagonal).coords)
+              } 
+              if (col >= 0 && col < width && row > 0) {
+                neighborsByDirection += ("north" -> grid.get(col, row - 1).coords)
+              }
+              if (col < width - 1 && northDiagonal >= 0 && northDiagonal < height) {
+                neighborsByDirection += ("northeast" -> grid.get(col + 1, northDiagonal).coords)
+              }
+              if (col > 0 && southDiagonal >= 0 && southDiagonal < height) {
+                neighborsByDirection += ("southwest" -> grid.get(col - 1, southDiagonal).coords)
+              }
+              if (row < height - 1 && col >= 0 && col < width) {
+                neighborsByDirection += ("south" -> grid.get(col, row + 1).coords)
+              }
+              if (col < width - 1 && southDiagonal >= 0 && southDiagonal < height) {
+                neighborsByDirection += ("southeast" -> grid.get(col + 1, southDiagonal).coords)
+              }
+              // now filter out the out-of-bounds (non-existent) neighbors
+              // neighborsByDirection = grid.removeOutOfBoundsNeighbors(neighborsByDirection)
+              cell.copy(
+                neighborsByDirection = neighborsByDirection,
+                isStart = cell.coords == startCoords,
+                isGoal = cell.coords == goalCoords)
+            }).toArray
+          }).toArray
+        }
+        case t => throw new IllegalArgumentException(s"Rejecting unexpected MazeType [$t]. Accepted values: [Orthogonal, Delta, Sigma]")
+      } 
     )
   }
   def apply(mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, 
