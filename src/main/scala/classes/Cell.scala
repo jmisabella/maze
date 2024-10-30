@@ -254,6 +254,9 @@ object Cell {
   def apply(mazeType: MazeType, coords: Coordinates, orientation: CellOrientation, visited: Boolean, neighbors: Map[String, Coordinates], linked: Set[Coordinates]): Cell = {
     apply(coords, mazeType, neighbors, linked, 0, false, false, false, orientation, visited, "   ")
   }
+  def apply(mazeType: MazeType, coords: Coordinates, orientation: CellOrientation, isStart: Boolean, isGoal: Boolean): Cell = {
+    apply(coords, mazeType, Map(), Set(), 0, isStart, isGoal, false, orientation, false, "   ")
+  }
   def apply(cell: Cell, isStart: Boolean, isGoal: Boolean): Cell = {
     apply(cell.coords, cell.mazeType, cell.neighborsByDirection, cell.linked, cell.distance, isStart, isGoal, cell.onSolutionPath, cell.orientation, cell.visited, cell.value)
   }

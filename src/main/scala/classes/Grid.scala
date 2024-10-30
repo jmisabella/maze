@@ -187,14 +187,33 @@ object Grid {
   def apply(mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, goalCoords: Coordinates): Grid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
     val empty: Grid = Grid(mazeType, height, width, Array[Array[Cell]](), seed, startCoords, goalCoords).copy(cells = Array.ofDim[Cell](height, width))
-    val grid: Grid = empty.copy(cells =
-      (for (row <- 0 until empty.height) yield {
-        (for (col <- 0 until empty.width) yield {
-          val coords = Coordinates(col, row)
-          Cell(mazeType = mazeType, coords = coords)
-        }).toArray
-      }).toArray
-    )
+    val grid: Grid = mazeType match {
+      case Delta => { // triangle cells are exceptional case such that they alternate upwards and downwards
+        def triangleOrientation(upward: Boolean) = if (upward) Normal else Inverted 
+        var rowStartsWithUpright: Boolean = true
+        empty.copy(cells =
+          (for (row <- 0 until empty.height) yield {
+            var upright: Boolean = !rowStartsWithUpright
+            rowStartsWithUpright = !rowStartsWithUpright
+            (for (col <- 0 until empty.width) yield {
+              upright = !upright
+              val coords = Coordinates(col, row)
+              Cell(mazeType, coords, triangleOrientation(upright), coords == startCoords, coords == goalCoords)
+            }).toArray
+          }).toArray
+        )
+      }
+      case _ => {
+        empty.copy(cells =
+          (for (row <- 0 until empty.height) yield {
+            (for (col <- 0 until empty.width) yield {
+              val coords = Coordinates(col, row)
+              Cell(mazeType = mazeType, coords = coords)
+            }).toArray
+          }).toArray
+        )
+      } 
+    }     
     grid.copy(
       cells = mazeType match {
         case Orthogonal => {
