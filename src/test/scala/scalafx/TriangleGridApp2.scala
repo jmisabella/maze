@@ -1,5 +1,9 @@
 package triangle
 
+import maze.classes.{ Cell, Grid, Coordinates, CellOrientation }
+import maze.classes.CellOrientation._
+import maze.classes.MazeType._
+
 import scalafx.application.JFXApp
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
@@ -7,18 +11,18 @@ import scalafx.scene.shape.Polygon
 import java.util.Arrays
 import play.api.libs.json.{ Json, Format }
 
-object TriangleType extends Enumeration {
-  type TriangleType = Value
-  val Upward, Downward = Value
+// object TriangleType extends Enumeration {
+//   type TriangleType = Value
+//   val Upward, Downward = Value
   
-  implicit val format: Format[TriangleType] = Json.formatEnum(this)
+//   implicit val format: Format[TriangleType] = Json.formatEnum(this)
 
-  def fromString(s: String): Option[TriangleType] = values.find(_.toString.toLowerCase == s.toLowerCase())
-}
-import TriangleType._
+//   def fromString(s: String): Option[TriangleType] = values.find(_.toString.toLowerCase == s.toLowerCase())
+// }
+// import TriangleType._
 
-case class Triangle2(v1: (Double, Double), v2: (Double, Double), v3: (Double, Double), triangleType: TriangleType) {
-  def walls: Walls2 = Walls2(triangleType) 
+case class Triangle(v1: (Double, Double), v2: (Double, Double), v3: (Double, Double), orientation: CellOrientation) {
+  def walls: Walls = Walls(orientation) 
   def points: Array[Double] = Array(v1._1, v1._2, v2._1, v2._2, v3._1, v3._2)
   def toPolygon: Polygon = {
     val polygon = new Polygon()
@@ -30,21 +34,21 @@ case class Triangle2(v1: (Double, Double), v2: (Double, Double), v3: (Double, Do
   }
 }
 
-// Walls class to manage the wall state
-case class Walls2(upperLeft: Boolean, upperRight: Boolean, bottom: Boolean, top: Boolean, lowerLeft: Boolean, lowerRight: Boolean)
-object Walls2 {
-  def apply(triangleType: TriangleType): Walls2 = triangleType match {
-    case Upward => Walls2(true, true, true, false, false, false)
-    case Downward => Walls2(false, false, false, true, true, true)
+// // Walls class to manage the wall state
+case class Walls(upperLeft: Boolean, upperRight: Boolean, bottom: Boolean, top: Boolean, lowerLeft: Boolean, lowerRight: Boolean)
+object Walls {
+  def apply(orientation: CellOrientation): Walls = orientation match {
+    case Normal => Walls(true, true, true, false, false, false)
+    case Inverted => Walls(false, false, false, true, true, true)
   }
 }
 
-// Cell class
-case class Cell(row: Int, col: Int, triangleType: TriangleType) {
-  var walls: Walls2 = Walls2(triangleType)
-}
+// // Cell class
+// case class Cell(row: Int, col: Int, triangleType: TriangleType) {
+//   var walls: Walls = Walls(triangleType)
+// }
 
-object TriangleGridApp extends JFXApp {
+object TriangleGridApp2 extends JFXApp {
   val rows = 16 
   val cols = 20 
   val cellSize = 35 
@@ -57,8 +61,8 @@ object TriangleGridApp extends JFXApp {
     val maze = Array.ofDim[Cell](rows, cols)
     for (row <- 0 until rows; col <- 0 until cols) {
       // Alternating between upward and downward triangles
-      val triangleType = if ((row + col) % 2 == 0) Upward else Downward
-      maze(row)(col) = Cell(row, col, triangleType)
+      val triangleType = if ((row + col) % 2 == 0) Normal else Inverted
+      maze(row)(col) = Cell(Delta, Coordinates(row, col), triangleType)
     }
     maze
   }
@@ -80,18 +84,18 @@ object TriangleGridApp extends JFXApp {
         val adjustedHeightFactor: Double = 2.0
         val adjustedWidthFactor: Double = 0.5
 
-        triangle = cell.triangleType match {
-          case Upward => Triangle2(
+        triangle = cell.orientation match {
+          case Normal => Triangle(
             (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor),               // Top
             (x * adjustedWidthFactor, y * adjustedHeightFactor + triangleHeight),             // Bottom Left
             (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor + triangleHeight),   // Bottom Right
-            Upward
+            Normal 
           )
-          case Downward => Triangle2(
+          case Inverted => Triangle(
             (x * adjustedWidthFactor, y * adjustedHeightFactor),                             // Top Left
             (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor),                   // Top Right
             (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor + triangleHeight), // Bottom
-            Downward 
+            Inverted 
           )
         }
 
