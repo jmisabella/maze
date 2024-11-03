@@ -1,7 +1,9 @@
 package triangle
 
-import maze.classes.{ Cell, Grid, Coordinates, CellOrientation }
+import maze.behaviors.builders.Generator
+import maze.classes.{ Cell, Grid, Coordinates, CellOrientation, MazeRequest }
 import maze.classes.CellOrientation._
+import maze.classes.Algorithm._
 import maze.classes.MazeType._
 import maze.classes.direction.TriangleDirection._
 
@@ -11,6 +13,7 @@ import scalafx.scene.paint.Color
 import scalafx.scene.shape.{ Polygon, Line }
 import java.util.Arrays
 import play.api.libs.json.{ Json, Format }
+import maze.behaviors.builders.RecursiveBacktracker
 
 case class Triangle(v1: (Double, Double), v2: (Double, Double), v3: (Double, Double), orientation: CellOrientation, walls: TriangleWalls) {
   def points: Array[Double] = Array(v1._1, v1._2, v2._1, v2._2, v3._1, v3._2)
@@ -69,20 +72,21 @@ object TriangleGridApp2 extends JFXApp {
   val triangleHeight = Math.sqrt(3) / 2 * cellSize
 
   // Create the maze
-  val maze = createMaze(rows, cols)
-  println("FIRST CELL'S NEIGHBORS: ")
-  maze(0)(0).neighborsByDirection.map(println)
+  // val maze = createMaze(rows, cols)
+  // val request = MazeRequest(Delta, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
+  val request = MazeRequest(Delta, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(0, 0))
+  val maze = Generator.generate(request).cells
 
-  def createMaze(rows: Int, cols: Int): Array[Array[Cell]] = {
-    // val maze = Array.ofDim[Cell](rows, cols)
-    // for (row <- 0 until rows; col <- 0 until cols) {
-    //   val triangleType = if ((row + col) % 2 == 0) Normal else Inverted
-    //   maze(row)(col) = Cell(Delta, Coordinates(row, col), triangleType)
-    // }
-    // maze
-    val grid = Grid(Delta, rows, cols, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
-    grid.cells
-  }
+  // def createMaze(rows: Int, cols: Int): Array[Array[Cell]] = {
+  //   // val maze = Array.ofDim[Cell](rows, cols)
+  //   // for (row <- 0 until rows; col <- 0 until cols) {
+  //   //   val triangleType = if ((row + col) % 2 == 0) Normal else Inverted
+  //   //   maze(row)(col) = Cell(Delta, Coordinates(row, col), triangleType)
+  //   // }
+  //   // maze
+  //   val grid = Grid(Delta, rows, cols, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
+  //   grid.cells
+  // }
 
   stage = new JFXApp.PrimaryStage {
     title = "Triangle Maze"
