@@ -67,6 +67,7 @@ case class Cell (
     case t => throw new IllegalArgumentException(s"Rejecting unexpected MazeType [$t]. Accepted values: [Orthogonal, Delta, Sigma]")
   }
 
+
   // def isLinkedDirection[SquareDirection](direction: SquareDirection): Boolean = direction match {
   //   case North => neighborsByDirection.get("north").isDefined && isLinkedCoords(neighborsByDirection.get("north"))
   //   case East => neighborsByDirection.get("east").isDefined && isLinkedCoords(neighborsByDirection.get("east"))
@@ -220,6 +221,9 @@ case class Cell (
   def isLinked(cell: Cell, bidi: Boolean = true): Boolean = bidi match {
     case false => linked.contains(cell.coords)
     case true  => linked.contains(cell.coords) && cell.linked(this.coords)
+  }
+  def isLinked[D <: Enumeration#Value](direction: D): Boolean = {
+    neighborsByDirection.keySet.contains(direction.toString().toLowerCase()) && !neighbors(direction).isEmpty && linked.contains(neighbors(direction).head)
   }
   def isLinkedCoords(coords: Coordinates): Boolean = linked.contains(coords)
   def isLinkedCoords(coords: Option[Coordinates]): Boolean = coords.isDefined && linked.contains(coords.get)
