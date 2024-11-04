@@ -72,10 +72,15 @@ object TriangleGridApp2 extends JFXApp {
   val triangleHeight = Math.sqrt(3) / 2 * cellSize
 
   // Create the maze
-  // val maze = createMaze(rows, cols)
-  // val request = MazeRequest(Delta, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
-  val request = MazeRequest(Delta, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(0, 0))
-  val maze = Generator.generate(request).cells
+  //// val maze = createMaze(rows, cols)
+  //// val request = MazeRequest(Delta, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
+  // val request = MazeRequest(Delta, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(0, 0))
+  // val request = MazeRequest(Delta, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(2, 1))
+  // val request = MazeRequest(Delta, cols, rows, Wilsons, Coordinates(0, 0), Coordinates(2, 1))
+  val request = MazeRequest(Delta, cols, rows, HuntAndKill, Coordinates(0, 0), Coordinates(2, 1))
+  val fullMaze = Generator.generate(request)
+  val maze = fullMaze.cells
+  println(fullMaze)
 
   // def createMaze(rows: Int, cols: Int): Array[Array[Cell]] = {
   //   // val maze = Array.ofDim[Cell](rows, cols)

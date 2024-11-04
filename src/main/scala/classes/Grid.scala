@@ -92,7 +92,7 @@ case class Grid(
   // given list of Cells, converts list to grid (array of arrays of cells)
   // prerequisite: provided list's length equals our grid's rows multiplied by columns
   def unflatten(flattened: Seq[Cell]): Grid = {
-    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighborsByDirection, c.value, c.distance, c.onSolutionPath))
+    val grouped = flattened.groupBy(c => (c.coords, c.visited, c.neighborsByDirection, c.value, c.distance, c.onSolutionPath, c.orientation))
     val merged: Seq[Option[Cell]] = grouped.foldLeft(Nil: Seq[Option[Cell]]) {
       case (acc, (k, v)) => {
         val coords: Coordinates = k._1
@@ -101,8 +101,9 @@ case class Grid(
         val value: String = k._4
         val distance: Int = k._5
         val onSolutionPath: Boolean = k._6
+        val orientation: CellOrientation = k._7
         val linked: Set[Coordinates] = v.map(c => c.linked).toSet.flatten
-        val cell: Cell = Cell(coords, mazeType, neighborsByDirection, linked, distance)
+        val cell: Cell = Cell(coords, mazeType, neighborsByDirection, linked, distance).copy(orientation =  orientation)
         acc ++ Seq(Some(cell))
       }
     }
