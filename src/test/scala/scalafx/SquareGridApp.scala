@@ -5,15 +5,16 @@ import maze.classes.{ Cell, Coordinates, MazeRequest }
 import maze.classes.Algorithm._
 import maze.classes.MazeType._
 import maze.classes.direction.SquareDirection._
+import maze.behaviors.builders.RecursiveBacktracker
 
 import scalafx.application.JFXApp
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
 import scalafx.scene.shape.{ Rectangle, Line }
+import scalafx.scene.text.{ Font, Text }
 import play.api.libs.json.{ Json, Format }
-import maze.behaviors.builders.RecursiveBacktracker
 
-case class Square(x: Double, y: Double, size: Double, walls: SquareWalls) {
+case class Square(x: Double, y: Double, size: Double, walls: SquareWalls, coords: Option[Coordinates] = None) {
   // Render the square shape itself
   def toRectangle: Rectangle = {
     val rect = new Rectangle {
@@ -35,6 +36,15 @@ case class Square(x: Double, y: Double, size: Double, walls: SquareWalls) {
       if (walls.left) Some(Line(x, y, x, y + size)) else None                // Left
     ).flatten
   }
+
+  // Render optional coordinates as text
+  def renderCoordinates: Option[Text] = coords.map { coord =>
+    new Text(x + size / 2 - 10, y + size / 2 + 5, s"${coord.x}, ${coord.y}") {
+      fill = Color.Gray
+      font = Font(10)
+    }
+  }
+
 }
 
 // SquareWalls class to manage wall states for a square cell
@@ -59,25 +69,26 @@ object SquareGridApp extends JFXApp {
   val request = MazeRequest(Orthogonal, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(0, 0))
   val maze = Generator.generate(request).cells
 
+  val squares = for {
+    row <- maze.indices
+    col <- maze(row).indices
+    cell = maze(row)(col)
+    x = col * cellSize
+    y = row * cellSize
+
+    // Create the square with walls based on the cell's wall state
+    square = Square(x, y, cellSize, SquareWalls(cell), Some(cell.coords))
+  } yield square
+
   stage = new JFXApp.PrimaryStage {
     title = "Square Maze"
     scene = new Scene(cols * cellSize, rows * cellSize) {
-      val shapes = for {
-        row <- maze.indices
-        col <- maze(row).indices
-        cell = maze(row)(col)
-
-        x = col * cellSize
-        y = row * cellSize
-
-        // Create the square with walls based on the cell's wall state
-        square = Square(x, y, cellSize, SquareWalls(cell))
-
-        rectangle = square.toRectangle
-        walls = square.renderWalls // Generate the wall lines
-      } yield Seq(rectangle) ++ walls
-
-      content = shapes.flatten
+      // Render both hexagons and their walls, and add optional coordinates as text
+      val shapes = squares.flatMap { square =>
+        Seq(square.toRectangle) ++ square.renderWalls ++ square.renderCoordinates.toSeq
+      }
+      content = shapes
     }
+  
   }
 }
