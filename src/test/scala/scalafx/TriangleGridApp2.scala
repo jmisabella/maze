@@ -55,9 +55,13 @@ case class Triangle(
 
   // Render optional coordinates as text
   def renderCoordinates: Option[Text] = coords.map { coord =>
-    new Text(v1._1 + (v3._1 - v1._1) / 2, v1._2 + (v3._2 - v1._2) / 2, s"${coord.x}, ${coord.y}") {
+    val (xOffset, yOffset) = orientation match {
+      case Normal   => ((v1._1 + v3._1) / 2 - 20, (v1._2 + v3._2) / 2 + 10)
+      case Inverted => ((v1._1 + v3._1) / 2, (v1._2 + v3._2) / 2 - 5)
+    }
+    new Text(xOffset, yOffset, s"${coord.x}, ${coord.y}") {
       fill = Color.Gray
-      font = Font(10)
+      font = Font(8)
     }
   }
 }
