@@ -1,104 +1,146 @@
 package triangle
 
+import maze.behaviors.builders.Generator
+import maze.classes.{ Cell, Coordinates, MazeRequest }
+import maze.classes.CellOrientation._
+import maze.classes.Algorithm._
+import maze.classes.MazeType._
+import maze.classes.direction.TriangleDirection._
+
 import scalafx.application.JFXApp
 import scalafx.scene.Scene
 import scalafx.scene.paint.Color
-import scalafx.scene.shape.Polygon
+import scalafx.scene.shape.{ Polygon, Line }
+import scalafx.scene.text.{ Font, Text }
+import maze.behaviors.builders.RecursiveBacktracker
 import java.util.Arrays
-import play.api.libs.json.{ Json, Format }
 
-object TriangleType extends Enumeration {
-  type TriangleType = Value
-  val Upward, Downward = Value
-  
-  implicit val format: Format[TriangleType] = Json.formatEnum(this)
-
-  def fromString(s: String): Option[TriangleType] = values.find(_.toString.toLowerCase == s.toLowerCase())
-}
-import TriangleType._
-
-case class Triangle2(v1: (Double, Double), v2: (Double, Double), v3: (Double, Double), triangleType: TriangleType) {
-  def walls: Walls2 = Walls2(triangleType) 
+case class Triangle(
+  v1: (Double, Double),
+  v2: (Double, Double),
+  v3: (Double, Double),
+  orientation: CellOrientation,
+  walls: TriangleWalls,
+  coords: Option[Coordinates] = None
+) {
   def points: Array[Double] = Array(v1._1, v1._2, v2._1, v2._2, v3._1, v3._2)
+
+  // Convert the triangle points to a polygon
   def toPolygon: Polygon = {
     val polygon = new Polygon()
-    // Convert Scala Double to Java Double
     polygon.getPoints.addAll(Arrays.asList(points.map(java.lang.Double.valueOf): _*))
     polygon.fill = Color.Transparent
-    polygon.stroke = Color.Black
+    polygon.stroke = Color.Transparent
     polygon
   }
-}
 
-// Walls class to manage the wall state
-case class Walls2(upperLeft: Boolean, upperRight: Boolean, bottom: Boolean, top: Boolean, lowerLeft: Boolean, lowerRight: Boolean)
-object Walls2 {
-  def apply(triangleType: TriangleType): Walls2 = triangleType match {
-    case Upward => Walls2(true, true, true, false, false, false)
-    case Downward => Walls2(false, false, false, true, true, true)
+  // Render walls individually based on the wall states
+  def renderWalls: Seq[Line] = {
+    orientation match {
+      case Normal =>
+        Seq(
+          if (walls.upperLeft) Some(Line(v1._1, v1._2, v2._1, v2._2)) else None,
+          if (walls.upperRight) Some(Line(v2._1, v2._2, v3._1, v3._2)) else None,
+          if (walls.bottom) Some(Line(v3._1, v3._2, v1._1, v1._2)) else None
+        ).flatten
+
+      case Inverted =>
+        Seq(
+          if (walls.top) Some(Line(v1._1, v1._2, v2._1, v2._2)) else None,
+          if (walls.lowerLeft) Some(Line(v2._1, v2._2, v3._1, v3._2)) else None,
+          if (walls.lowerRight) Some(Line(v3._1, v3._2, v1._1, v1._2)) else None
+        ).flatten
+    }
+  }
+
+  // Render optional coordinates as text
+  def renderCoordinates: Option[Text] = coords.map { coord =>
+    val (xOffset, yOffset) = orientation match {
+      case Normal   => ((v1._1 + v3._1) / 2 - 20, (v1._2 + v3._2) / 2 + 10)
+      case Inverted => ((v1._1 + v3._1) / 2, (v1._2 + v3._2) / 2 - 5)
+    }
+    new Text(xOffset, yOffset, s"${coord.x}, ${coord.y}") {
+      fill = Color.Gray
+      font = Font(8)
+    }
   }
 }
 
-// Cell class
-case class Cell(row: Int, col: Int, triangleType: TriangleType) {
-  var walls: Walls2 = Walls2(triangleType)
+case class TriangleWalls(
+  upperLeft: Boolean,
+  upperRight: Boolean,
+  bottom: Boolean,
+  top: Boolean,
+  lowerLeft: Boolean,
+  lowerRight: Boolean
+)
+object TriangleWalls {
+  def apply(cell: Cell): TriangleWalls = {
+    TriangleWalls(
+      upperLeft = !cell.isLinked(UpperLeft),
+      upperRight = !cell.isLinked(UpperRight),
+      bottom = !cell.isLinked(Down),
+      top = !cell.isLinked(Up),
+      lowerLeft = !cell.isLinked(LowerLeft),
+      lowerRight = !cell.isLinked(LowerRight)
+    )
+  }
 }
 
 object TriangleGridApp extends JFXApp {
-  val rows = 16 
-  val cols = 20 
-  val cellSize = 35 
+  val rows = 16
+  val cols = 20
+  // val cellSize = 35
+  val cellSize = 50 
   val triangleHeight = Math.sqrt(3) / 2 * cellSize
 
   // Create the maze
-  val maze = createMaze(rows, cols)
-
-  def createMaze(rows: Int, cols: Int): Array[Array[Cell]] = {
-    val maze = Array.ofDim[Cell](rows, cols)
-    for (row <- 0 until rows; col <- 0 until cols) {
-      // Alternating between upward and downward triangles
-      val triangleType = if ((row + col) % 2 == 0) Upward else Downward
-      maze(row)(col) = Cell(row, col, triangleType)
-    }
-    maze
-  }
+  // val request = MazeRequest(Delta, cols, rows, HuntAndKill, Coordinates(0, 0), Coordinates(2, 1))
+  val request = MazeRequest(Delta, cols, rows, Wilsons, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
+  // val request = MazeRequest(Delta, cols, rows, AldousBroder, Coordinates(0, 0), Coordinates(2, 1))
+  val fullMaze = Generator.generate(request)
+  val maze = fullMaze.cells
+  println(fullMaze)
 
   stage = new JFXApp.PrimaryStage {
     title = "Triangle Maze"
-    // scene = new Scene(cols * cellSize, rows * triangleHeight) {
     scene = new Scene(cols * cellSize / 2, rows * triangleHeight) {
       val shapes = for {
         row <- maze.indices
         col <- maze(row).indices
         cell = maze(row)(col)
 
-        // Adjust x for odd rows (stagger the columns)
         x = col * cellSize
-        y = row * triangleHeight / 2 // Adjust y for triangle height
+        y = row * triangleHeight / 2
 
-        // Define upward or downward triangles based on cell type
         val adjustedHeightFactor: Double = 2.0
         val adjustedWidthFactor: Double = 0.5
 
-        triangle = cell.triangleType match {
-          case Upward => Triangle2(
-            (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor),               // Top
-            (x * adjustedWidthFactor, y * adjustedHeightFactor + triangleHeight),             // Bottom Left
-            (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor + triangleHeight),   // Bottom Right
-            Upward
+        // Create the triangle with walls based on the cell's orientation
+        triangle = cell.orientation match {
+          case Normal => Triangle(
+            (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor),
+            (x * adjustedWidthFactor, y * adjustedHeightFactor + triangleHeight),
+            (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor + triangleHeight),
+            Normal,
+            TriangleWalls(cell),
+            Some(cell.coords)
           )
-          case Downward => Triangle2(
-            (x * adjustedWidthFactor, y * adjustedHeightFactor),                             // Top Left
-            (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor),                   // Top Right
-            (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor + triangleHeight), // Bottom
-            Downward 
+          case Inverted => Triangle(
+            (x * adjustedWidthFactor, y * adjustedHeightFactor),
+            (x * adjustedWidthFactor + cellSize, y * adjustedHeightFactor),
+            (x * adjustedWidthFactor + cellSize / 2, y * adjustedHeightFactor + triangleHeight),
+            Inverted,
+            TriangleWalls(cell),
+            Some(cell.coords)
           )
         }
 
         polygon = triangle.toPolygon
-      } yield polygon
+        walls = triangle.renderWalls
+      } yield Seq(polygon) ++ walls ++ triangle.renderCoordinates.toSeq
 
-      content = shapes
+      content = shapes.flatten
     }
   }
 }

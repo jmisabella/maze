@@ -4,7 +4,7 @@ package maze.classes
 import maze.classes.{ Cell, Coordinates, MazeType }
 import maze.classes.CellOrientation._
 // import maze.classes.cell.{ SquareCell, TriangleCell, HexCell }
-// import maze.classes.cell.TriangleOrientation._
+import maze.classes.direction.SquareDirection._
 // import maze.classes.grid.{ SquareGrid, TriangleGrid, HexGrid }
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
@@ -167,8 +167,34 @@ case class Grid(
   def contains(cs: Seq[Cell]): Boolean = flatten().foldLeft(false)((acc, c) => flatten().contains(c))
   def find(p: Cell => Boolean): Option[Cell] = flatten().find(p)
 
-  def asci(): String = ""
-  
+  def asci(): String = mazeType match {
+    case Orthogonal => {
+      var output: String = "+" + "---+" * width + "\n"
+      for (row <- cells) {
+        var top: String = "|"
+        var bottom: String = "+"
+        for (cell <- row) {
+          val body = cell.value
+          val eastBoundary: String = cell.neighborsByDirection.get("east").isDefined match {
+            case true if (cell.isLinked(East)) => " "
+            case _ => "|"
+          }
+          top += body + eastBoundary
+          val southBoundary: String = cell.neighborsByDirection.get("south").isDefined match {
+            case true if (cell.isLinked(South)) => "   "
+            case _ => "---"
+          }
+          val corner: String= "+"
+          bottom += southBoundary + corner
+        }
+        output += top + "\n"
+        output += bottom + "\n"
+      }
+      output 
+    }
+    case t => throw new IllegalArgumentException(s"Cannot print maze as ASCI for MazeType [$t]") 
+  }
+
   override def toString(): String = {
     var output: String = "{\"rows\":["
     var currRow: String = ""

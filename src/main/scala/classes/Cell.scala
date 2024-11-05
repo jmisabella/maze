@@ -208,7 +208,8 @@ case class Cell (
       "distance" -> distance,
       "isStart" -> isStart,
       "isGoal" -> isGoal, 
-      "onSolutionPath" -> onSolutionPath//,
+      "onSolutionPath" -> onSolutionPath,
+      "orientation" -> orientation.toString()
     )).toString()
   }
  
@@ -223,7 +224,8 @@ case class Cell (
     case true  => linked.contains(cell.coords) && cell.linked(this.coords)
   }
   def isLinked[D <: Enumeration#Value](direction: D): Boolean = {
-    neighborsByDirection.keySet.contains(direction.toString().toLowerCase()) && !neighbors(direction).isEmpty && linked.contains(neighbors(direction).head)
+    // neighborsByDirection.keySet.contains(direction.toString().toLowerCase()) && !neighbors(direction).isEmpty && linked.contains(neighbors(direction).head)
+    neighborsByDirection.keySet.contains(direction.toString().toLowerCase()) && linked.contains(neighbors(direction).head)
   }
   def isLinkedCoords(coords: Coordinates): Boolean = linked.contains(coords)
   def isLinkedCoords(coords: Option[Coordinates]): Boolean = coords.isDefined && linked.contains(coords.get)

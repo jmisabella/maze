@@ -66,7 +66,8 @@ object SquareGridApp extends JFXApp {
   val cellSize = 35
 
   // Create the maze
-  val request = MazeRequest(Orthogonal, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(0, 0))
+//   val request = MazeRequest(Orthogonal, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(0, 0))
+  val request = MazeRequest(Orthogonal, cols, rows, AldousBroder, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
   val maze = Generator.generate(request).cells
 
   val squares = for {
