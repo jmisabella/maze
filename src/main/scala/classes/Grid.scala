@@ -245,7 +245,6 @@ object Grid {
       cells = mazeType match {
         case Orthogonal => {
           (for (row <- 0 until grid.height) yield {
-            // var neighborsByDirection = Map[String, Coordinates]() 
             // set cells' neighbors
             (for (col <- 0 until grid.width) yield {
               var neighborsByDirection = Map[String, Coordinates]() 

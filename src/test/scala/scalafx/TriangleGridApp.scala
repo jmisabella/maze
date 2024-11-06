@@ -40,15 +40,15 @@ case class Triangle(
       case Normal =>
         Seq(
           if (walls.upperLeft) Some(Line(v1._1, v1._2, v2._1, v2._2)) else None,
-          if (walls.upperRight) Some(Line(v2._1, v2._2, v3._1, v3._2)) else None,
-          if (walls.bottom) Some(Line(v3._1, v3._2, v1._1, v1._2)) else None
+          if (walls.upperRight) Some(Line(v3._1, v3._2, v1._1, v1._2)) else None,
+          if (walls.bottom) Some(Line(v2._1, v2._2, v3._1, v3._2)) else None
         ).flatten
 
       case Inverted =>
         Seq(
           if (walls.top) Some(Line(v1._1, v1._2, v2._1, v2._2)) else None,
-          if (walls.lowerLeft) Some(Line(v2._1, v2._2, v3._1, v3._2)) else None,
-          if (walls.lowerRight) Some(Line(v3._1, v3._2, v1._1, v1._2)) else None
+          if (walls.lowerLeft) Some(Line(v3._1, v3._2, v1._1, v1._2)) else None,
+          if (walls.lowerRight) Some(Line(v2._1, v2._2, v3._1, v3._2)) else None,
         ).flatten
     }
   }
@@ -83,6 +83,13 @@ object TriangleWalls {
       top = !cell.isLinked(Up),
       lowerLeft = !cell.isLinked(LowerLeft),
       lowerRight = !cell.isLinked(LowerRight)
+      //// TODO: hard-coding walls to debug
+      // upperLeft = true,
+      // upperRight = true,
+      // bottom = true,
+      // top = true,
+      // lowerLeft = true,
+      // lowerRight = true 
     )
   }
 }
@@ -96,8 +103,8 @@ object TriangleGridApp extends JFXApp {
 
   // Create the maze
   // val request = MazeRequest(Delta, cols, rows, HuntAndKill, Coordinates(0, 0), Coordinates(2, 1))
-  val request = MazeRequest(Delta, cols, rows, Wilsons, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
-  // val request = MazeRequest(Delta, cols, rows, AldousBroder, Coordinates(0, 0), Coordinates(2, 1))
+  // val request = MazeRequest(Delta, cols, rows, Wilsons, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
+  val request = MazeRequest(Delta, cols, rows, AldousBroder, Coordinates(0, 0), Coordinates(2, 1))
   val fullMaze = Generator.generate(request)
   val maze = fullMaze.cells
   println(fullMaze)
