@@ -29,7 +29,10 @@ case class Cell (
   visited: Boolean = false,
   value: String = "   "
 ) {
-  
+
+  val x: Int = coords.x
+  val y: Int = coords.y
+
   def neighbors(): Seq[Coordinates] = neighborsByDirection.values.toSeq
 
   def neighbors[D <: Enumeration#Value](direction: D): Seq[Coordinates] = mazeType match {

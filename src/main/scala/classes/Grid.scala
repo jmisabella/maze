@@ -245,9 +245,10 @@ object Grid {
       cells = mazeType match {
         case Orthogonal => {
           (for (row <- 0 until grid.height) yield {
-            var neighborsByDirection = Map[String, Coordinates]() 
+            // var neighborsByDirection = Map[String, Coordinates]() 
             // set cells' neighbors
             (for (col <- 0 until grid.width) yield {
+              var neighborsByDirection = Map[String, Coordinates]() 
               val coordinates: Coordinates = Coordinates(col, row)
               val cell = grid.cells(row)(col)
 
@@ -272,9 +273,9 @@ object Grid {
         }
         case Delta => {
           (for (row <- 0 until grid.height) yield {
-            var neighborsByDirection = Map[String, Coordinates]() 
             // set cells' neighbors
             (for (col <- 0 until grid.width) yield {
+              var neighborsByDirection = Map[String, Coordinates]() 
               val coordinates: Coordinates = Coordinates(col, row)
               val cell = grid.cells(row)(col)
               val left: Option[Coordinates] = if (col > 0) Some(Coordinates(col - 1, row)) else None
@@ -304,9 +305,9 @@ object Grid {
         }
         case Sigma => {
           (for (row <- 0 until grid.height) yield {
-            var neighborsByDirection = Map[String, Coordinates]() 
             // set cells' neighbors
             (for (col <- 0 until grid.width) yield {
+              var neighborsByDirection = Map[String, Coordinates]() 
               val coordinates: Coordinates = Coordinates(col, row)
               val cell = grid.cells(row)(col)
 

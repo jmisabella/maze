@@ -3,6 +3,7 @@ package maze.classes
 // import maze.classes.cell.SquareCell
 // import maze.classes.grid.SquareGrid
 import maze.classes.{ Cell, Grid }
+import maze.classes.CellOrientation._
 import maze.classes.MazeType._
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ Sidewinder, BinaryTree, Generator }
@@ -257,6 +258,47 @@ class GridSpec extends AnyFlatSpec with GivenWhenThen {
     grid.get(0, 9).isGoal should be (false)
     info("\n" + grid.asci())
     info(grid.toString())
+  }
+
+  it should "generate a 4 x 4 Delta grid (with triangle cells) and cells should know of each others' neighbors" in {
+    Given("a Delta 4x4 Grid")
+    val grid = Grid(Delta, 4, 4, Coordinates(0, 0), Coordinates(3, 3))
+    Then("cell 0,0 should not be inverted")
+    var cell = grid.get(0,0)
+    cell.orientation should equal (Normal)
+    Then("cell 0,0 should have exactly 2 neighbors")
+    cell.neighbors() should have length (2)
+    Then("cell 0,0 should have neighbors 1,0 and 0,1")
+    cell.neighbors() should contain (Coordinates(1,0))
+    cell.neighbors() should contain (Coordinates(0,1))
+    Then("cell 1,0 should be inverted")
+    cell = grid.get(1,0)
+    cell.orientation should equal (Inverted)
+    info(cell.coords.toString())
+    info(cell.orientation.toString())
+    info(cell.neighborsByDirection.mkString(", "))
+    info(cell.neighbors().mkString(", "))
+    
+    // Then("cell 1,0 should have exactly 2 neighbors")
+    // cell.neighbors() should have length (2)
+    // Then("cell 1,0 should be neighbors with cell 0,0")
+    // Then("cell 1,0 should be neighbors with 0,0 and 2,0")
+    // cell.neighbors should contain (Coordinates(0,0))
+    // cell.neighbors should contain (Coordinates(2,0))
+    // Then("cell 1,0 should NOT be neighbors with 1,1")
+    // cell.neighbors shouldNot contain (Coordinates(1,1))
+    // Then("cell 2,0 should not be inverted")
+    // cell = grid.get(2,0)
+    // cell.orientation should equal (Normal)
+    // Then("cell 2,0 should have exactly 3 neighbors")
+    // cell.neighbors() should have length (3)
+    // Then("cell 2,0 should be neighbors with 1,0 3,0 and 2,1")
+    // cell.neighbors should contain (Coordinates(1,0))
+    // cell.neighbors should contain (Coordinates(3,0))
+    // cell.neighbors should contain (Coordinates(2,1))
+
+
+  
   }
   
 
