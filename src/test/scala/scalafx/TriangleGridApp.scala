@@ -104,7 +104,8 @@ object TriangleGridApp extends JFXApp {
   // Create the maze
   // val request = MazeRequest(Delta, cols, rows, HuntAndKill, Coordinates(0, 0), Coordinates(2, 1))
   // val request = MazeRequest(Delta, cols, rows, Wilsons, Coordinates(0, 0), Coordinates(cols - 1, rows - 1))
-  val request = MazeRequest(Delta, cols, rows, AldousBroder, Coordinates(0, 0), Coordinates(2, 1))
+  // val request = MazeRequest(Delta, cols, rows, AldousBroder, Coordinates(0, 0), Coordinates(2, 1))
+  val request = MazeRequest(Delta, cols, rows, RecursiveBacktracker, Coordinates(0, 0), Coordinates(2, 1))
   val fullMaze = Generator.generate(request)
   val maze = fullMaze.cells
   println(fullMaze)

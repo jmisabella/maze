@@ -36,15 +36,34 @@ case class Hexagon(centerX: Double, centerY: Double, size: Double, walls: HexWal
       val angle = Math.PI / 3 * i
       (centerX + size * Math.cos(angle), centerY + size * Math.sin(angle))
     }
-
     Seq(
-      if (walls.north) Some(Line(points(0)._1, points(0)._2, points(1)._1, points(1)._2)) else None, // North
-      if (walls.northeast) Some(Line(points(1)._1, points(1)._2, points(2)._1, points(2)._2)) else None, // Northeast
-      if (walls.southeast) Some(Line(points(2)._1, points(2)._2, points(3)._1, points(3)._2)) else None, // Southeast
-      if (walls.south) Some(Line(points(3)._1, points(3)._2, points(4)._1, points(4)._2)) else None,     // South
-      if (walls.southwest) Some(Line(points(4)._1, points(4)._2, points(5)._1, points(5)._2)) else None, // Southwest
-      if (walls.northwest) Some(Line(points(5)._1, points(5)._2, points(0)._1, points(0)._2)) else None  // Northwest
+      if (walls.southeast) Some(Line(points(0)._1, points(0)._2, points(1)._1, points(1)._2)) else None,
+      if (walls.south) Some(Line(points(1)._1, points(1)._2, points(2)._1, points(2)._2)) else None,
+      if (walls.southwest) Some(Line(points(2)._1, points(2)._2, points(3)._1, points(3)._2)) else None,
+      if (walls.northwest) Some(Line(points(3)._1, points(3)._2, points(4)._1, points(4)._2)) else None,
+      if (walls.north) Some(Line(points(4)._1, points(4)._2, points(5)._1, points(5)._2)) else None,
+      if (walls.northeast) Some(Line(points(5)._1, points(5)._2, points(0)._1, points(0)._2)) else None
     ).flatten
+    // Seq(
+    //   // below line incorrectly renders north wall as northwest or southeast, line should be horizontal
+    //   // if (walls.north) Some(Line(points(0)._1, points(0)._2, points(1)._1, points(1)._2)) else None,
+    //   if (walls.southeast) Some(Line(points(0)._1, points(0)._2, points(1)._1, points(1)._2)) else None,
+    //   // below line incorrectly renders northeast as a horizontal line as if it's north or south
+    //   // if (walls.northeast) Some(Line(points(1)._1, points(1)._2, points(2)._1, points(2)._2)) else None,
+    //   if (walls.south) Some(Line(points(1)._1, points(1)._2, points(2)._1, points(2)._2)) else None,
+    //   // below line incorrectly renders southeast as if it's southwest or northeast
+    //   // if (walls.southeast) Some(Line(points(2)._1, points(2)._2, points(3)._1, points(3)._2)) else None,
+    //   if (walls.southwest) Some(Line(points(2)._1, points(2)._2, points(3)._1, points(3)._2)) else None,
+    //   // below line incorrectly renders south as if it's northwest or southeast (but not a horizontal line) 
+    //   // if (walls.south) Some(Line(points(3)._1, points(3)._2, points(4)._1, points(4)._2)) else None,
+    //   if (walls.northwest) Some(Line(points(3)._1, points(3)._2, points(4)._1, points(4)._2)) else None,
+    //   // below line incorrectly renders southwest as a horizontal line line north or south 
+    //   // if (walls.southwest) Some(Line(points(4)._1, points(4)._2, points(5)._1, points(5)._2)) else None,
+    //   if (walls.north) Some(Line(points(4)._1, points(4)._2, points(5)._1, points(5)._2)) else None,
+    //   // below line incorrectly renders northwest as if it's southwest or northeast 
+    //   // if (walls.northwest) Some(Line(points(5)._1, points(5)._2, points(0)._1, points(0)._2)) else None
+    //   if (walls.northeast) Some(Line(points(5)._1, points(5)._2, points(0)._1, points(0)._2)) else None
+    // ).flatten
   }
 
   // Render optional coordinates as text
@@ -66,6 +85,14 @@ object HexWalls {
       south = !cell.isLinked(South),
       southwest = !cell.isLinked(SouthWest),
       northwest = !cell.isLinked(NorthWest)
+      // //// TODO: temporarily hard-coding walls to debug
+      // north = true,
+      // northeast = true,
+      // southeast = true,
+      // south = true,
+      // southwest = true,
+      // northwest = true
+
     )
   }
 }
