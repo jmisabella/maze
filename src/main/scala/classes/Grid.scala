@@ -1,11 +1,8 @@
 package maze.classes
 
-// import maze.behaviors.Cell
 import maze.classes.{ Cell, Coordinates, MazeType }
 import maze.classes.CellOrientation._
-// import maze.classes.cell.{ SquareCell, TriangleCell, HexCell }
 import maze.classes.direction.SquareDirection._
-// import maze.classes.grid.{ SquareGrid, TriangleGrid, HexGrid }
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
