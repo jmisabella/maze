@@ -51,7 +51,7 @@ class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
     info("\n" + generated.asci())
   }
 
-  it should "honor start and goal coordinates specified in MazeRequest when generating a non-square HuntAndKill maze grid" in {
+  it should "honor start and goal coordinates specified in MazeRequest when generating a non-square HuntAndKill orthogonal maze grid" in {
     Given("5x10 HuntAndKill request")
     val request = MazeRequest(Orthogonal, 5, 10, Algorithm.HuntAndKill, Coordinates(0, 9), Coordinates(4, 0))
     When("generating the grid")
@@ -80,5 +80,62 @@ class HuntAndKillSpec extends AnyFlatSpec with GivenWhenThen {
     Then("resulting maze should be printed to screen using asci")
     info("\n" + grid.asci())
   }
+
+  it should "honor start and goal coordinates specified in MazeRequest when generating a 5x10 HuntAndKill delta maze grid" in {
+    Given("5x10 HuntAndKill request")
+    val request = MazeRequest(Delta, 5, 10, Algorithm.HuntAndKill, Coordinates(0, 9), Coordinates(4, 0))
+    When("generating the grid")
+    var grid = Generator.generate(request)
+    Then("grid's start should be southwest")
+    grid.startCoords should equal (Coordinates(0, request.height - 1))
+    info("START COORDS: " + grid.startCoords.toString())
+    Then("grid's goal should be northeast")
+    grid.goalCoords should equal (Coordinates(request.width - 1, 0))
+    Then("exactly one cell should be the goal cell (isGoal == true)")
+    grid.count(c => c.isGoal) should equal (1)
+    Then("exactly one cell should be the starting cell (isStart == true)")
+    grid.count(c => c.isStart) should equal (1)
+    Then("grid's start cell at 9,0 should have isStart set to true")
+    grid.get(0, 9).isStart should be (true)
+    Then("grid's 0,0 cell should have isStart set to false")
+    grid.get(0, 0).isStart should be (false)
+    Then("grid's goal cell at 0,4 should have isGoal set to true")
+    grid.get(4, 0).isGoal should be (true)
+    Then("grid's start cell at 9,0 should have isGoal set to false")
+    grid.get(0, 9).isGoal should be (false)
+    Then("resulting maze should contain no stranded unreachable cells") 
+    grid.isFullyConnected() shouldBe (true)
+    Then("resulting maze is a perfect maze")
+    grid.isPerfectMaze() shouldBe (true) 
+  }
+  
+  it should "honor start and goal coordinates specified in MazeRequest when generating a 5x10 HuntAndKill sigma maze grid" in {
+    Given("5x10 HuntAndKill request")
+    val request = MazeRequest(Sigma, 5, 10, Algorithm.HuntAndKill, Coordinates(0, 9), Coordinates(4, 0))
+    When("generating the grid")
+    var grid = Generator.generate(request)
+    Then("grid's start should be southwest")
+    grid.startCoords should equal (Coordinates(0, request.height - 1))
+    info("START COORDS: " + grid.startCoords.toString())
+    Then("grid's goal should be northeast")
+    grid.goalCoords should equal (Coordinates(request.width - 1, 0))
+    Then("exactly one cell should be the goal cell (isGoal == true)")
+    grid.count(c => c.isGoal) should equal (1)
+    Then("exactly one cell should be the starting cell (isStart == true)")
+    grid.count(c => c.isStart) should equal (1)
+    Then("grid's start cell at 9,0 should have isStart set to true")
+    grid.get(0, 9).isStart should be (true)
+    Then("grid's 0,0 cell should have isStart set to false")
+    grid.get(0, 0).isStart should be (false)
+    Then("grid's goal cell at 0,4 should have isGoal set to true")
+    grid.get(4, 0).isGoal should be (true)
+    Then("grid's start cell at 9,0 should have isGoal set to false")
+    grid.get(0, 9).isGoal should be (false)
+    Then("resulting maze should contain no stranded unreachable cells") 
+    grid.isFullyConnected() shouldBe (true)
+    Then("resulting maze is a perfect maze")
+    grid.isPerfectMaze() shouldBe (true) 
+  }
+
 
 }

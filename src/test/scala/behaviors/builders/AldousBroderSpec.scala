@@ -22,7 +22,7 @@ class AldousBroderSpec extends AnyFlatSpec with GivenWhenThen {
     override val distance = _distance
   }
   
-  "AldousBroder" should "generate a 5x5 maze using AldousBroder and print it to screen" in {
+  "AldousBroder" should "generate a 5x5 orthogonal maze using AldousBroder and print it to screen" in {
     Given("5x5 grid")
     val grid = Grid(Orthogonal, 5, 5, Coordinates(0, 4), Coordinates(4, 0))
     When("generating maze using AldousBroder")
@@ -40,8 +40,38 @@ class AldousBroderSpec extends AnyFlatSpec with GivenWhenThen {
     Then("the maze should be printed to screen")
     println(generated.toString())
     println(generated.asci())
-    
+  }
 
+  it should "generate a 5x5 delta maze using AldousBroder verify it to be a perfect maze" in {
+    Given("5x5 grid")
+    val grid = Grid(Delta, 5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    When("generating maze using AldousBroder")
+    val generated = module.generate(grid)
+    Then("generated maze should have height of 5 cells")
+    generated.height should be (5)
+    generated.cells.length should be (5)
+    Then("generated maze should have width of 5 cells")
+    generated.width should be (5)
+    generated.cells.count(c => c.length == 5) should be (5)
+    Then("resulting maze is a perfect maze")
+    generated.isFullyConnected() shouldBe (true)
+    generated.isPerfectMaze() shouldBe (true) 
+  }
+  
+  it should "generate a 5x5 sigma maze using AldousBroder verify it to be a perfect maze" in {
+    Given("5x5 grid")
+    val grid = Grid(Sigma, 5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    When("generating maze using AldousBroder")
+    val generated = module.generate(grid)
+    Then("generated maze should have height of 5 cells")
+    generated.height should be (5)
+    generated.cells.length should be (5)
+    Then("generated maze should have width of 5 cells")
+    generated.width should be (5)
+    generated.cells.count(c => c.length == 5) should be (5)
+    Then("resulting maze is a perfect maze")
+    generated.isFullyConnected() shouldBe (true)
+    generated.isPerfectMaze() shouldBe (true) 
   }
 
 }
