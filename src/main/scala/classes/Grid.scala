@@ -2,7 +2,10 @@ package maze.classes
 
 import maze.classes.{ Cell, Coordinates, MazeType }
 import maze.classes.CellOrientation._
+import maze.classes.direction.{ SquareDirection, TriangleDirection, HexDirection }
 import maze.classes.direction.SquareDirection._
+import maze.classes.direction.TriangleDirection._
+import maze.classes.direction.HexDirection._
 import maze.classes.MazeType._
 import maze.utilities.RNG // can control initial seed to ensure repeatability for testing
 import scala.util.Random // used to randomly seed our custom RNG for non-testing
@@ -27,24 +30,22 @@ case class Grid(
   def neighbors(coords: Coordinates): Seq[Cell] = get(coords).neighbors().map(c => get(c.x, c.y))
   
   def linkOneUnreachable(): Grid = {
-    var nextGrid: Grid = this
-    if (!nextGrid.isFullyConnected()) {
-      var reachableCells: Seq[Cell] = nextGrid.reachable()
-      var unreachableCells: Seq[Cell] = nextGrid.unreachable()
-      for (unreached <- unreachableCells) {
-        for (neighborCoords <- unreached.unlinkedNeighbors()) {
-          var cell: Cell = unreached 
-          var neighbor: Cell = get(neighborCoords)
-          if (reachable.contains(neighbor)) {
-            cell = cell.setLinked(linked = cell.linked ++ Set(neighbor.coords))
-            neighbor = neighbor.setLinked(linked = neighbor.linked ++ Set(cell.coords))
-            nextGrid = nextGrid.set(cell).set(neighbor)
-            return nextGrid
-          }
-        } 
+    if (isFullyConnected()) return this
+
+    val reachableCells = reachable()
+    val unreachableCells = unreachable()
+
+    unreachableCells.foreach { unreached =>
+      unreached.unlinkedNeighbors().foreach { neighborCoords =>
+        val neighbor = get(neighborCoords)
+        if (reachableCells.contains(neighbor)) {
+          val updatedUnreached = unreached.setLinked(linked = unreached.linked + neighbor.coords)
+          val updatedNeighbor = neighbor.setLinked(linked = neighbor.linked + unreached.coords)
+          return this.set(updatedUnreached).set(updatedNeighbor)
+        }
       }
     }
-    nextGrid
+    this
   }
   def linkUnreachables(): Grid = {
     var nextGrid = this
@@ -172,13 +173,13 @@ case class Grid(
         var bottom: String = "+"
         for (cell <- row) {
           val body = cell.value
-          val eastBoundary: String = cell.neighborsByDirection.get("east").isDefined match {
-            case true if (cell.isLinked(East)) => " "
+          val eastBoundary: String = cell.neighborsByDirection.get(Grid.lower(SquareDirection.East)).isDefined match {
+            case true if (cell.isLinked(SquareDirection.East)) => " "
             case _ => "|"
           }
           top += body + eastBoundary
-          val southBoundary: String = cell.neighborsByDirection.get("south").isDefined match {
-            case true if (cell.isLinked(South)) => "   "
+          val southBoundary: String = cell.neighborsByDirection.get(Grid.lower(SquareDirection.South)).isDefined match {
+            case true if (cell.isLinked(SquareDirection.South)) => "   "
             case _ => "---"
           }
           val corner: String= "+"
@@ -205,9 +206,11 @@ case class Grid(
     output += "]}"
     output
   }
+
 }
 
 object Grid {
+  def lower[D <: Enumeration#Value](direction: D): String = direction.toString().toLowerCase()
   def apply(mazeType: MazeType, height: Int, width: Int, startCoords: Coordinates, goalCoords: Coordinates): Grid = {
     val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
     val empty: Grid = Grid(mazeType, height, width, Array[Array[Cell]](), seed, startCoords, goalCoords).copy(cells = Array.ofDim[Cell](height, width))
@@ -237,7 +240,7 @@ object Grid {
           }).toArray
         )
       } 
-    }     
+    } 
     grid.copy(
       cells = mazeType match {
         case Orthogonal => {
@@ -249,16 +252,16 @@ object Grid {
               val cell = grid.cells(row)(col)
 
               if (cell.coords.y != 0) {
-                neighborsByDirection += ("north" -> grid.cells(cell.coords.y - 1)(cell.coords.x).coords)
+                neighborsByDirection += (lower(SquareDirection.North) -> grid.cells(cell.y - 1)(cell.x).coords)
               }
-              if (cell.coords.x < grid.width - 1) {
-                neighborsByDirection += ("east" -> (grid.cells(cell.coords.y)(cell.coords.x + 1)).coords)
+              if (cell.x < grid.width - 1) {
+                neighborsByDirection += (lower(East) -> (grid.cells(cell.y)(cell.x + 1)).coords)
               }
-              if (cell.coords.y < grid.height - 1) {
-                neighborsByDirection += ("south" -> (grid.cells(cell.coords.y + 1)(cell.coords.x)).coords)
+              if (cell.y < grid.height - 1) {
+                neighborsByDirection += (lower(SquareDirection.South) -> (grid.cells(cell.y + 1)(cell.x)).coords)
               }
-              if (cell.coords.x != 0) {
-                neighborsByDirection += ("west" -> (grid.cells(cell.coords.y)(cell.coords.x - 1)).coords)
+              if (cell.x != 0) {
+                neighborsByDirection += (lower(West) -> (grid.cells(cell.y)(cell.x - 1)).coords)
               }
               cell.copy(
                 neighborsByDirection = neighborsByDirection,
@@ -277,20 +280,20 @@ object Grid {
               val left: Option[Coordinates] = if (col > 0) Some(Coordinates(col - 1, row)) else None
               val right: Option[Coordinates] = if (col < width - 1) Some(Coordinates(col + 1, row)) else None
               if (left.isDefined) {
-                val key = if (cell.orientation == Normal) "upperleft" else "lowerleft"
+                val key = if (cell.orientation == Normal) lower(UpperLeft) else lower(LowerLeft)
                 neighborsByDirection += (key -> left.get)
               }
               if (right.isDefined) {
-                val key = if (cell.orientation == Normal) "upperright" else "lowerright"
+                val key = if (cell.orientation == Normal) lower(UpperRight) else lower(LowerRight)
                 neighborsByDirection += (key -> right.get)
               }
               val up: Option[Coordinates] = if (cell.orientation == Inverted && row > 0) Some(Coordinates(col, row - 1)) else None
               val down: Option[Coordinates] = if (cell.orientation == Normal && row < height - 1) Some(Coordinates(col, row + 1)) else None
               if (up.isDefined) {
-                neighborsByDirection += ("up" -> up.get)
+                neighborsByDirection += (lower(Up) -> up.get)
               }
               if (down.isDefined) {
-                neighborsByDirection += ("down" -> down.get)
+                neighborsByDirection += (lower(Down) -> down.get)
               }
               cell.copy(
                 neighborsByDirection = neighborsByDirection,
@@ -313,22 +316,22 @@ object Grid {
                 case false => (row, row + 1)
               }
               if (col > 0 && northDiagonal >= 0 && northDiagonal < height) {
-                neighborsByDirection += ("northwest" -> grid.get(col - 1, northDiagonal).coords)
+                neighborsByDirection += (lower(NorthWest) -> grid.get(col - 1, northDiagonal).coords)
               } 
               if (col >= 0 && col < width && row > 0) {
-                neighborsByDirection += ("north" -> grid.get(col, row - 1).coords)
+                neighborsByDirection += (lower(HexDirection.North) -> grid.get(col, row - 1).coords)
               }
               if (col < width - 1 && northDiagonal >= 0 && northDiagonal < height) {
-                neighborsByDirection += ("northeast" -> grid.get(col + 1, northDiagonal).coords)
+                neighborsByDirection += (lower(NorthEast) -> grid.get(col + 1, northDiagonal).coords)
               }
               if (col > 0 && southDiagonal >= 0 && southDiagonal < height) {
-                neighborsByDirection += ("southwest" -> grid.get(col - 1, southDiagonal).coords)
+                neighborsByDirection += (lower(SouthWest) -> grid.get(col - 1, southDiagonal).coords)
               }
               if (row < height - 1 && col >= 0 && col < width) {
-                neighborsByDirection += ("south" -> grid.get(col, row + 1).coords)
+                neighborsByDirection += (lower(HexDirection.South) -> grid.get(col, row + 1).coords)
               }
               if (col < width - 1 && southDiagonal >= 0 && southDiagonal < height) {
-                neighborsByDirection += ("southeast" -> grid.get(col + 1, southDiagonal).coords)
+                neighborsByDirection += (lower(SouthEast) -> grid.get(col + 1, southDiagonal).coords)
               }
               // now filter out the out-of-bounds (non-existent) neighbors
               // neighborsByDirection = grid.removeOutOfBoundsNeighbors(neighborsByDirection)
@@ -366,13 +369,4 @@ object Grid {
       val seed: RNG = RNG.RandomSeed(Random.nextInt(height * width + 1))
       Grid(mazeType, height, width, startCoords, goalCoords, seed, flattened)
   }
-//   private def setCells[C <: Cell, G <: Grid[C]](grid: G, cells: Array[Array[C]])(implicit ct: ClassTag[C]): G = {
-//     instantiate[C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, cells.toList.flatten)
-//   }
-//   private def setCells[C <: Cell, G <: Grid[C]](grid: G, cells: Seq[Seq[C]])(implicit ct: ClassTag[C]): G = {
-//     setCells(grid, cells.map(xs => xs.toArray).toArray)
-//   }
-//   private def setSeed[C <: Cell, G <: Grid[C]](grid: G, seed: RNG)(implicit ct: ClassTag[C]): G = {
-//     instantiate[C, G](grid.mazeType, grid.height, grid.width, grid.startCoords, grid.goalCoords, seed, grid.flatten)
-//   } 
 }

@@ -158,8 +158,8 @@ class LinkageSpec extends AnyFlatSpec with GivenWhenThen {
         for (linkedCell <- linked) {
           updated = updated.set(linkedCell)
         }
-        updated.cells(cell.coords.y)(cell.coords.x).linked.toList.containsSlice(originalLinked.toList) shouldBe (true)
-        updated.cells(cell.coords.y)(cell.coords.x).linked.contains(cell.neighbors(West).head) shouldBe (true)
+        updated.cells(cell.y)(cell.x).linked.toList.containsSlice(originalLinked.toList) shouldBe (true)
+        updated.cells(cell.y)(cell.x).linked.contains(cell.neighbors(West).head) shouldBe (true)
       }
     }
     println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")

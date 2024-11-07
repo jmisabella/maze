@@ -125,7 +125,7 @@ class SidewinderSpec extends AnyFlatSpec with GivenWhenThen {
     val dist = module.distance.getDistances(grid, 0, 0)
     for (cell <- grid) {
       dist.keySet should contain (cell.coords) 
-      println(s"COORDS: ${cell.coords.x}, ${cell.coords.y}")
+      println(s"COORDS: ${cell.x}, ${cell.coords.y}")
       println(s"DIST: ${dist.get(cell.coords)}")
     }
     println(module.distance.distances(grid, 0, 0))

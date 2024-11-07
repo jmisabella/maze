@@ -35,39 +35,14 @@ case class Cell (
 
   def neighbors(): Seq[Coordinates] = neighborsByDirection.values.toSeq
 
-  def neighbors[D <: Enumeration#Value](direction: D): Seq[Coordinates] = mazeType match {
-    case Orthogonal => direction match {
-      case SquareDirection.North => Seq(neighborsByDirection("north"))
-      case SquareDirection.East => Seq(neighborsByDirection("east"))
-      case SquareDirection.South => Seq(neighborsByDirection("south"))
-      case SquareDirection.West => Seq(neighborsByDirection("west"))
-      case d => throw new IllegalArgumentException(s"Rejecting illegal direction [$d] for maze type Orthogonal (square cells): expecting one of [North, East, South West]")
-    }
-    case Delta => direction match {
-      case TriangleDirection.UpperLeft => Seq(neighborsByDirection("upperleft"))
-      case TriangleDirection.UpperRight => Seq(neighborsByDirection("upperright"))
-      case TriangleDirection.Down => Seq(neighborsByDirection("down"))
-      case TriangleDirection.Up => Seq(neighborsByDirection("up"))
-      case TriangleDirection.LowerLeft => Seq(neighborsByDirection("lowerleft"))
-      case TriangleDirection.LowerRight => Seq(neighborsByDirection("lowerright"))
-      case d => {
-          throw new IllegalArgumentException(
-              s"Rejectng illegal direction [$d] for maze type Delta (triangle cells): expecting one of [UpperLeft, UpperRight, Down, Up, LowerLeft, LowerRight]")
-      }
-    } 
-    case Sigma => direction match {
-      case HexDirection.NorthWest => Seq(neighborsByDirection("northwest"))
-      case HexDirection.North => Seq(neighborsByDirection("north"))
-      case HexDirection.NorthEast => Seq(neighborsByDirection("northeast"))
-      case HexDirection.SouthWest => Seq(neighborsByDirection("southwest"))
-      case HexDirection.South => Seq(neighborsByDirection("south"))
-      case HexDirection.SouthEast => Seq(neighborsByDirection("southeast"))
-      case d => {
-          throw new IllegalArgumentException(
-              s"Rejecting illegal directin [$d] for maze type Sigma (hex cells): expecting one of [UpperLeft, UpperRight, Bottom, Top, LowerLeft, LowerRight]")
-      }
-    }
-    case t => throw new IllegalArgumentException(s"Rejecting unexpected MazeType [$t]. Accepted values: [Orthogonal, Delta, Sigma]")
+  def neighbors[D <: Enumeration#Value](direction: D): Seq[Coordinates] = {
+    assert(
+      (mazeType == Orthogonal && direction.isInstanceOf[SquareDirection]) ||
+      (mazeType == Delta && direction.isInstanceOf[TriangleDirection]) ||
+      (mazeType == Sigma && direction.isInstanceOf[HexDirection]),
+      s"Rejecting unexpected MazeType/Direction combination: MazeType [$mazeType], Direction [$direction]"
+    )
+    Seq(neighborsByDirection(direction.toString().toLowerCase()))
   }
 
   override def toString(): String = {
@@ -244,13 +219,6 @@ case class Cell (
 }
 
 object Cell {
-// //   def apply(x: Int, y: Int): Cell = Cell(coords = Coordinates(x, y))
-//   def apply(mazeType: MazeType, coords: Coordinates, neighborsByDirection: Map[String, Coordinates], 
-//     linked: Set[Coordinates], distance: Int, isStart: Boolean = false, isGoal: Boolean = false, onSolutionPath: Boolean = false, 
-//     visited: Boolean = false, value: String = "   "): Cell = {
-
-//       Cell(coords = coords, mazeType = mazeType, neighborsByDirection = neighborsByDirection, linked = linked, distance = distance, isStart = isStart, isGoal = isGoal, onSolutionPath = onSolutionPath, visited = visited, value = value).asInstanceOf[C]
-//   }
   def apply(mazeType: MazeType, coords: Coordinates, orientation: CellOrientation, visited: Boolean, neighbors: Map[String, Coordinates], linked: Set[Coordinates]): Cell = {
     apply(coords, mazeType, neighbors, linked, 0, false, false, false, orientation, visited, "   ")
   }

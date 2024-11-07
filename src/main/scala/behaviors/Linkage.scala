@@ -54,7 +54,7 @@ trait Linkage {
     for (y <- 0 until grid.height) {
       val row: Seq[Cell] = updated.row(y)
       for (cell <- row) {
-        if (cell.coords.x < grid.width - 1) {
+        if (cell.x < grid.width - 1) {
           val neighbor: Cell = updated.get(cell.neighbors(East).head)
           if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
             updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
@@ -67,7 +67,7 @@ trait Linkage {
     for (x <- 0 until grid.width) {
       val column: Seq[Cell] = grid.column(x)
       for (cell <- column) {
-        if (cell.coords.y < grid.height - 1) {
+        if (cell.y < grid.height - 1) {
           val neighbor: Cell = updated.get(cell.neighbors(South).head)
           if (cell.linked.contains(neighbor.coords) && !neighbor.linked.contains(cell.coords)) {
             updated = updated.set(neighbor.setLinked(neighbor.linked ++ Set(cell.coords))) 
