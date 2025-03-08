@@ -3,7 +3,7 @@ ThisBuild / organization := "io.github.jmisabella"
 ThisBuild / organizationName := "jmisabella"
 ThisBuild / organizationHomepage := Some(url("https://github.com/jmisabella"))
 ThisBuild / version := "0.0.27"
-ThisBuild / scalaVersion := "2.13.10"
+ThisBuild / scalaVersion := "2.13.12"
 
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -19,12 +19,22 @@ ThisBuild / developers := List(
     url = url("https://github.com/jmisabella")
   )
 )
+// Determine OS version of JavaFX binaries
+lazy val osName = System.getProperty("os.name") match {
+  case n if n.startsWith("Linux") => "linux"
+  case n if n.startsWith("Mac") => "mac"
+  case n if n.startsWith("Windows") => "win"
+  case _ => throw new Exception("Unknown platform!")
+}
+val javaFxImports = Seq("base", "controls", "fxml", "graphics", "media", "swing", "web")
+    .map(m => "org.openjfx" % s"javafx-$m" % "16" classifier osName)
 
-ThisBuild / libraryDependencies ++= Seq(
+ThisBuild / libraryDependencies ++= (Seq(
   "com.typesafe.play" %% "play-json" % "2.10.0-RC6",
   "com.fasterxml.jackson.core" % "jackson-core" % "2.13.4",
+  "org.scalafx" %% "scalafx" % "16.0.0-R24" % "test",
   "org.scalatest" %% "scalatest" % "3.2.9" % "test"
-)
+) ++ javaFxImports.map(s => s % "test"))
 ThisBuild / description := "Scala library for generating and solving mazes"
 ThisBuild / licenses := List(
   "Apache 2" -> new URL("http://www.apache.org/licenses/LICENSE-2.0.txt")

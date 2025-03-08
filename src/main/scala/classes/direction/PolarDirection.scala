@@ -1,4 +1,4 @@
-package maze.classes
+package maze.classes.direction
 
 object PolarDirection extends Enumeration {
   type PolarDirection = Value

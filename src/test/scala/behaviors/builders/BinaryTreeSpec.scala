@@ -2,7 +2,9 @@ package maze.behaviors
 
 import maze.behaviors.{ Linkage, Distance }
 import maze.behaviors.builders.{ BinaryTree, Generator }
-import maze.classes.{ SquareCell, SquareGrid, Coordinates, MazeRequest, Algorithm }
+import maze.classes.{ Coordinates, Cell, Grid, MazeRequest, Algorithm }
+// import maze.classes.cell.SquareCell
+// import maze.classes.grid.SquareGrid
 import maze.classes.MazeType._
 
 import org.scalatest.flatspec.AnyFlatSpec
@@ -11,19 +13,19 @@ import org.scalatest.GivenWhenThen
 
 class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
-  case object module extends BinaryTree[SquareCell, SquareGrid] {
-    case object _linkage extends Linkage[SquareCell, SquareGrid]
-    override type LINKAGE = Linkage[SquareCell, SquareGrid]
+  case object module extends BinaryTree {
+    case object _linkage extends Linkage
+    override type LINKAGE = Linkage
     override val linker = _linkage
 
-    case object _distance extends Distance[SquareCell, SquareGrid]
-    override type DISTANCE = Distance[SquareCell, SquareGrid]
+    case object _distance extends Distance
+    override type DISTANCE = Distance
     override val distance = _distance
   }
 
   "BinaryTree" should "generate a 5x5 maze using Binary Tree and print it to screen" in {
     Given("5x5 grid")
-    val grid = SquareGrid(5, 5, Coordinates(0, 4), Coordinates(4, 0))
+    val grid = Grid(Orthogonal, 5, 5, Coordinates(0, 4), Coordinates(4, 0))
     When("generating maze using BinaryTree")
     val generated = module.generate(grid)
     Then("generated maze should have height of 5 cells")
@@ -43,7 +45,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 20x20 maze and print to screen" in {
     Given("20x20 grid")
-    val grid = SquareGrid(20, 20, Coordinates(0, 19), Coordinates(19, 0))
+    val grid = Grid(Orthogonal, 20, 20, Coordinates(0, 19), Coordinates(19, 0))
     When("generating maze using BinaryTree")
     val generated = module.generate(grid)
     Then("generated maze should have height of 20 cells")
@@ -62,7 +64,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 8x8 maze and print to screen" in {
     Given("8x8 grid")
-    val grid = SquareGrid(8, 8, Coordinates(0, 7), Coordinates(7, 0))
+    val grid = Grid(Orthogonal, 8, 8, Coordinates(0, 7), Coordinates(7, 0))
     When("generating maze using BinaryTree")
     val generated = module.generate(grid)
     Then("generated maze should have height of 8 cells")
@@ -81,7 +83,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 10x10 maze and print to screen" in {
     Given("10x10 grid")
-    val grid = SquareGrid(10, 10, Coordinates(0, 9), Coordinates(9, 0))
+    val grid = Grid(Orthogonal, 10, 10, Coordinates(0, 9), Coordinates(9, 0))
     When("generating maze using BinaryTree")
     val generated = module.generate(grid)
     Then("generated maze should have height of 10 cells")
@@ -100,7 +102,7 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
 
   it should "generate a 11x11 maze and print to screen" in {
     Given("11x11 grid")
-    val grid = SquareGrid(11, 11, Coordinates(0, 10), Coordinates(10, 0))
+    val grid = Grid(Orthogonal, 11, 11, Coordinates(0, 10), Coordinates(10, 0))
     When("generating maze using BinaryTree")
     val generated = module.generate(grid)
     Then("generated maze should have height of 11 cells")
@@ -118,16 +120,16 @@ class BinaryTreeSpec extends AnyFlatSpec with GivenWhenThen {
   }
   
   it should "honor start and goal coordinates specified in MazeRequest when generating a large non-square grid" in {
-    case object module extends BinaryTree[SquareCell, SquareGrid] {
-      case object _linkage extends Linkage[SquareCell, SquareGrid]
-      override type LINKAGE = Linkage[SquareCell, SquareGrid]
+    case object module extends BinaryTree {
+      case object _linkage extends Linkage
+      override type LINKAGE = Linkage
       override val linker = _linkage
-      case object _distance extends Distance[SquareCell, SquareGrid]
-      override type DISTANCE = Distance[SquareCell, SquareGrid]
+      case object _distance extends Distance
+      override type DISTANCE = Distance
       override val distance = _distance
     }
     Given("JSON for a 52x29 BinaryTree request")
-    val json = """{"mazeType":"Square","width":"52","height":"29","algorithm":"BinaryTree","startX":"14","startY":"0","goalX":"14","goalY":"28"}""" 
+    val json = """{"mazeType":"Orthogonal","width":"52","height":"29","algorithm":"BinaryTree","startX":"14","startY":"0","goalX":"14","goalY":"28"}""" 
     When("generating the grid")
     val request: MazeRequest = MazeRequest(json)
     var grid = Generator.generate(request)
